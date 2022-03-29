@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+
 require('dotenv').config();
 
 const time = require('./time');
@@ -9,26 +10,29 @@ const Report = require('./models/report');
 
 const app = express();
 
+app.set('view engine', 'hbs');
+
 app.get('/', async (req, res) => {
 
     const userID = req.query.user_id;
-    let answer = [];
+    let report = [];
 
     try {
         if (userID) {
-            answer = await Report.find({ userID: userID, dayOfWeek: time.today.dayOfWeek() });
-            console.log(answer);
+            report = await Report.find({ userID: userID, dayOfWeek: time.today.dayOfWeek() });
 
-            if (answer.length == 0) {
-                answer = new Report({ userID: userID, dayOfWeek: time.today.dayOfWeek() });
-                await answer.save();
+            if (report.length == 0) {
+                report = new Report({ userID: userID, dayOfWeek: time.today.dayOfWeek() });
+                await report.save();
             }
         } 
-        else {
-            answer = ('No user ID quered :\\');
-        }
 
-        res.send(answer);
+        res.render('report.hbs', {
+            day: 'сегодня',
+            date: time.today.date(),
+            calories: 2700,
+            toEat: 200,
+        });
 
     } catch (e) {
         res.status(500).send('Oops, something went wrong :(');
