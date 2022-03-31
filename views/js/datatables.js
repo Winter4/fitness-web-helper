@@ -15,14 +15,20 @@ $(document).ready(function() {
         let response = await fetch('http://localhost:5500/meals/' + selected);
         let meal = await response.json();
 
-        bfTable.row.add( [
-            meal.name,
-            97,
-            meal.calories,
-            meal.proteins,
-            meal.fats,
-            meal.carbons
-        ] ).draw( false );
+        let mealWeight = document.getElementById('meal-weight').value;
+        if (mealWeight == '' || Number(mealWeight) < 1) {
+            
+        }
+        else {
+            bfTable.row.add( [
+                meal.name,
+                mealWeight,
+                meal.calories,
+                meal.proteins,
+                meal.fats,
+                meal.carbons
+            ] ).draw( false );
+        }
     } );
     
 
