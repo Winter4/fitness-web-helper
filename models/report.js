@@ -15,7 +15,7 @@ const reportSchema = new mongoose.Schema({
         default: () => time.today.dayOfWeek(),
     },
     breakfast: [{
-        _id: { 
+        meal: { 
             type: String, 
             ref: 'meal',
             required: true, 

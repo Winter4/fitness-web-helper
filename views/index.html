@@ -49,26 +49,7 @@
     fds -->
 
     <!-- Datatables init -->
-    <script>
-        $(document).ready( function () {
-            $('#breakfastTable').DataTable({
-                paging: false,
-                searching: false,
-                ordering: false,
-                info: false,
-            });
-        } );
-    </script>
-    <script>
-        $(document).ready( function () {
-            $('#dinnerTable').DataTable();
-        } );
-    </script>
-    <script>
-        $(document).ready( function () {
-            $('#eveningTable').DataTable();
-        } );
-    </script>
+    <script src="./js/datatables.js"></script>
     <!-- Datatables init over -->
 
 
@@ -143,13 +124,15 @@
                         <label for="meal-list">Выберите продукт:</label>
                         <select id="meals-list"></select>
                         <!-- Meals drodpown over -->
+                        <br>
 
                         <!-- Weight input -->
                         <label for="meal-weight">Введите массу в граммах:</label>
-                        <input id="meal-weight" name="meal-weight" />
+                        <input id="meal-weight" name="meal-weight" type="number" min="1"/>
                         <!-- Weight input over  -->
+                        <br>
 
-                        <input type="submit" value="Добавить">
+                        <input type="button" id="add-meal-button" value="Добавить">
                     </form>
                     <!-- New meal form over -->
                    

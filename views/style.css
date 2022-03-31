@@ -24,3 +24,11 @@ table {
     margin-top: 15px;
     margin-left: 5%;
 }
+
+form.add-meal-form > * {
+    margin: 8px;
+}
+
+form.add-meal-form input[type="submit"] {
+    margin-top: 15px;
+}

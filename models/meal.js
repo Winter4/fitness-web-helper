@@ -4,7 +4,7 @@ require('dotenv').config();
 const time = require('../time');
 
 const mealSchema = new mongoose.Schema({
-    _id: {
+    name: {
         type: String,
         required: true,
     },

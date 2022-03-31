@@ -17,7 +17,13 @@ app.set('view engine', 'hbs');
 app.use(cors());
 
 app.get('/meals', async (req, res) => {
-    res.json(await Meal.find());
+    res.json(await Meal.find({}, { "name": true }));
+});
+
+app.get('/meals/:id', async (req, res) => {
+    console.log('got req');
+    let id = req.params.id;
+    res.json(await Meal.findOne({ "_id": mongoose.Types.ObjectId(id) }));
 });
 
 app.get('/', async (req, res) => {
@@ -47,5 +53,5 @@ app.get('/', async (req, res) => {
 
 app.listen(5500, () => { 
     mongoose.connect(process.env.MONGO_URL, () => console.log('Connected to DB'));
-    console.log('Server started at 3000');
+    console.log('Server started at 5500');
 });
