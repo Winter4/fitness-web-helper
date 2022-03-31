@@ -1,3 +1,7 @@
+.container {
+    padding-top: 25px;
+}
+
 header {
     text-align: center;
     margin: 0 auto;
@@ -5,6 +9,7 @@ header {
 
 .nav {
     justify-content: center;
+    margin-top: 15px;
 }
 
 .content {
@@ -13,4 +18,9 @@ header {
 
 table {
     text-align: center;
+}
+
+.dropdown {
+    margin-top: 15px;
+    margin-left: 5%;
 }

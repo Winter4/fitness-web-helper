@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const time = require('./time');
 const Report = require('./models/report');
+const Meal = require('./models/meal');
 
 // 414894488
 
@@ -19,20 +20,17 @@ app.get('/', async (req, res) => {
 
     try {
         if (userID) {
-            report = await Report.find({ userID: userID, dayOfWeek: time.today.dayOfWeek() });
+            report = await Report.findOne({ userID: userID, dayOfWeek: time.today.dayOfWeek() });
 
-            if (report.length == 0) {
+            if (report == null) {
                 report = new Report({ userID: userID, dayOfWeek: time.today.dayOfWeek() });
                 await report.save();
             }
         } 
 
-        res.render('report.hbs', {
-            day: 'сегодня',
-            date: time.today.date(),
-            calories: 2700,
-            toEat: 200,
-        });
+
+        let answer = report;
+        res.send(answer);
 
     } catch (e) {
         res.status(500).send('Oops, something went wrong :(');

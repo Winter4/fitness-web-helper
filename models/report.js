@@ -14,6 +14,19 @@ const reportSchema = new mongoose.Schema({
         immutable: true,
         default: () => time.today.dayOfWeek(),
     },
+    breakfast: [{
+        _id: { 
+            type: String, 
+            ref: 'meals',
+            required: true, 
+        },
+        weight: {
+            type: Number,
+            required: true,
+            min: 0,
+        }
+    }],
+
 }, { collection: 'reports', versionKey: false });
 
-module.exports = new mongoose.model('reports', reportSchema);
+module.exports = mongoose.model('reports', reportSchema);
