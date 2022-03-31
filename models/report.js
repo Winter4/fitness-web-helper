@@ -17,7 +17,7 @@ const reportSchema = new mongoose.Schema({
     breakfast: [{
         _id: { 
             type: String, 
-            ref: 'meals',
+            ref: 'meal',
             required: true, 
         },
         weight: {
@@ -29,4 +29,4 @@ const reportSchema = new mongoose.Schema({
 
 }, { collection: 'reports', versionKey: false });
 
-module.exports = mongoose.model('reports', reportSchema);
+module.exports = mongoose.model('report', reportSchema);
