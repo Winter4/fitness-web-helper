@@ -43,6 +43,12 @@
         src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js">
     </script>
 
+    <!-- fds<!-- JQuery Selectize plugin 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/js/selectize.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/css/selectize.bootstrap2.min.css">
+    fds -->
+
+    <!-- Datatables init -->
     <script>
         $(document).ready( function () {
             $('#breakfastTable').DataTable({
@@ -63,10 +69,14 @@
             $('#eveningTable').DataTable();
         } );
     </script>
+    <!-- Datatables init over -->
 
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="./style.css">
+
+    <!-- Custom JS -->
+    <script src="./js/getMeals.js"></script>
 </head>
 
 <!------------------------------------------------------------------------------------------------------>
@@ -127,18 +137,22 @@
                     </table>
                     <!-- Table over -->
 
-                    <!-- Meals drodpown -->
-                    <div class="dropdown">
-                        <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                            Добавить продукт
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                            <li><a class="dropdown-item" href="#">Action</a></li>
-                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                            <li><a class="dropdown-item" href="#">Something else here</a></li>
-                        </ul>
-                    </div>
-                    <!-- Meals drodpown over -->
+                    <!-- New meal form -->
+                    <form action="#" class="add-meal-form">
+                         <!-- Meals drodpown -->
+                        <label for="meal-list">Выберите продукт:</label>
+                        <select id="meals-list"></select>
+                        <!-- Meals drodpown over -->
+
+                        <!-- Weight input -->
+                        <label for="meal-weight">Введите массу в граммах:</label>
+                        <input id="meal-weight" name="meal-weight" />
+                        <!-- Weight input over  -->
+
+                        <input type="submit" value="Добавить">
+                    </form>
+                    <!-- New meal form over -->
+                   
 
                 </div>
                 <!-- Breakfast tab over -->
@@ -148,6 +162,6 @@
         <!-- Content over -->
 
     </div>
-    <script src="./script.js"></script>
+    
 </body>
 <html>

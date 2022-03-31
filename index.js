@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 
 require('dotenv').config();
 
@@ -12,6 +13,12 @@ const Meal = require('./models/meal');
 const app = express();
 
 app.set('view engine', 'hbs');
+
+app.use(cors());
+
+app.get('/meals', async (req, res) => {
+    res.json(await Meal.find());
+});
 
 app.get('/', async (req, res) => {
 
@@ -38,7 +45,7 @@ app.get('/', async (req, res) => {
     }
 });
 
-app.listen(3000, () => { 
+app.listen(5500, () => { 
     mongoose.connect(process.env.MONGO_URL, () => console.log('Connected to DB'));
     console.log('Server started at 3000');
 });
