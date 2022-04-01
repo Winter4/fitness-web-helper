@@ -48,16 +48,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/css/selectize.bootstrap2.min.css">
     fds -->
 
-    <!-- Datatables init -->
-    <script src="./js/datatables.js"></script>
-    <!-- Datatables init over -->
-
-
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="style.css" type="text/css">
 
     <!-- Custom JS -->
-    <script src="./js/getMeals.js"></script>
+    <script src="/js/datatables.js"></script>
+    <script src="/js/mealSelect.js"></script>
 </head>
 
 <!------------------------------------------------------------------------------------------------------>
@@ -95,26 +91,6 @@
 
                     <!-- Table -->
                     <table id="breakfastTable" class="display" cellspacing="0" width="100%">
-                        <thead>
-                            <tr>
-                                <th>Название продукта</th>
-                                <th>Масса, г</th>
-                                <th>Калории</th>
-                                <th>Белки, г</th>
-                                <th>Жиры, г</th>
-                                <th>Углеводы, г</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Авокадо</td>
-                                <td>100</td>
-                                <td>231</td>
-                                <td>45</td>
-                                <td>22</td>
-                                <td>11</td>
-                            </tr>
-                        </tbody>
                     </table>
                     <!-- Table over -->
 
@@ -130,21 +106,25 @@
                         <label for="meal-weight">Введите массу в граммах:</label>
                         <input id="meal-weight" name="meal-weight" type="number" min="1" value="100" />
                         <!-- Weight input over  -->
+                        
                         <br>
-
                         <input type="button" id="add-meal-button" value="Добавить">
                     </form>
                     <!-- New meal form over -->
                    
-
                 </div>
                 <!-- Breakfast tab over -->
 
+                <!-- Dinner tab -->
+                <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                </div>
+                <!-- Dinner tab over -->
 
         </div>
-        <!-- Content over -->
+        <!-- Tabs content over -->
 
     </div>
+    <!-- Content over -->
     
 </body>
 <html>

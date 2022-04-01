@@ -1,7 +1,7 @@
 
 document.addEventListener("DOMContentLoaded", async () => {
     try {
-        let response = await fetch('http://localhost:5500/meals');
+        let response = await fetch('http://localhost:5500/api/meals');
         let meals = await response.json();
 
         let list = document.getElementById('meals-list');
