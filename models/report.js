@@ -15,6 +15,10 @@ const reportSchema = new mongoose.Schema({
         default: () => time.today.dayOfWeek(),
     },
     breakfast: [{
+        _id: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+        },
         meal: { 
             type: mongoose.Schema.Types.ObjectId, 
             ref: 'meal',

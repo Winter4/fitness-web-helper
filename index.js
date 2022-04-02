@@ -66,8 +66,11 @@ app.get('/api/reports/get/:id/:feeding', async (req, res) => {
         for (let i = 0; i < report.length; i++) {
             let weight = report[i].weight;
             let meal = report[i].meal;
+            let id = report[i]._id;
 
             answer.push({
+                _id: id,
+
                 meal: meal.calcByWeight(weight),
                 weight: weight
             })
@@ -92,7 +95,7 @@ app.get('/api/reports/set/:id/:feeding', async (req, res) => {
         let report = await Report.findOne({ userID: userID, dayOfWeek: time.today.dayOfWeek() });
 
         switch (feeding) {
-            case 'breakfast': report.breakfast.push({ meal: mongoose.Types.ObjectId(mealID), weight: mealWeight });
+            case 'breakfast': report.breakfast.push({ _id: new mongoose.Types.ObjectId, meal: mongoose.Types.ObjectId(mealID), weight: mealWeight });
             break;
         }
 
@@ -101,6 +104,42 @@ app.get('/api/reports/set/:id/:feeding', async (req, res) => {
         res.send();
     } catch(e) {
         console.log(e);
+    }
+});
+
+app.get('/api/reports/del/:id/:feeding', async (req, res) => {
+
+    try {
+        let mealID = req.query.row_id;
+
+        let userID = req.params.id;
+        let feeding = req.params.feeding;
+
+        let report = await Report.findOne({ userID: userID, dayOfWeek: time.today.dayOfWeek() });
+
+        const deleteByID = (array, id) => {
+            for (i in array) {
+                if (id === `'${array[i]._id.toString()}'`) {
+                    array.splice(i, 1);
+                    break;
+                }
+            }
+        };
+
+        switch (feeding) {
+            case 'breakfast': deleteByID(report.breakfast, mealID);
+            break;
+        }
+
+        await report.save();
+
+        res.statusCode = 200;
+        res.send();
+
+    } catch (e) {
+        console.log(e);
+        res.statusCode = 502;
+        res.send();
     }
 });
 
