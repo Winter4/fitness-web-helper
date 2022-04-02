@@ -23,11 +23,10 @@ app.get('/:id', (req, res) => {
     res.sendFile(__dirname + '/views/index.html');
 });
 
-app.get('/api/reports/:id/:feeding', async (req, res) => {
-    
-    console.log(':id/:feeding');
+app.get('/api/reports/get/:id/:feeding', async (req, res) => {
 
     let meal = req.params.feeding;
+    
     let projection = {};
 
     try {
@@ -59,10 +58,48 @@ app.get('/api/reports/:id/:feeding', async (req, res) => {
             await report.save();
         }
 
-        res.json({ data: report });
+        await report.populate('breakfast.meal');
+        report = report.breakfast;
+
+        let answer = [];
+
+        for (let i = 0; i < report.length; i++) {
+            let weight = report[i].weight;
+            let meal = report[i].meal;
+
+            answer.push({
+                meal: meal.calcByWeight(weight),
+                weight: weight
+            })
+        }
+        res.json({ data: answer });
 
     } catch (e) {
         res.status(500).send('Oops, something went wrong :(');
+        console.log(e);
+    }
+});
+
+app.get('/api/reports/set/:id/:feeding', async (req, res) => {
+
+    try {
+        let userID = req.params.id;
+        let feeding = req.params.feeding;
+
+        let mealID = req.query.meal_id;
+        let mealWeight = req.query.weight;
+
+        let report = await Report.findOne({ userID: userID, dayOfWeek: time.today.dayOfWeek() });
+
+        switch (feeding) {
+            case 'breakfast': report.breakfast.push({ meal: mongoose.Types.ObjectId(mealID), weight: mealWeight });
+            break;
+        }
+
+        await report.save();
+        res.statusCode = 200;
+        res.send();
+    } catch(e) {
         console.log(e);
     }
 });

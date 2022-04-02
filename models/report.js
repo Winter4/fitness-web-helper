@@ -16,13 +16,11 @@ const reportSchema = new mongoose.Schema({
     },
     breakfast: [{
         meal: { 
-            type: String, 
+            type: mongoose.Schema.Types.ObjectId, 
             ref: 'meal',
-            required: true, 
         },
         weight: {
             type: Number,
-            required: true,
             min: 0,
         }
     }],

@@ -8,39 +8,48 @@ $(document).ready(function() {
         paging: false,
         info: false,
 
-        ajax: `http://localhost:5500/api/reports/${userID}/breakfast`,
+        ajax: `http://localhost:5500/api/reports/get/${userID}/breakfast`,
 
         columns: [
             {
                 title: "Продукт",
-                data: "name",
+                data: "meal.name",
             },
             {
                 title: "Масса, г",
+                orderable: false,
                 data: "weight",
+                render: function(data, type, row, meta) {
+                  return `
+                  <input type="number" min="1" value="${data}" />
+                  `;
+                }
             },
             {
                 title: "Калории",
-                data: "calories"
+                data: "meal.calories",
             },
             {
                 title: "Белки",
+                data: "meal.proteins",
             },
             {
                 title: "Жиры",
+                data: "meal.fats",
             },
             {
                 title: "Углеводы",
+                data: "meal.carbons",
             },
             {
                 title: "",
                 orderable: false,
                 searchable: false,
                 data: null,
-                render: function ( data, type, row, meta ) {
+                render: function(data, type, row, meta) {
                   return `
                   <a href="javascript:;" onclick="removeRecord(${row.id})" >
-                    <i class="fas fa-trash">вуд</i>
+                    <i class="fas fa-trash">delete</i>
                   </a>`;
                 }
               },
@@ -57,6 +66,19 @@ $(document).ready(function() {
             Toastify({ text: "Ошибка во время удаления записи", className: "bg-gradient-danger border-radius-lg" }).showToast();
         });
     }
+
+    $('#add-meal-button').on('click', async function() {
+
+      console.log('test 1');
+
+      let selected = document.getElementById('meals-list').value;
+
+      let weight = document.getElementById('meal-weight').value;
+      let response = await fetch(`http://localhost:5500/api/reports/set/${userID}/breakfast?meal_id=${selected}&weight=${weight}`);
+      
+      if (response.ok) bfTable.ajax.reload();
+      else console.log('error');
+  } );
 
     /* 
     $("#current-table").DataTable({
@@ -111,29 +133,5 @@ $(document).ready(function() {
             Toastify({ text: "Ошибка во время удаления записи", className: "bg-gradient-danger border-radius-lg" }).showToast();
         });
     } */
-
-    $('#add-meal-button').on('click', async function() {
-
-        let selected = document.getElementById('meals-list').value;
-
-        let response = await fetch('http://localhost:5500/meals/' + selected);
-        let meal = await response.json();
-
-        let mealWeight = document.getElementById('meal-weight').value;
-        if (mealWeight == '' || Number(mealWeight) < 1) {
-            
-        }
-        else {
-            bfTable.row.add( [
-                meal.name,
-                mealWeight,
-                mealWeight * meal.calories / 100,
-                mealWeight * meal.proteins / 100,
-                mealWeight * meal.fats / 100,
-                mealWeight * meal.carbons / 100,
-            ] ).draw( false );
-        }
-    } );
-    
 
 });
