@@ -143,6 +143,43 @@ app.get('/api/reports/del/:id/:feeding', async (req, res) => {
     }
 });
 
+app.get('/api/reports/put/:id/:feeding', async (req, res) => {
+
+    try {
+        let mealID = req.query.row_id;
+        let mealWeight = req.query.row_weight
+
+        let userID = req.params.id;
+        let feeding = req.params.feeding;
+
+        const changeByID = (array, id, newWeight) => {
+            for (i in array) {
+                if (id === `'${array[i]._id.toString()}'`) {
+                    array[i].weight = newWeight;
+                    break;
+                }
+            }
+        };
+
+        let report = await Report.findOne({ userID: userID, dayOfWeek: time.today.dayOfWeek() });
+
+        switch (feeding) {
+            case 'breakfast': changeByID(report.breakfast, mealID, mealWeight);
+            break;
+        }
+
+        await report.save();
+
+        res.statusCode = 200;
+        res.send();
+
+    } catch (e) {
+        console.log(e);
+        res.statusCode = 502;
+        res.send();
+    }
+});
+
 app.get('/api/meals', async (req, res) => {
     let answer = await Meal.find({}, { "name": true });
     res.json(answer);

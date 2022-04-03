@@ -1,5 +1,5 @@
 
-document.addEventListener("DOMContentLoaded", async () => {
+$(document).ready(async function() {
     try {
         let response = await fetch('http://localhost:5500/api/meals');
         let meals = await response.json();
