@@ -72,9 +72,9 @@
 
             <nav>
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                    <button class="nav-link" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Завтрак</button>
-                    <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Обед</button>
-                    <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Ужин</button>
+                    <button class="nav-link" id="nav-breakfast-tab" data-bs-toggle="tab" data-bs-target="#nav-breakfast" type="button" role="tab" aria-controls="nav-breakfast" aria-selected="false">Завтрак</button>
+                    <button class="nav-link" id="nav-dinner-tab" data-bs-toggle="tab" data-bs-target="#nav-dinner" type="button" role="tab" aria-controls="nav-dinner" aria-selected="false">Обед</button>
+                    <button class="nav-link" id="nav-supper-tab" data-bs-toggle="tab" data-bs-target="#nav-supper" type="button" role="tab" aria-controls="nav-supper" aria-selected="false">Ужин</button>
                 </div>
             </nav>
         </header>
@@ -83,48 +83,60 @@
         <!-- Content -->
         <div class="content">
             
-            <!-- Tabs content -->
+            <!-------------------------------------- Tabs content ------------------------------------------------>
             <div class="tab-content" id="nav-tabContent">
 
                 <!-- Breakfast tab -->
-                <div class="tab-pane fade" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-
+                <div class="tab-pane fade" id="nav-breakfast" role="tabpanel" aria-labelledby="nav-breakfast-tab">
                     <!-- Table -->
-                    <table id="breakfastTable" class="display" cellspacing="0" width="100%">
+                    <table id="breakfast-table" class="display" cellspacing="0" width="100%">
                     </table>
                     <!-- Table over -->
-
-                    <!-- New meal form -->
-                    <form action="#" class="add-meal-form">
-                         <!-- Meals drodpown -->
-                        <label for="meal-list">Выберите продукт:</label>
-                        <select id="meals-list"></select>
-                        <!-- Meals drodpown over -->
-                        <br>
-
-                        <!-- Weight input -->
-                        <label for="meal-weight">Введите массу в граммах:</label>
-                        <input id="meal-weight" name="meal-weight" type="number" min="1" value="100" />
-                        <!-- Weight input over  -->
-                        
-                        <br>
-                        <input type="button" id="add-meal-button" value="Добавить">
-                    </form>
-                    <!-- New meal form over -->
-                   
                 </div>
                 <!-- Breakfast tab over -->
 
                 <!-- Dinner tab -->
-                <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                <div class="tab-pane fade" id="nav-dinner" role="tabpanel" aria-labelledby="nav-dinner-tab">
+                    <!-- Table -->
+                    <table id="dinner-table" class="display" cellspacing="0" width="100%">
+                    </table>
+                    <!-- Table over -->
                 </div>
                 <!-- Dinner tab over -->
 
+                <!-- Supper tab -->
+                <div class="tab-pane fade" id="nav-supper" role="tabpanel" aria-labelledby="nav-supper-tab">
+                    <!-- Table -->
+                    <table id="supper-table" class="display" cellspacing="0" width="100%">
+                    </table>
+                    <!-- Table over -->
+                </div>
+                <!-- Supper tab over -->
+
+            </div>
+            <!--------------------------------------- Tabs content over ------------------------------------------->
+
+            <!----------------------------------------- New meal form --------------------------------------------->
+            <form action="#" class="add-meal-form">
+                <!-- Meals drodpown -->
+                <label for="meal-list">Выберите продукт:</label>
+                <select id="meals-list"></select>
+                <!-- Meals drodpown over -->
+                <br>
+
+                <!-- Weight input -->
+                <label for="meal-weight">Введите массу в граммах:</label>
+                <input id="meal-weight" name="meal-weight" type="number" min="1" value="100" />
+                <!-- Weight input over  -->
+                
+                <br>
+                <input type="button" id="add-meal-button" value="Добавить">
+            </form>
+            <!-------------------------------------- New meal form over ------------------------------------------->
+
         </div>
-        <!-- Tabs content over -->
+        <!-- Content over -->
 
     </div>
-    <!-- Content over -->
-    
 </body>
 <html>

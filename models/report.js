@@ -14,7 +14,36 @@ const reportSchema = new mongoose.Schema({
         immutable: true,
         default: () => time.today.dayOfWeek(),
     },
+    
     breakfast: [{
+        _id: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+        },
+        meal: { 
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: 'meal',
+        },
+        weight: {
+            type: Number,
+            min: 0,
+        }
+    }],
+    dinner: [{
+        _id: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+        },
+        meal: { 
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: 'meal',
+        },
+        weight: {
+            type: Number,
+            min: 0,
+        }
+    }],
+    supper: [{
         _id: {
             type: mongoose.Schema.Types.ObjectId,
             required: true,

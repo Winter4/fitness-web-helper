@@ -26,44 +26,34 @@ app.get('/:id', (req, res) => {
 app.get('/api/reports/get/:id/:feeding', async (req, res) => {
 
     let meal = req.params.feeding;
-    
-    let projection = {};
-
-    try {
-        switch (meal) {
-            case 'breakfast': projection = { breakfast: true, _id: false };
-            break;
-
-            case 'dinner': projection = { dinner: true, _id: false };
-            break;
-
-            case 'supper': projection = { supper: true, _id: false };
-            break;
-
-            default: throw new Error('Empty meal param');
-        }
-    } catch (e) {
-        res.status(404).send(e);
-        console.log(e);
-    }
 
     let id = req.params.id;
     let report = {};
 
     try {
-        report = await Report.findOne({ userID: id, dayOfWeek: time.today.dayOfWeek() }, projection);
+        report = await Report.findOne({ userID: id, dayOfWeek: time.today.dayOfWeek() });
 
         if (report == null) {
             report = new Report({ userID: id, dayOfWeek: time.today.dayOfWeek() });
             await report.save();
         }
 
-        await report.populate('breakfast.meal');
-        report = report.breakfast;
+        await report.populate(`${meal}.meal`);
+        switch (meal) {
+            case 'breakfast': report = report.breakfast;
+            break;
+
+            case 'dinner': report = report.dinner;
+            break;
+
+            case 'supper': report = report.supper;
+            break;
+        }
+        
 
         let answer = [];
 
-        for (let i = 0; i < report.length; i++) {
+        for (i in report) {
             let weight = report[i].weight;
             let meal = report[i].meal;
             let id = report[i]._id;
@@ -97,6 +87,12 @@ app.get('/api/reports/set/:id/:feeding', async (req, res) => {
         switch (feeding) {
             case 'breakfast': report.breakfast.push({ _id: new mongoose.Types.ObjectId, meal: mongoose.Types.ObjectId(mealID), weight: mealWeight });
             break;
+
+            case 'dinner': report.dinner.push({ _id: new mongoose.Types.ObjectId, meal: mongoose.Types.ObjectId(mealID), weight: mealWeight });
+            break;
+
+            case 'supper': report.supper.push({ _id: new mongoose.Types.ObjectId, meal: mongoose.Types.ObjectId(mealID), weight: mealWeight });
+            break;
         }
 
         await report.save();
@@ -128,6 +124,12 @@ app.get('/api/reports/del/:id/:feeding', async (req, res) => {
 
         switch (feeding) {
             case 'breakfast': deleteByID(report.breakfast, mealID);
+            break;
+
+            case 'dinner': deleteByID(report.dinner, mealID);
+            break;
+
+            case 'supper': deleteByID(report.supper, mealID);
             break;
         }
 
@@ -165,6 +167,12 @@ app.get('/api/reports/put/:id/:feeding', async (req, res) => {
 
         switch (feeding) {
             case 'breakfast': changeByID(report.breakfast, mealID, mealWeight);
+            break;
+
+            case 'dinner': changeByID(report.dinner, mealID, mealWeight);
+            break;
+
+            case 'supper': changeByID(report.supper, mealID, mealWeight);
             break;
         }
 
