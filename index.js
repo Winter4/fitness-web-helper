@@ -19,27 +19,53 @@ app.use(cors());
 
 // __________________________________________
 
-app.get('/:id', (req, res) => {
+app.get('/', async (req, res) => {
+
+    let id = req.query.id;
+
+    let exists = Boolean(await Report.exists({ userID: id, date: time.today.date() }));
+    if (!(exists)) {
+        let report = new Report({ userID: id });
+        await report.save();
+    }
+
     res.sendFile(__dirname + '/views/index.html');
 });
 
-app.get('/api/reports/get/:id/:feeding', async (req, res) => {
-
-    let meal = req.params.feeding;
+// header AJAX
+app.get('/header/report-data/:id/:yesterday', async (req, res) => {
 
     let id = req.params.id;
+    let yesterday = Boolean(Number(req.params.yesterday));
+
+    let date = !(yesterday) ? time.today.date() : time.yesterday.date();
+
+    let report = await Report.findOne({ userID: id, date: date })
+
+    let answer = {
+        date: report.date,
+
+    };
+
+    res.send();
+});
+
+// datatables AJAX
+app.get('/api/reports/get/:id/:feeding', async (req, res) => {
+
+    let id = req.params.id;
+    let feeding = req.params.feeding;
+    
+    let yesterday = Boolean(Number(req.query.yesterday));
+    let date = !(yesterday) ? time.today.date() : time.yesterday.date();
+
     let report = {};
 
     try {
-        report = await Report.findOne({ userID: id, dayOfWeek: time.today.dayOfWeek() });
+        report = await Report.findOne({ userID: id, date: date });
 
-        if (report == null) {
-            report = new Report({ userID: id, dayOfWeek: time.today.dayOfWeek() });
-            await report.save();
-        }
-
-        await report.populate(`${meal}.meal`);
-        switch (meal) {
+        await report.populate(`${feeding}.meal`);
+        switch (feeding) {
             case 'breakfast': report = report.breakfast;
             break;
 
@@ -82,7 +108,11 @@ app.get('/api/reports/set/:id/:feeding', async (req, res) => {
         let mealID = req.query.meal_id;
         let mealWeight = req.query.weight;
 
-        let report = await Report.findOne({ userID: userID, dayOfWeek: time.today.dayOfWeek() });
+        let yesterday = Boolean(Number(req.query.yesterday));
+        let date = !(yesterday) ? time.today.date() : time.yesterday.date();
+
+
+        let report = await Report.findOne({ userID: userID, date: date });
 
         switch (feeding) {
             case 'breakfast': report.breakfast.push({ _id: new mongoose.Types.ObjectId, meal: mongoose.Types.ObjectId(mealID), weight: mealWeight });
@@ -111,7 +141,10 @@ app.get('/api/reports/del/:id/:feeding', async (req, res) => {
         let userID = req.params.id;
         let feeding = req.params.feeding;
 
-        let report = await Report.findOne({ userID: userID, dayOfWeek: time.today.dayOfWeek() });
+        let yesterday = Boolean(Number(req.query.yesterday));
+        let date = !(yesterday) ? time.today.date() : time.yesterday.date();
+        
+        let report = await Report.findOne({ userID: userID, date: date });
 
         const deleteByID = (array, id) => {
             for (i in array) {
@@ -154,6 +187,9 @@ app.get('/api/reports/put/:id/:feeding', async (req, res) => {
         let userID = req.params.id;
         let feeding = req.params.feeding;
 
+        let yesterday = Boolean(Number(req.query.yesterday));
+        let date = !(yesterday) ? time.today.date() : time.yesterday.date();
+
         const changeByID = (array, id, newWeight) => {
             for (i in array) {
                 if (id === `'${array[i]._id.toString()}'`) {
@@ -163,7 +199,7 @@ app.get('/api/reports/put/:id/:feeding', async (req, res) => {
             }
         };
 
-        let report = await Report.findOne({ userID: userID, dayOfWeek: time.today.dayOfWeek() });
+        let report = await Report.findOne({ userID: userID, date: date });
 
         switch (feeding) {
             case 'breakfast': changeByID(report.breakfast, mealID, mealWeight);

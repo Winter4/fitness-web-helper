@@ -5,14 +5,15 @@ const time = require('../time');
 
 const reportSchema = new mongoose.Schema({
     userID: {
-        type: String,
+        type: Number,
         required: true,
+        ref: 'user',
     },
-    dayOfWeek: {
+    date: {
         type: String,
         required: true,
+        default: () => time.today.date(),
         immutable: true,
-        default: () => time.today.dayOfWeek(),
     },
     
     breakfast: [{

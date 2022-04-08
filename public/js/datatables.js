@@ -1,22 +1,4 @@
-function deleteRow(userID, rowID, feeding) {
-
-    $.get(`/api/reports/del/${userID}/${feeding}?row_id='${rowID}'`)
-    .done(function (data) {
-        $(`#${feeding}-table`).DataTable().ajax.reload();
-    })
-    .fail(function () { });
-}
-
-function editRowWeight(userID, rowID, feeding) {
-
-    let newWeight = $(`#${rowID}`).val();
-
-    $.get(`/api/reports/put/${userID}/${feeding}?row_id='${rowID}'&row_weight=${newWeight}`)
-    .done(function (data) {
-        $(`#${feeding}-table`).DataTable().ajax.reload();
-    })
-    .fail(function () { });
-}
+import { userID, yesterday } from './commons.js';
 
 $(document).ready(function() {
 
@@ -27,13 +9,10 @@ $(document).ready(function() {
         let selectedMeal = $('#meals-list').val();
         let weight = $('#meal-weight').val();
 
-        let response = await fetch(`http://localhost:5500/api/reports/set/${userID}/${curFeeding}?meal_id=${selectedMeal}&weight=${weight}`);
+        let response = await fetch(`${origin}/api/reports/set/${userID}/${curFeeding}?yesterday=${yesterday}&meal_id=${selectedMeal}&weight=${weight}`);
 
         if (response.ok)  $(`#${curFeeding}-table`).DataTable().ajax.reload();
     });
-
-    let userID = new URL(location.href).pathname;
-    userID = userID.substring(1);
 
     let bTable = null;
     let dTable = null;
@@ -48,7 +27,7 @@ $(document).ready(function() {
                 paging: false,
                 info: false,
         
-                ajax: `http://localhost:5500/api/reports/get/${userID}/breakfast`,
+                ajax: `${origin}/api/reports/get/${userID}/breakfast?yesterday=${yesterday}`,
         
                 language: {
                     url: "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
@@ -64,7 +43,7 @@ $(document).ready(function() {
                     orderable: false,
                     data: "weight",
                     render: function(data, type, row, meta) {
-                        return `<input type="number" min="1" value="${data}" id="${row._id}" onblur="editRowWeight(${userID}, '${row._id}', 'breakfast')" />`;
+                        return `<input type="number" min="1" value="${data}" id="${row._id}" onblur="editRowWeight('${userID}', '${yesterday}', '${row._id}', 'breakfast')" />`;
                     }
                 },
                 {
@@ -90,7 +69,7 @@ $(document).ready(function() {
                     data: null,
                     render: function(data, type, row, meta) {
                     return `
-                    <a href="javascript:;" onclick="deleteRow(${userID}, '${row._id}', 'breakfast')" >
+                    <a href="javascript:;" onclick="deleteRow('${userID}', '${yesterday}', '${row._id}', 'breakfast')" >
                         delete
                     </a>`;
                     }
@@ -109,7 +88,7 @@ $(document).ready(function() {
                 paging: false,
                 info: false,
         
-                ajax: `http://localhost:5500/api/reports/get/${userID}/dinner`,
+                ajax: `${origin}/api/reports/get/${userID}/dinner?yesterday=${yesterday}`,
         
                 language: {
                     url: "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
@@ -125,7 +104,7 @@ $(document).ready(function() {
                     orderable: false,
                     data: "weight",
                     render: function(data, type, row, meta) {
-                        return `<input type="number" min="1" value="${data}" id="${row._id}" onblur="editRowWeight(${userID}, '${row._id}', 'dinner')" />`;
+                        return `<input type="number" min="1" value="${data}" id="${row._id}" onblur="editRowWeight('${userID}', '${yesterday}', '${row._id}', 'dinner')" />`;
                     }
                 },
                 {
@@ -151,7 +130,7 @@ $(document).ready(function() {
                     data: null,
                     render: function(data, type, row, meta) {
                     return `
-                    <a href="javascript:;" onclick="deleteRow(${userID}, '${row._id}', 'dinner')" >
+                    <a href="javascript:;" onclick="deleteRow('${userID}', '${yesterday}', '${row._id}', 'dinner')" >
                         delete
                     </a>`;
                     }
@@ -170,7 +149,7 @@ $(document).ready(function() {
                 paging: false,
                 info: false,
         
-                ajax: `http://localhost:5500/api/reports/get/${userID}/supper`,
+                ajax: `${origin}/api/reports/get/${userID}/supper?yesterday=${yesterday}`,
         
                 language: {
                     url: "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
@@ -186,7 +165,7 @@ $(document).ready(function() {
                     orderable: false,
                     data: "weight",
                     render: function(data, type, row, meta) {
-                        return `<input type="number" min="1" value="${data}" id="${row._id}" onblur="editRowWeight(${userID}, '${row._id}', 'supper')" />`;
+                        return `<input type="number" min="1" value="${data}" id="${row._id}" onblur="editRowWeight('${userID}', '${yesterday}', '${row._id}', 'supper')" />`;
                     }
                 },
                 {
@@ -212,7 +191,7 @@ $(document).ready(function() {
                     data: null,
                     render: function(data, type, row, meta) {
                     return `
-                    <a href="javascript:;" onclick="deleteRow(${userID}, '${row._id}', 'supper')" >
+                    <a href="javascript:;" onclick="deleteRow('${userID}', '${yesterday}', '${row._id}', 'supper')" >
                         delete
                     </a>`;
                     }
@@ -221,4 +200,5 @@ $(document).ready(function() {
             });
         }
     });
+    
 });
