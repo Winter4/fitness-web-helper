@@ -125,6 +125,8 @@ $(document).ready(function() {
     let bTable = null;
     let dTable = null;
     let sTable = null;
+    let l1Table = null;
+    let l2Table = null;
 
     $('#nav-breakfast-tab').on('click', function() { 
         curFeeding = 'breakfast'; 
@@ -187,6 +189,67 @@ $(document).ready(function() {
         }
     });
 
+    $('#nav-lunch1-tab').on('click', function() { 
+        curFeeding = 'lunch1'; 
+
+        if (l1Table == null) {
+            l1Table = $('#lunch1-table').DataTable({
+
+                paging: false,
+                info: false,
+        
+                ajax: `${origin}/api/reports/get/${userID}/lunch1?yesterday=${yesterday}`,
+        
+                language: {
+                    url: "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
+                },
+        
+                columns: [
+                {
+                    title: "Продукт",
+                    data: "meal.name",
+                },
+                {
+                    title: "Масса, г",
+                    orderable: false,
+                    data: "weight",
+                    render: function(data, type, row, meta) {
+                        return `<input type="number" min="1" value="${data}" id="${row._id}" onblur="onRowEdit('${userID}', '${yesterday}', '${row._id}', 'lunch1', '${origin}')" />`;
+                    }
+                },
+                {
+                    title: "Калории",
+                    data: "meal.calories",
+                },
+                {
+                    title: "Белки",
+                    data: "meal.proteins",
+                },
+                {
+                    title: "Жиры",
+                    data: "meal.fats",
+                },
+                {
+                    title: "Углеводы",
+                    data: "meal.carbons",
+                },
+                {
+                    title: "",
+                    orderable: false,
+                    searchable: false,
+                    data: null,
+                    render: function(data, type, row, meta) {
+                    return `
+                    <a href="javascript:;" onclick="onRowDelete('${userID}', '${yesterday}', '${row._id}', 'lunch1', '${origin}')" >
+                        delete
+                    </a>`;
+                    }
+                },
+                ]
+            });
+        }
+    });
+
     $('#nav-dinner-tab').on('click', function() { 
         curFeeding = 'dinner'; 
 
@@ -239,6 +302,67 @@ $(document).ready(function() {
                     render: function(data, type, row, meta) {
                     return `
                     <a href="javascript:;" onclick="onRowDelete('${userID}', '${yesterday}', '${row._id}', 'dinner', '${origin}')" >
+                        delete
+                    </a>`;
+                    }
+                },
+                ]
+            });
+        }
+    });
+
+    $('#nav-lunch2-tab').on('click', function() { 
+        curFeeding = 'lunch2'; 
+
+        if (l2Table == null) {
+            l2Table = $('#lunch2-table').DataTable({
+
+                paging: false,
+                info: false,
+        
+                ajax: `${origin}/api/reports/get/${userID}/lunch2?yesterday=${yesterday}`,
+        
+                language: {
+                    url: "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
+                },
+        
+                columns: [
+                {
+                    title: "Продукт",
+                    data: "meal.name",
+                },
+                {
+                    title: "Масса, г",
+                    orderable: false,
+                    data: "weight",
+                    render: function(data, type, row, meta) {
+                        return `<input type="number" min="1" value="${data}" id="${row._id}" onblur="onRowEdit('${userID}', '${yesterday}', '${row._id}', 'lunch2', '${origin}')" />`;
+                    }
+                },
+                {
+                    title: "Калории",
+                    data: "meal.calories",
+                },
+                {
+                    title: "Белки",
+                    data: "meal.proteins",
+                },
+                {
+                    title: "Жиры",
+                    data: "meal.fats",
+                },
+                {
+                    title: "Углеводы",
+                    data: "meal.carbons",
+                },
+                {
+                    title: "",
+                    orderable: false,
+                    searchable: false,
+                    data: null,
+                    render: function(data, type, row, meta) {
+                    return `
+                    <a href="javascript:;" onclick="onRowDelete('${userID}', '${yesterday}', '${row._id}', 'lunch2', '${origin}')" >
                         delete
                     </a>`;
                     }

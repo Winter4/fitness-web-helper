@@ -20,56 +20,65 @@ app.use(cors());
 // __________________________________________
 
 app.get('/', async (req, res) => {
+    try {
+        let id = req.query.id;
 
-    let id = req.query.id;
+        let exists = Boolean(await Report.exists({ userID: id, date: time.today.date() }));
+        if (!(exists)) {
+            let report = new Report({ userID: id });
+            await report.save();
+        }
 
-    let exists = Boolean(await Report.exists({ userID: id, date: time.today.date() }));
-    if (!(exists)) {
-        let report = new Report({ userID: id });
-        await report.save();
+        res.sendFile(__dirname + '/views/index.html');
+    } catch (e) {
+        console.log(e);
     }
-
-    res.sendFile(__dirname + '/views/index.html');
 });
 
 // header AJAX
 app.get('/header/calories/:id/:yesterday', async (req, res) => {
+    try {
+        let id = req.params.id;
+        let yesterday = Boolean(Number(req.params.yesterday));
 
-    let id = req.params.id;
-    let yesterday = Boolean(Number(req.params.yesterday));
+        let date = !(yesterday) ? time.today.date() : time.yesterday.date();
 
-    let date = !(yesterday) ? time.today.date() : time.yesterday.date();
+        let report = await Report.findOne({ userID: id, date: date })
+        await report.populate('userID');
 
-    let report = await Report.findOne({ userID: id, date: date })
-    await report.populate('userID');
+        let answer = {
+            caloriesEaten: report.calories,
+            caloriesToEat: report.userID.caloriesToLose,
+        };
 
-    let answer = {
-        caloriesEaten: report.calories,
-        caloriesToEat: report.userID.caloriesToLose,
-    };
-
-    res.json(answer);
+        res.json(answer);
+    } catch (e) {
+        console.log(e);
+    }
 });
 
 app.get('/header/date', (req, res) => {
-    res.json({ 
-        today: time.today.date(),
-        yesterday: time.yesterday.date(), 
-    });
+    try {
+        res.json({ 
+            today: time.today.date(),
+            yesterday: time.yesterday.date(), 
+        });
+    } catch (e) {
+        console.log(e);
+    }
 });
 
 // datatables AJAX
 app.get('/api/reports/get/:id/:feeding', async (req, res) => {
-
-    let id = req.params.id;
-    let feeding = req.params.feeding;
-    
-    let yesterday = Boolean(Number(req.query.yesterday));
-    let date = !(yesterday) ? time.today.date() : time.yesterday.date();
-
-    let report = {};
-
     try {
+        let id = req.params.id;
+        let feeding = req.params.feeding;
+        
+        let yesterday = Boolean(Number(req.query.yesterday));
+        let date = !(yesterday) ? time.today.date() : time.yesterday.date();
+
+        let report = {};
+
         report = await Report.findOne({ userID: id, date: date });
 
         let feedingList = [];
@@ -82,6 +91,12 @@ app.get('/api/reports/get/:id/:feeding', async (req, res) => {
             break;
 
             case 'supper': feedingList = report.supper;
+            break;
+
+            case 'lunch1': feedingList = report.lunch1;
+            break;
+
+            case 'lunch2': feedingList = report.lunch2;
             break;
         }
         
@@ -131,6 +146,12 @@ app.get('/api/reports/set/:id/:feeding', async (req, res) => {
 
             case 'supper': report.supper.push({ _id: new mongoose.Types.ObjectId, meal: mongoose.Types.ObjectId(mealID), weight: mealWeight });
             break;
+
+            case 'lunch1': report.lunch1.push({ _id: new mongoose.Types.ObjectId, meal: mongoose.Types.ObjectId(mealID), weight: mealWeight });
+            break;
+
+            case 'lunch2': report.lunch2.push({ _id: new mongoose.Types.ObjectId, meal: mongoose.Types.ObjectId(mealID), weight: mealWeight });
+            break;
         }
 
         await report.save();
@@ -171,6 +192,12 @@ app.get('/api/reports/del/:id/:feeding', async (req, res) => {
             break;
 
             case 'supper': deleteByID(report.supper, mealID);
+            break;
+
+            case 'lunch1': deleteByID(report.lunch1, mealID);
+            break;
+
+            case 'lunch2': deleteByID(report.lunch2, mealID);
             break;
         }
 
@@ -218,6 +245,12 @@ app.get('/api/reports/put/:id/:feeding', async (req, res) => {
 
             case 'supper': changeByID(report.supper, mealID, mealWeight);
             break;
+
+            case 'lunch1': changeByID(report.lunch1, mealID, mealWeight);
+            break;
+
+            case 'lunch2': changeByID(report.lunch2, mealID, mealWeight);
+            break;
         }
 
         await report.save();
@@ -233,13 +266,21 @@ app.get('/api/reports/put/:id/:feeding', async (req, res) => {
 });
 
 app.get('/api/meals', async (req, res) => {
-    let answer = await Meal.find({}, { "name": true });
-    res.json(answer);
+    try {
+        let answer = await Meal.find({}, { "name": true });
+        res.json(answer);
+    } catch (e) {
+        console.log(e);
+    }
 });
 
 app.get('/api/meals/:id', async (req, res) => {
-    let id = req.params.id;
-    res.json(await Meal.findOne({ "_id": mongoose.Types.ObjectId(id) }));
+    try {
+        let id = req.params.id;
+        res.json(await Meal.findOne({ "_id": mongoose.Types.ObjectId(id) }));
+    } catch (e) {
+        console.log(e);
+    }
 });
 
 app.listen(5500, () => {

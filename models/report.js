@@ -61,6 +61,34 @@ const reportSchema = new mongoose.Schema({
             min: 0,
         }
     }],
+    lunch1: [{
+        _id: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+        },
+        meal: { 
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: 'meal',
+        },
+        weight: {
+            type: Number,
+            min: 0,
+        }
+    }],
+    lunch2: [{
+        _id: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+        },
+        meal: { 
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: 'meal',
+        },
+        weight: {
+            type: Number,
+            min: 0,
+        }
+    }],
 
     calories: Number,
 
@@ -80,6 +108,14 @@ reportSchema.pre('save', async function() {
 
     await this.populate('supper.meal');
     for (item of this.supper) 
+        this.calories += item.meal.getCaloriesByWeight(item.weight);
+
+    await this.populate('lunch1.meal');
+    for (item of this.lunch1) 
+        this.calories += item.meal.getCaloriesByWeight(item.weight);
+
+    await this.populate('lunch2.meal');
+    for (item of this.lunch2) 
         this.calories += item.meal.getCaloriesByWeight(item.weight);
 });
 
