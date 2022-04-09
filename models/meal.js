@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const time = require('../time');
-
 const mealSchema = new mongoose.Schema({
     _id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -40,5 +38,9 @@ mealSchema.methods.calcByWeight = function(weight) {
         carbons: (weight * this.carbons / 100).toFixed(1),
     };
 };
+
+mealSchema.methods.getCaloriesByWeight = function(weight) {
+    return Number((weight * this.calories / 100).toFixed(1));
+}
 
 module.exports = mongoose.model('meal', mealSchema);

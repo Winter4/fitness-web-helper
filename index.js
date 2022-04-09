@@ -33,7 +33,7 @@ app.get('/', async (req, res) => {
 });
 
 // header AJAX
-app.get('/header/report-data/:id/:yesterday', async (req, res) => {
+app.get('/header/calories/:id/:yesterday', async (req, res) => {
 
     let id = req.params.id;
     let yesterday = Boolean(Number(req.params.yesterday));
@@ -41,13 +41,21 @@ app.get('/header/report-data/:id/:yesterday', async (req, res) => {
     let date = !(yesterday) ? time.today.date() : time.yesterday.date();
 
     let report = await Report.findOne({ userID: id, date: date })
+    await report.populate('userID');
 
     let answer = {
-        date: report.date,
-
+        caloriesEaten: report.calories,
+        caloriesToEat: report.userID.caloriesToLose,
     };
 
-    res.send();
+    res.json(answer);
+});
+
+app.get('/header/date', (req, res) => {
+    res.json({ 
+        today: time.today.date(),
+        yesterday: time.yesterday.date(), 
+    });
 });
 
 // datatables AJAX
@@ -64,25 +72,26 @@ app.get('/api/reports/get/:id/:feeding', async (req, res) => {
     try {
         report = await Report.findOne({ userID: id, date: date });
 
+        let feedingList = [];
         await report.populate(`${feeding}.meal`);
         switch (feeding) {
-            case 'breakfast': report = report.breakfast;
+            case 'breakfast': feedingList = report.breakfast;
             break;
 
-            case 'dinner': report = report.dinner;
+            case 'dinner': feedingList = report.dinner;
             break;
 
-            case 'supper': report = report.supper;
+            case 'supper': feedingList = report.supper;
             break;
         }
         
 
         let answer = [];
 
-        for (i in report) {
-            let weight = report[i].weight;
-            let meal = report[i].meal;
-            let id = report[i]._id;
+        for (i in feedingList) {
+            let weight = feedingList[i].weight;
+            let meal = feedingList[i].meal;
+            let id = feedingList[i]._id;
 
             answer.push({
                 _id: id,
@@ -110,7 +119,6 @@ app.get('/api/reports/set/:id/:feeding', async (req, res) => {
 
         let yesterday = Boolean(Number(req.query.yesterday));
         let date = !(yesterday) ? time.today.date() : time.yesterday.date();
-
 
         let report = await Report.findOne({ userID: userID, date: date });
 
