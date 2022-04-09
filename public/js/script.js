@@ -59,13 +59,17 @@ $(document).ready(async function() {
     let response = await fetch(`${origin}/header/date`);
     let date = await response.json();
 
+    
     let html = '';
+    let linkID = 'yesterdayLink';
     if (yesterday) 
         html = `Отчёт за вчера (${date.yesterday})   |   <a href="${origin}/?id=${userID}">Отчёт за сегодня (${date.today})</a>`;
     else 
-        html = `<a href="${origin}?id=${userID}&yesterday=1">Отчёт за вчера (${date.yesterday})</a>   |   Отчёт за сегодня (${date.today})`;
+        html = `<a id="${linkID}" href="${origin}?id=${userID}&yesterday=1">Отчёт за вчера (${date.yesterday})</a>   |   Отчёт за сегодня (${date.today})`;
 
     $('header div.links').html(html);
+
+    if (!(date.yesterdayExists)) $(`#${linkID}`).addClass('disabled').append(' отсутствует');
 
     updateHeaderCalories(origin, userID, yesterday);
 });

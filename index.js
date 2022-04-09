@@ -57,11 +57,12 @@ app.get('/header/calories/:id/:yesterday', async (req, res) => {
     }
 });
 
-app.get('/header/date', (req, res) => {
+app.get('/header/date', async (req, res) => {
     try {
         res.json({ 
             today: time.today.date(),
             yesterday: time.yesterday.date(), 
+            yesterdayExists: await Report.exists({ date: time.yesterday.date() }),
         });
     } catch (e) {
         console.log(e);
