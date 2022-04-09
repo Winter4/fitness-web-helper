@@ -53,23 +53,33 @@ async function updateHeaderCalories(origin, userID, yesterday) {
 
     $('header div.calories').html(`<br>Калории: ${data.caloriesEaten}/${data.caloriesToEat}`);
 }
-// set header links (yesterday/today report)
+// set header links 
 $(document).ready(async function() {
 
-    let response = await fetch(`${origin}/header/date`);
-    let date = await response.json();
+    let response = await fetch(`${origin}/header/date/${userID}`);
+    let data = await response.json();
 
-    
     let html = '';
     let linkID = 'yesterdayLink';
     if (yesterday) 
-        html = `Отчёт за вчера (${date.yesterday})   |   <a href="${origin}/?id=${userID}">Отчёт за сегодня (${date.today})</a>`;
+        html = `Отчёт за вчера (${data.yesterday})   |   <a href="${origin}/?id=${userID}">Отчёт за сегодня (${data.today})</a>`;
     else 
-        html = `<a id="${linkID}" href="${origin}?id=${userID}&yesterday=1">Отчёт за вчера (${date.yesterday})</a>   |   Отчёт за сегодня (${date.today})`;
+        html = `<a id="${linkID}" href="${origin}?id=${userID}&yesterday=1">Отчёт за вчера (${data.yesterday})</a>   |   Отчёт за сегодня (${data.today})`;
 
     $('header div.links').html(html);
 
-    if (!(date.yesterdayExists)) $(`#${linkID}`).addClass('disabled').append(' отсутствует');
+    if (!(data.yesterdayExists)) $(`#${linkID}`).addClass('disabled').append(' отсутствует');
+
+    switch (data.mealsPerDay) {
+        case 3: 
+            $('#nav-lunch1-tab').addClass('disabled');
+            $('#nav-lunch2-tab').addClass('disabled');
+        break;
+
+        case 4: 
+            $('#nav-lunch2-tab').addClass('disabled');
+        break;
+    }
 
     updateHeaderCalories(origin, userID, yesterday);
 });

@@ -57,12 +57,18 @@ app.get('/header/calories/:id/:yesterday', async (req, res) => {
     }
 });
 
-app.get('/header/date', async (req, res) => {
+app.get('/header/date/:id', async (req, res) => {
     try {
+        let id = req.params.id;
+
+        let report = await Report.findOne({ userID: id, date: time.today.date() });
+        await report.populate('userID');
+
         res.json({ 
             today: time.today.date(),
             yesterday: time.yesterday.date(), 
-            yesterdayExists: await Report.exists({ date: time.yesterday.date() }),
+            yesterdayExists: await Report.exists({ userID: id, date: time.yesterday.date() }),
+            mealsPerDay: report.userID.mealsPerDay,
         });
     } catch (e) {
         console.log(e);

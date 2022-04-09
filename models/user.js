@@ -5,9 +5,8 @@ const userSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    caloriesToLose: {
-        type: Number,
-    },
+    caloriesToLose: Number,
+    mealsPerDay: Number
    
 }, {versionKey: false, collection: 'users'} );
 
