@@ -1,5 +1,6 @@
 
-// get query object of the URL
+// ______________________________ get query object of the URL _____________________________________
+
 function getQueryParam(param, url) {
 
     let href = url;
@@ -20,9 +21,8 @@ const url = new URL(location.href).href;
 const userID = getQueryParam('id', url);
 const yesterday = Number(getQueryParam('yesterday', url));
 
-// ________________________________________________________________________________________
+// _______________________________ delete row from the table ________________________________________
 
-// delete row from the table
 async function deleteRow(userID, yesterday, rowID, feeding) {
 
     await $.get(`/api/reports/del/${userID}/${feeding}?yesterday=${yesterday}&row_id='${rowID}'`)
@@ -31,7 +31,9 @@ async function deleteRow(userID, yesterday, rowID, feeding) {
     })
     .fail(function () { });
 }
-// edit row after weigth changing
+
+// _______________________________ edit row after weigth changing ___________________________________
+
 async function editRow(userID, yesterday, rowID, feeding) {
 
     let newWeight = $(`#${rowID}`).val();
@@ -43,9 +45,8 @@ async function editRow(userID, yesterday, rowID, feeding) {
     .fail(function () { });
 }
 
-// ________________________________________________________________________________________
+// _______________________________ update header calories ____________________________________
 
-// update header calories value
 async function updateHeaderCalories(origin, userID, yesterday) {
 
     let response = await fetch(`${origin}/header/calories/${userID}/${yesterday}`);
@@ -53,7 +54,9 @@ async function updateHeaderCalories(origin, userID, yesterday) {
 
     $('header div.calories').html(`<br>Калории: ${data.caloriesEaten}/${data.caloriesToEat}`);
 }
-// set header links 
+
+// ___________________________________ set header links _______________________________________
+
 $(document).ready(async function() {
 
     let response = await fetch(`${origin}/header/date/${userID}`);
@@ -84,9 +87,8 @@ $(document).ready(async function() {
     updateHeaderCalories(origin, userID, yesterday);
 });
 
-// ________________________________________________________________________________________
+// _________________________________ "edit row" event handler ___________________________________
 
-// "edit row" event handler
 async function onRowEdit(userID, yesterday, rowID, feeding, origin) {
     await editRow(userID, yesterday, rowID, feeding);
     updateHeaderCalories(origin, userID, yesterday);
@@ -97,9 +99,8 @@ async function onRowDelete(userID, yesterday, rowID, feeding, origin) {
     updateHeaderCalories(origin, userID, yesterday);
 }
 
-// ________________________________________________________________________________________
+// ________________________________ get the meals list from DB __________________________________
 
-// get the meals list from DB
 $(document).ready(async function() {
     try {
         let response = await fetch('http://localhost:5500/api/meals');
@@ -117,9 +118,8 @@ $(document).ready(async function() {
     }
 });
 
-// ________________________________________________________________________________________
+// ____________________________ init datatables && "add meal" button _____________________________
 
-// init datatables && "add meal" button
 $(document).ready(function() {
 
     let curFeeding = null;
@@ -136,6 +136,8 @@ $(document).ready(function() {
         updateHeaderCalories(origin, userID, yesterday);
     });
 
+
+
     let bTable = null;
     let dTable = null;
     let sTable = null;
@@ -148,24 +150,36 @@ $(document).ready(function() {
         if (bTable == null) {
             bTable = $('#breakfast-table').DataTable({
 
-                paging: false,
-                info: false,
-        
-                ajax: `${origin}/api/reports/get/${userID}/breakfast?yesterday=${yesterday}`,
-        
                 language: {
                     url: "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
                 },
+
+                paging: false,
+                info: false,
+                order: [[ 0, 'asc' ]], // 0 - the first column, 'meal.group'
+
+                rowGroup: {
+                    dataSrc: 'meal.group'
+                },
+                ajax: `${origin}/api/reports/get/${userID}/breakfast?yesterday=${yesterday}`,
         
+
                 columns: [
+                {
+                    title: "Категория",
+                    data: "meal.group",
+                    orderable: false,
+                    visible: false,
+                },
                 {
                     title: "Продукт",
                     data: "meal.name",
+                    orderable: false,
                 },
                 {
                     title: "Масса, г",
-                    orderable: false,
                     data: "weight",
+                    orderable: false,
                     render: function(data, type, row, meta) {
                         return `<input type="number" min="1" value="${data}" id="${row._id}" onblur="onRowEdit('${userID}', '${yesterday}', '${row._id}', 'breakfast', '${origin}')" />`;
                     }
@@ -189,13 +203,12 @@ $(document).ready(function() {
                 {
                     title: "",
                     orderable: false,
-                    searchable: false,
                     data: null,
                     render: function(data, type, row, meta) {
-                    return `
-                    <a href="javascript:;" onclick="onRowDelete('${userID}', '${yesterday}', '${row._id}', 'breakfast', '${origin}')" >
-                        delete
-                    </a>`;
+                        return `
+                        <a href="javascript:;" onclick="onRowDelete('${userID}', '${yesterday}', '${row._id}', 'breakfast', '${origin}')" >
+                            delete
+                        </a>`;
                     }
                 },
                 ]
@@ -209,16 +222,27 @@ $(document).ready(function() {
         if (l1Table == null) {
             l1Table = $('#lunch1-table').DataTable({
 
-                paging: false,
-                info: false,
-        
-                ajax: `${origin}/api/reports/get/${userID}/lunch1?yesterday=${yesterday}`,
-        
                 language: {
                     url: "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
                 },
+
+                paging: false,
+                info: false,
+                order: [[ 0, 'asc' ]], // 0 - the first column, 'meal.group'
+
+                rowGroup: {
+                    dataSrc: 'meal.group'
+                },
+                ajax: `${origin}/api/reports/get/${userID}/lunch1?yesterday=${yesterday}`,
         
+                
                 columns: [
+                {
+                    title: "Категория",
+                    data: "meal.group",
+                    orderable: false,
+                    visible: false,
+                },
                 {
                     title: "Продукт",
                     data: "meal.name",
@@ -270,16 +294,27 @@ $(document).ready(function() {
         if (dTable == null) {
             dTable = $('#dinner-table').DataTable({
 
-                paging: false,
-                info: false,
-        
-                ajax: `${origin}/api/reports/get/${userID}/dinner?yesterday=${yesterday}`,
-        
                 language: {
                     url: "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
                 },
+
+                paging: false,
+                info: false,
+                order: [[ 0, 'asc' ]], // 0 - the first column, 'meal.group'
+
+                rowGroup: {
+                    dataSrc: 'meal.group'
+                },
+                ajax: `${origin}/api/reports/get/${userID}/dinner?yesterday=${yesterday}`,
         
+                
                 columns: [
+                {
+                    title: "Категория",
+                    data: "meal.group",
+                    orderable: false,
+                    visible: false,
+                },
                 {
                     title: "Продукт",
                     data: "meal.name",
@@ -331,16 +366,27 @@ $(document).ready(function() {
         if (l2Table == null) {
             l2Table = $('#lunch2-table').DataTable({
 
-                paging: false,
-                info: false,
-        
-                ajax: `${origin}/api/reports/get/${userID}/lunch2?yesterday=${yesterday}`,
-        
                 language: {
                     url: "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
                 },
+
+                paging: false,
+                info: false,
+                order: [[ 0, 'asc' ]], // 0 - the first column, 'meal.group'
+
+                rowGroup: {
+                    dataSrc: 'meal.group'
+                },
+                ajax: `${origin}/api/reports/get/${userID}/lunch2?yesterday=${yesterday}`,
+        
         
                 columns: [
+                {
+                    title: "Категория",
+                    data: "meal.group",
+                    orderable: false,
+                    visible: false,
+                },
                 {
                     title: "Продукт",
                     data: "meal.name",
@@ -392,16 +438,27 @@ $(document).ready(function() {
         if (sTable == null) {
             sTable = $('#supper-table').DataTable({
 
-                paging: false,
-                info: false,
-        
-                ajax: `${origin}/api/reports/get/${userID}/supper?yesterday=${yesterday}`,
-        
                 language: {
                     url: "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
                 },
+
+                paging: false,
+                info: false,
+                order: [[ 0, 'asc' ]], // 0 - the first column, 'meal.group'
+
+                rowGroup: {
+                    dataSrc: 'meal.group'
+                },
+                ajax: `${origin}/api/reports/get/${userID}/supper?yesterday=${yesterday}`,
+        
         
                 columns: [
+                {
+                    title: "Категория",
+                    data: "meal.group",
+                    orderable: false,
+                    visible: false,
+                },
                 {
                     title: "Продукт",
                     data: "meal.name",

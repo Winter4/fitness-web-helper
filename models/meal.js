@@ -25,6 +25,11 @@ const mealSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
+
+    group: {
+        type: String,
+        immutable: true,
+    }
 }, { collection: 'meals', versionKey: false });
 
 mealSchema.methods.calcByWeight = function(weight) {
@@ -36,6 +41,8 @@ mealSchema.methods.calcByWeight = function(weight) {
         proteins: (weight * this.proteins / 100).toFixed(1),
         fats: (weight * this.fats / 100).toFixed(1),
         carbons: (weight * this.carbons / 100).toFixed(1),
+
+        group: this.group,
     };
 };
 

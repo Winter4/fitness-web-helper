@@ -117,6 +117,8 @@ reportSchema.pre('save', async function() {
     await this.populate('lunch2.meal');
     for (item of this.lunch2) 
         this.calories += item.meal.getCaloriesByWeight(item.weight);
+
+    this.calories = this.calories.toFixed();
 });
 
 module.exports = mongoose.model('report', reportSchema);

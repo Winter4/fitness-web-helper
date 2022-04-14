@@ -24,9 +24,9 @@ module.exports.yesterday = {
 const parseDate = date => {
 
     let day = date.date();
-    day = day.length == 2 ? day : '0' + day;
+    day = Number(day) < 10 ? '0' + day : day;
     let month = date.month() + 1;
-    month = month.length == 2 ? month : '0' + month;
+    month = Number(month) < 10 ? '0' + month : month;
     let year  = date.year();
 
     return `${day}.${month}.${year}`;

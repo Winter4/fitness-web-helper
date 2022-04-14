@@ -10,8 +10,6 @@ const time = require('./time');
 const Report = require('./models/report');
 const Meal = require('./models/meal');
 
-// 414894488
-
 const app = express();
 
 app.use(express.static(__dirname + "/public"));
@@ -88,6 +86,7 @@ app.get('/api/reports/get/:id/:feeding', async (req, res) => {
 
         report = await Report.findOne({ userID: id, date: date });
 
+
         let feedingList = [];
         await report.populate(`${feeding}.meal`);
         switch (feeding) {
@@ -106,23 +105,11 @@ app.get('/api/reports/get/:id/:feeding', async (req, res) => {
             case 'lunch2': feedingList = report.lunch2;
             break;
         }
+
+        for (item of feedingList)
+            item.meal = item.meal.calcByWeight(item.weight);
         
-
-        let answer = [];
-
-        for (i in feedingList) {
-            let weight = feedingList[i].weight;
-            let meal = feedingList[i].meal;
-            let id = feedingList[i]._id;
-
-            answer.push({
-                _id: id,
-
-                meal: meal.calcByWeight(weight),
-                weight: weight
-            })
-        }
-        res.json({ data: answer });
+        res.json({ data: feedingList });
 
     } catch (e) {
         res.status(500).send('Oops, something went wrong :(');
@@ -260,6 +247,7 @@ app.get('/api/reports/put/:id/:feeding', async (req, res) => {
             break;
         }
 
+        console.log(report);
         await report.save();
 
         res.statusCode = 200;
