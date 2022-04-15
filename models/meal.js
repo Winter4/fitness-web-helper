@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-require('dotenv').config();
 
 const mealSchema = new mongoose.Schema({
     _id: {

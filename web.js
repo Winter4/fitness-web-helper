@@ -2,8 +2,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
-require('dotenv').config();
-
 // _________________________________________
 
 const time = require('./time');
@@ -278,7 +276,7 @@ app.get('/api/meals/:id', async (req, res) => {
     }
 });
 
-app.listen(5500, () => {
-    mongoose.connect(process.env.MONGO_URL, () => console.log('Connected to DB'));
-    console.log('Server started at 5500');
+app.listen(8080, () => {
+    mongoose.connect(require('./env').MONGO_URL, () => console.log('Connected to DB'));
+    console.log('Server started at 8080');
 });
