@@ -103,7 +103,7 @@ async function onRowDelete(userID, yesterday, rowID, feeding, origin) {
 
 $(document).ready(async function() {
     try {
-        let response = await fetch('http://localhost:5500/api/meals');
+        let response = await fetch(`${origin}/api/meals`);
         let meals = await response.json();
 
         let list = document.getElementById('meals-list');
