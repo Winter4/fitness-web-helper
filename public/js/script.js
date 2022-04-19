@@ -13,20 +13,20 @@ function getQueryParam(param, url) {
 
 // globals
 const protocol = 'http://';
-const host = 'localhost:5500';
+const host = 'localhost:8080';
 const origin = protocol + host;
 
 const url = new URL(location.href).href;
 
-const userID = getQueryParam('id', url);
+const user = getQueryParam('id', url);
 const yesterday = Number(getQueryParam('yesterday', url));
 
 // _______________________________ delete row from the table ________________________________________
 
-async function deleteRow(userID, yesterday, rowID, feeding) {
+async function deleteRow(user, yesterday, rowID, feeding) {
 
-    await $.get(`/api/reports/del/${userID}/${feeding}?yesterday=${yesterday}&row_id='${rowID}'`)
-    .done(function (data) {
+    await $.get(`/api/reports/del/${user}/${feeding}?yesterday=${yesterday}&row_id='${rowID}'`)
+    .done(function(res) {
         $(`#${feeding}-table`).DataTable().ajax.reload();
     })
     .fail(function () { });
@@ -34,12 +34,12 @@ async function deleteRow(userID, yesterday, rowID, feeding) {
 
 // _______________________________ edit row after weigth changing ___________________________________
 
-async function editRow(userID, yesterday, rowID, feeding) {
+async function editRow(user, yesterday, rowID, feeding) {
 
     let newWeight = $(`#${rowID}`).val();
 
-    await $.get(`/api/reports/put/${userID}/${feeding}?yesterday=${yesterday}&row_id='${rowID}'&row_weight=${newWeight}`)
-    .done(function (data) {
+    await $.get(`/api/reports/put/${user}/${feeding}?yesterday=${yesterday}&row_id='${rowID}'&row_weight=${newWeight}`)
+    .done(function(res) {
         $(`#${feeding}-table`).DataTable().ajax.reload();
     })
     .fail(function () { });
@@ -47,461 +47,188 @@ async function editRow(userID, yesterday, rowID, feeding) {
 
 // _______________________________ update header calories ____________________________________
 
-async function updateHeaderCalories(origin, userID, yesterday) {
+async function updateCaloriesGot(origin, user, yesterday) {
 
-    let response = await fetch(`${origin}/header/calories/${userID}/${yesterday}`);
-    let data = await response.json();
-
-    $('header div.calories').html(`<br>Калории: ${data.caloriesEaten}/${data.caloriesToEat}`);
+    await $.get(`/calories-got/${user}/${yesterday}`)
+    .done(function(res) {
+        $('header div.calories div.got').html(res.caloriesGot);
+    })
+    .fail(function() { });
 }
-
-// ___________________________________ set header links _______________________________________
-
-$(document).ready(async function() {
-
-    let response = await fetch(`${origin}/header/date/${userID}`);
-    let data = await response.json();
-
-    let html = '';
-    let linkID = 'yesterdayLink';
-    if (yesterday) 
-        html = `Отчёт за вчера (${data.yesterday})   |   <a href="${origin}/?id=${userID}">Отчёт за сегодня (${data.today})</a>`;
-    else 
-        html = `<a id="${linkID}" href="${origin}?id=${userID}&yesterday=1">Отчёт за вчера (${data.yesterday})</a>   |   Отчёт за сегодня (${data.today})`;
-
-    $('header div.links').html(html);
-
-    if (!(data.yesterdayExists)) $(`#${linkID}`).addClass('disabled').append(' отсутствует');
-
-    switch (data.mealsPerDay) {
-        case 3: 
-            $('#nav-lunch1-tab').addClass('disabled');
-            $('#nav-lunch2-tab').addClass('disabled');
-        break;
-
-        case 4: 
-            $('#nav-lunch2-tab').addClass('disabled');
-        break;
-    }
-
-    updateHeaderCalories(origin, userID, yesterday);
-});
 
 // _________________________________ "edit row" event handler ___________________________________
 
-async function onRowEdit(userID, yesterday, rowID, feeding, origin) {
-    await editRow(userID, yesterday, rowID, feeding);
-    updateHeaderCalories(origin, userID, yesterday);
+async function onRowEdit(user, yesterday, rowID, feeding, origin) {
+    await editRow(user, yesterday, rowID, feeding);
+    updateHeaderCalories(origin, user, yesterday);
 }
 // "delete row" event handler
-async function onRowDelete(userID, yesterday, rowID, feeding, origin) {
-    await deleteRow(userID, yesterday, rowID, feeding);
-    updateHeaderCalories(origin, userID, yesterday);
+async function onRowDelete(user, yesterday, rowID, feeding, origin) {
+    await deleteRow(user, yesterday, rowID, feeding);
+    updateHeaderCalories(origin, user, yesterday);
 }
-
-// ________________________________ get the meals list from DB __________________________________
-
-$(document).ready(async function() {
-    try {
-        let response = await fetch(`${origin}/api/meals`);
-        let meals = await response.json();
-
-        let list = document.getElementById('meals-list');
-        for (meal of meals) {
-            let option = document.createElement('option');
-            option.value = meal._id;
-            option.text = meal.name;
-            list.appendChild(option);
-        }
-    } catch (e) {
-        console.log(e);
-    }
-});
 
 // ____________________________ init datatables && "add meal" button _____________________________
 
+function getTabContent(tab) {
+
+    // get selectors content
+    $.get(`/meals`)
+    .done(function(res) {
+        const proteinsSelect = $(`#nav-${tab} .proteins select`);
+
+        $.each(res, function(i, item) {
+            proteinsSelect.append($('<option>', { 
+                value: item._id,
+                text : item.name 
+            }));
+        });
+    })
+    .fail(function() { console.log(`Get ${tab} select data error`) });
+}
+
+function setButtonOnclick(tab) {
+
+    $(document).ready(function() {
+        $(`#nav-${tab} .proteins button`).on('click', function() {
+
+            let id = $(`#nav-${tab} .proteins select`).val();
+            let weight = $(`#nav-${tab} .proteins input.weight`).val();
+
+            $.post(`/reports/${user}/${tab}`, { id: id, weight: weight })
+            .done(function(res) {
+                $(`#nav-${tab} .proteins table`).DataTable().ajax().reload();
+            })
+            .fail(function() { console.log(`Error: post to /reports/${user}/${tab}`) });
+        });
+    });
+}
+
+
+// main .ready script
 $(document).ready(function() {
 
-    let curFeeding = null;
+    let mealsPerDay;
 
-    $('#add-meal-button').on('click', async function() {
+    // get user data
+    $.get(`/data/${user}`)
+    .done(function(res) {
 
-        let selectedMeal = $('#meals-list').val();
-        let weight = $('#meal-weight').val();
+        console.log(res);
 
-        let response = await fetch(`${origin}/api/reports/set/${userID}/${curFeeding}?yesterday=${yesterday}&meal_id=${selectedMeal}&weight=${weight}`);
+        // get mealsPerDay
+        mealsPerDay = res.mealsPerDay;
 
-        if (response.ok)  $(`#${curFeeding}-table`).DataTable().ajax.reload();
+        // insert links
+        let html = '';
+        let linkID = 'yesterdayLink';
+        if (yesterday) 
+            html = `Отчёт за вчера (${res.yesterday})   |   <a href="${origin}/?id=${user}">Отчёт за сегодня (${res.today})</a>`;
+        else 
+            html = `<a id="${linkID}" href="${origin}?id=${user}&yesterday=1">Отчёт за вчера (${res.yesterday})</a>   |   Отчёт за сегодня (${res.today})`;
+        $('header div.links').html(html);
 
-        updateHeaderCalories(origin, userID, yesterday);
-    });
+        if (!(res.yesterdayExists)) $(`#${linkID}`).addClass('disabled').append(' отсутствует');
+        /////////////////////////////////
+
+        // fill header calories-target
+        $('header div.calories div.target').html('/' + res.caloriesTarget);
+
+        switch (mealsPerDay) {
+            case 3: 
+                $('#nav-lunch1-tab').addClass('disabled');
+                $('#nav-lunch2-tab').addClass('disabled');
+                break;
+
+            case 4: 
+                $('#nav-lunch2-tab').addClass('disabled');
+                $('#nav-lunch1-tab').append(` (${res.caloriesPerTabs.lunch1} кал)`);
+                break;
+
+            case 5:
+                $('#nav-lunch1-tab').append(` (${res.caloriesPerTabs.lunch1} кал)`);
+                $('#nav-lunch2-tab').append(` (${res.caloriesPerTabs.lunch2} кал)`);
+                break;
+        }
+        $('#nav-breakfast-tab').append(` (${res.caloriesPerTabs.breakfast} кал)`);
+        $('#nav-dinner-tab').append(` (${res.caloriesPerTabs.dinner} кал)`);
+        $('#nav-supper-tab').append(` (${res.caloriesPerTabs.supper} кал)`);
+    })
+    .fail(function() { });
+
+    updateCaloriesGot(origin, user, yesterday);
 
 
+    let tab = null;
 
-    let bTable = null;
-    let dTable = null;
-    let sTable = null;
-    let l1Table = null;
-    let l2Table = null;
+
+    let bTab  = null; // breakfast tab
+    let l1Tab = null; // launch 1 tab
+    let dTab  = null; // dinner tab
+    let l2Tab = null; // launch 2 tab
+    let sTab  = null; // supper tab
 
     $('#nav-breakfast-tab').on('click', function() { 
-        curFeeding = 'breakfast'; 
 
-        if (bTable == null) {
-            bTable = $('#breakfast-table').DataTable({
+        tab = 'breakfast'; 
 
-                language: {
-                    url: "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
-                },
+        try {
+            if (bTab == null) {
+                bTab = true;
 
-                paging: false,
-                info: false,
-                order: [[ 0, 'asc' ]], // 0 - the first column, 'meal.group'
+                $('#nav-breakfast .proteins table').DataTable({
 
-                rowGroup: {
-                    dataSrc: 'meal.group'
-                },
-                ajax: `${origin}/api/reports/get/${userID}/breakfast?yesterday=${yesterday}`,
-        
+                    language: {
+                        url: "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
+                    },
 
-                columns: [
-                {
-                    title: "Категория",
-                    data: "meal.group",
-                    orderable: false,
-                    visible: false,
-                },
-                {
-                    title: "Продукт",
-                    data: "meal.name",
-                    orderable: false,
-                },
-                {
-                    title: "Масса, г",
-                    data: "weight",
-                    orderable: false,
-                    render: function(data, type, row, meta) {
-                        return `<input type="number" min="1" value="${data}" id="${row._id}" onblur="onRowEdit('${userID}', '${yesterday}', '${row._id}', 'breakfast', '${origin}')" />`;
-                    }
-                },
-                {
-                    title: "Калории",
-                    data: "meal.calories",
-                },
-                {
-                    title: "Белки",
-                    data: "meal.proteins",
-                },
-                {
-                    title: "Жиры",
-                    data: "meal.fats",
-                },
-                {
-                    title: "Углеводы",
-                    data: "meal.carbons",
-                },
-                {
-                    title: "",
-                    orderable: false,
-                    data: null,
-                    render: function(data, type, row, meta) {
-                        return `
-                        <a href="javascript:;" onclick="onRowDelete('${userID}', '${yesterday}', '${row._id}', 'breakfast', '${origin}')" >
-                            delete
-                        </a>`;
-                    }
-                },
-                ]
-            });
-        }
-    });
+                    paging: false,
+                    info: false,
 
-    $('#nav-lunch1-tab').on('click', function() { 
-        curFeeding = 'lunch1'; 
+                    ajax: `${origin}/reports/${user}/breakfast/proteins`,
+            
+                    columns: [
+                        {
+                            title: "Продукт",
+                            data: "name",
+                            orderable: false,
+                        },
+                        {
+                            title: "Съедено, г",
+                            data: "weight.eaten",
+                            orderable: false,
+                            render: function(data, type, row, meta) {
+                                return `<input type="number" min="1" value="${data}" id="${row._id}" onblur="onRowEdit('${user}', '${yesterday}', '${row._id}', 'breakfast', '${origin}')" />`;
+                            }
+                        },
+                        {
+                            title: "Осталось съесть, г",
+                            data: "weight.toEat",
+                            orderable: false,
+                            render: function(data, type, row, meta) { return data }
+                        },
+                        {
+                            title: "",
+                            orderable: false,
+                            data: null,
+                            render: function(data, type, row, meta) {
+                                return `
+                                <a href="javascript:;" onclick="onRowDelete('${user}', '${yesterday}', '${row._id}', 'breakfast', '${origin}')" >
+                                    delete
+                                </a>`;
+                            }
+                        },
+                    ]
+                });
 
-        if (l1Table == null) {
-            l1Table = $('#lunch1-table').DataTable({
-
-                language: {
-                    url: "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
-                },
-
-                paging: false,
-                info: false,
-                order: [[ 0, 'asc' ]], // 0 - the first column, 'meal.group'
-
-                rowGroup: {
-                    dataSrc: 'meal.group'
-                },
-                ajax: `${origin}/api/reports/get/${userID}/lunch1?yesterday=${yesterday}`,
-        
+                getTabContent(tab);
+                setButtonOnclick(tab);
                 
-                columns: [
-                {
-                    title: "Категория",
-                    data: "meal.group",
-                    orderable: false,
-                    visible: false,
-                },
-                {
-                    title: "Продукт",
-                    data: "meal.name",
-                },
-                {
-                    title: "Масса, г",
-                    orderable: false,
-                    data: "weight",
-                    render: function(data, type, row, meta) {
-                        return `<input type="number" min="1" value="${data}" id="${row._id}" onblur="onRowEdit('${userID}', '${yesterday}', '${row._id}', 'lunch1', '${origin}')" />`;
-                    }
-                },
-                {
-                    title: "Калории",
-                    data: "meal.calories",
-                },
-                {
-                    title: "Белки",
-                    data: "meal.proteins",
-                },
-                {
-                    title: "Жиры",
-                    data: "meal.fats",
-                },
-                {
-                    title: "Углеводы",
-                    data: "meal.carbons",
-                },
-                {
-                    title: "",
-                    orderable: false,
-                    searchable: false,
-                    data: null,
-                    render: function(data, type, row, meta) {
-                    return `
-                    <a href="javascript:;" onclick="onRowDelete('${userID}', '${yesterday}', '${row._id}', 'lunch1', '${origin}')" >
-                        delete
-                    </a>`;
-                    }
-                },
-                ]
-            });
+            }
+        } catch (e) {
+            console.log(e);
         }
     });
 
-    $('#nav-dinner-tab').on('click', function() { 
-        curFeeding = 'dinner'; 
-
-        if (dTable == null) {
-            dTable = $('#dinner-table').DataTable({
-
-                language: {
-                    url: "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
-                },
-
-                paging: false,
-                info: false,
-                order: [[ 0, 'asc' ]], // 0 - the first column, 'meal.group'
-
-                rowGroup: {
-                    dataSrc: 'meal.group'
-                },
-                ajax: `${origin}/api/reports/get/${userID}/dinner?yesterday=${yesterday}`,
-        
-                
-                columns: [
-                {
-                    title: "Категория",
-                    data: "meal.group",
-                    orderable: false,
-                    visible: false,
-                },
-                {
-                    title: "Продукт",
-                    data: "meal.name",
-                },
-                {
-                    title: "Масса, г",
-                    orderable: false,
-                    data: "weight",
-                    render: function(data, type, row, meta) {
-                        return `<input type="number" min="1" value="${data}" id="${row._id}" onblur="onRowEdit('${userID}', '${yesterday}', '${row._id}', 'dinner', '${origin}')" />`;
-                    }
-                },
-                {
-                    title: "Калории",
-                    data: "meal.calories",
-                },
-                {
-                    title: "Белки",
-                    data: "meal.proteins",
-                },
-                {
-                    title: "Жиры",
-                    data: "meal.fats",
-                },
-                {
-                    title: "Углеводы",
-                    data: "meal.carbons",
-                },
-                {
-                    title: "",
-                    orderable: false,
-                    searchable: false,
-                    data: null,
-                    render: function(data, type, row, meta) {
-                    return `
-                    <a href="javascript:;" onclick="onRowDelete('${userID}', '${yesterday}', '${row._id}', 'dinner', '${origin}')" >
-                        delete
-                    </a>`;
-                    }
-                },
-                ]
-            });
-        }
-    });
-
-    $('#nav-lunch2-tab').on('click', function() { 
-        curFeeding = 'lunch2'; 
-
-        if (l2Table == null) {
-            l2Table = $('#lunch2-table').DataTable({
-
-                language: {
-                    url: "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
-                },
-
-                paging: false,
-                info: false,
-                order: [[ 0, 'asc' ]], // 0 - the first column, 'meal.group'
-
-                rowGroup: {
-                    dataSrc: 'meal.group'
-                },
-                ajax: `${origin}/api/reports/get/${userID}/lunch2?yesterday=${yesterday}`,
-        
-        
-                columns: [
-                {
-                    title: "Категория",
-                    data: "meal.group",
-                    orderable: false,
-                    visible: false,
-                },
-                {
-                    title: "Продукт",
-                    data: "meal.name",
-                },
-                {
-                    title: "Масса, г",
-                    orderable: false,
-                    data: "weight",
-                    render: function(data, type, row, meta) {
-                        return `<input type="number" min="1" value="${data}" id="${row._id}" onblur="onRowEdit('${userID}', '${yesterday}', '${row._id}', 'lunch2', '${origin}')" />`;
-                    }
-                },
-                {
-                    title: "Калории",
-                    data: "meal.calories",
-                },
-                {
-                    title: "Белки",
-                    data: "meal.proteins",
-                },
-                {
-                    title: "Жиры",
-                    data: "meal.fats",
-                },
-                {
-                    title: "Углеводы",
-                    data: "meal.carbons",
-                },
-                {
-                    title: "",
-                    orderable: false,
-                    searchable: false,
-                    data: null,
-                    render: function(data, type, row, meta) {
-                    return `
-                    <a href="javascript:;" onclick="onRowDelete('${userID}', '${yesterday}', '${row._id}', 'lunch2', '${origin}')" >
-                        delete
-                    </a>`;
-                    }
-                },
-                ]
-            });
-        }
-    });
-
-    $('#nav-supper-tab').on('click', function() { 
-        curFeeding = 'supper'; 
-
-        if (sTable == null) {
-            sTable = $('#supper-table').DataTable({
-
-                language: {
-                    url: "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
-                },
-
-                paging: false,
-                info: false,
-                order: [[ 0, 'asc' ]], // 0 - the first column, 'meal.group'
-
-                rowGroup: {
-                    dataSrc: 'meal.group'
-                },
-                ajax: `${origin}/api/reports/get/${userID}/supper?yesterday=${yesterday}`,
-        
-        
-                columns: [
-                {
-                    title: "Категория",
-                    data: "meal.group",
-                    orderable: false,
-                    visible: false,
-                },
-                {
-                    title: "Продукт",
-                    data: "meal.name",
-                },
-                {
-                    title: "Масса, г",
-                    orderable: false,
-                    data: "weight",
-                    render: function(data, type, row, meta) {
-                        return `<input type="number" min="1" value="${data}" id="${row._id}" onblur="onRowEdit('${userID}', '${yesterday}', '${row._id}', 'supper', '${origin}')" />`;
-                    }
-                },
-                {
-                    title: "Калории",
-                    data: "meal.calories",
-                },
-                {
-                    title: "Белки",
-                    data: "meal.proteins",
-                },
-                {
-                    title: "Жиры",
-                    data: "meal.fats",
-                },
-                {
-                    title: "Углеводы",
-                    data: "meal.carbons",
-                },
-                {
-                    title: "",
-                    orderable: false,
-                    searchable: false,
-                    data: null,
-                    render: function(data, type, row, meta) {
-                    return `
-                    <a href="javascript:;" onclick="onRowDelete('${userID}', '${yesterday}', '${row._id}', 'supper', '${origin}')" >
-                        delete
-                    </a>`;
-                    }
-                },
-                ]
-            });
-        }
-    });
     
 });

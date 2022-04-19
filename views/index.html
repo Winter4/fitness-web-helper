@@ -52,7 +52,10 @@
         <!-- Header -->
         <header>
             <div class="links"></div>
-            <div class="calories"></div>
+            <div class="calories">
+                <div class="got"></div>
+                <div class="target"></div>
+            </div>
 
             <nav>
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -67,17 +70,27 @@
         <!-- Header over -->
 
         <!-- Content -->
-        <div class="content">
+        <main>
             
             <!-------------------------------------- Tabs content ------------------------------------------------>
             <div class="tab-content" id="nav-tabContent">
 
                 <!-- Breakfast tab -->
                 <div class="tab-pane fade" id="nav-breakfast" role="tabpanel" aria-labelledby="nav-breakfast-tab">
-                    <!-- Table -->
-                    <table id="breakfast-table" class="display" cellspacing="0" width="100%">
-                    </table>
-                    <!-- Table over -->
+
+                    <div class="proteins">
+                        <table class="display" cellspacing="0" width="100%"></table>
+
+                        <label>Выберите продукт: <select></select></label>
+                        <br>
+                        <label>
+                            Введите массу в граммах: 
+                            <input class="weight" type="number" min="1" value="100" />
+                        </label>
+                        <br>
+                        <button>Добавить</button>
+                    </div>
+
                 </div>
                 <!-- Breakfast tab over -->
 
@@ -120,25 +133,9 @@
             </div>
             <!--------------------------------------- Tabs content over ------------------------------------------->
 
-            <!----------------------------------------- New meal form --------------------------------------------->
-            <form action="#" class="add-meal-form">
-                <!-- Meals drodpown -->
-                <label for="meal-list">Выберите продукт:</label>
-                <select id="meals-list"></select>
-                <!-- Meals drodpown over -->
-                <br>
+            
 
-                <!-- Weight input -->
-                <label for="meal-weight">Введите массу в граммах:</label>
-                <input id="meal-weight" name="meal-weight" type="number" min="1" value="100" />
-                <!-- Weight input over  -->
-                
-                <br>
-                <input type="button" id="add-meal-button" value="Добавить">
-            </form>
-            <!-------------------------------------- New meal form over ------------------------------------------->
-
-        </div>
+        </main>
         <!-- Content over -->
 
     </div>
