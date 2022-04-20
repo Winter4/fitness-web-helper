@@ -119,13 +119,15 @@ const reportSchema = new mongoose.Schema({
 // _____________________________________________
 
 // calculate calories-got in the report
-reportSchema.pre('save', async function(next) {
+reportSchema.pre('save', async function() {
+
     let cals = Number(0);
 
     await this.populate('breakfast.meals.food');
-    for (item of this.breakfast.meals) 
-        cals += item.food.getCaloriesByWeight(item.weight);
 
+    for (item of this.breakfast.meals) {
+        cals += Number(item.food.calories * item.weight.eaten);
+    }
     /*
     await this.populate('dinner.meals.food');
     for (item of this.dinner.meals) 
@@ -143,7 +145,7 @@ reportSchema.pre('save', async function(next) {
     for (item of this.lunch2.meals) 
         this.calories += item.meal.getCaloriesByWeight(item.weight);
     */
-
+    
     this.calories.got = cals.toFixed();
 });
 
@@ -185,7 +187,7 @@ reportSchema.methods.calcToEatWeights = async function(tab, nutrient) {
     await meal.populate('meals.food');
 
     let newCaloriesGot = 0;
-    // calc new calories got sum
+    // calc new calories per nutrient sum
     for (item of meal.meals) {
         if (item.food.group == nutrient)
             newCaloriesGot += item.food.calories * item.weight.eaten;
@@ -216,7 +218,7 @@ reportSchema.methods.calcToEatWeights = async function(tab, nutrient) {
 
 // calc all the target calories in the
 reportSchema.methods.calcTargetCalories = function() {
-    
+
     this.calories.target = this.user.caloriesToLose;
 
     switch(this.user.mealsPerDay) {

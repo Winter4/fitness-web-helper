@@ -4,30 +4,24 @@ const mongoose = require('mongoose');
 
 const Report = require('../../models/report');
 const Meal = require('../../models/meal');
-const getReqDate = require('../get-req-date');
+const getReport = require('../get-report');
 
 router.use(express.urlencoded({ extended: false }));
 
-router.post('/reports/:id/:tab', async (req, res) => {
+router.post('/reports/:user/:tab', async (req, res) => {
     try {
-        let user = req.params.id;
-        let tab = req.params.tab;
 
-        let newMeal = req.body;
-
-        let date = getReqDate(req.query.yesterday);
-
-        let report = await Report.findOne({ user: user, date: date });
+        let report = await getReport(req.params, req.query);
 
         let mealObject = { 
             _id: new mongoose.Types.ObjectId, 
-            food: mongoose.Types.ObjectId(newMeal.id), 
+            food: mongoose.Types.ObjectId(req.body.id), 
             weight: {
-                eaten: newMeal.weight,
+                eaten: req.body.weight,
                 toEat: -1,
             }
         };
-        switch (tab) {
+        switch (req.params.tab) {
             case 'breakfast': report.breakfast.meals.push(mealObject);
             break;
 
@@ -44,8 +38,8 @@ router.post('/reports/:id/:tab', async (req, res) => {
             break;
         }
 
-        const mealData = await Meal.findOne({ _id: newMeal.id });
-        report.calcToEatWeights(tab, mealData.group);
+        const mealData = await Meal.findOne({ _id: req.body.id });
+        await report.calcToEatWeights(req.params.tab, mealData.group);
         await report.save();
 
         res.send();

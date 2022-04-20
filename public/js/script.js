@@ -21,51 +21,59 @@ const url = new URL(location.href).href;
 const user = getQueryParam('id', url);
 const yesterday = Number(getQueryParam('yesterday', url));
 
-// _______________________________ delete row from the table ________________________________________
+// _______________________________ update header calories ____________________________________
 
-async function deleteRow(user, yesterday, rowID, feeding) {
+function updateCaloriesGot(user, yesterday) {
 
-    await $.get(`/api/reports/del/${user}/${feeding}?yesterday=${yesterday}&row_id='${rowID}'`)
+    $.get(`/calories-got/${user}/${yesterday}`)
     .done(function(res) {
-        $(`#${feeding}-table`).DataTable().ajax.reload();
+        $('header div.calories div.got').html(res.caloriesGot);
     })
-    .fail(function () { });
+    .fail(function(err) { console.log('Update calories got:'); console.log(err); });
 }
 
 // _______________________________ edit row after weigth changing ___________________________________
 
-async function editRow(user, yesterday, rowID, feeding) {
+function updateRow(user, tab, rowID, nutrient, yesterday) {
 
     let newWeight = $(`#${rowID}`).val();
 
-    await $.get(`/api/reports/put/${user}/${feeding}?yesterday=${yesterday}&row_id='${rowID}'&row_weight=${newWeight}`)
-    .done(function(res) {
-        $(`#${feeding}-table`).DataTable().ajax.reload();
-    })
-    .fail(function () { });
+    $.ajax({
+        url: `/reports/${user}/${tab}?row_id=${rowID}&row_weight=${newWeight}&nutrient=${nutrient}`,
+        type: 'PUT',
+        success: function (res) {
+            $(`#nav-${tab} .${nutrient} table`).DataTable().ajax.reload();
+            updateCaloriesGot(user, yesterday);
+        },
+        error: function(res) {
+            console.log(`Update ${tab} ${nutrient} table data error`)
+        }
+    });
 }
 
-// _______________________________ update header calories ____________________________________
-
-async function updateCaloriesGot(origin, user, yesterday) {
-
-    await $.get(`/calories-got/${user}/${yesterday}`)
-    .done(function(res) {
-        $('header div.calories div.got').html(res.caloriesGot);
-    })
-    .fail(function() { });
+async function onRowUpdate(user, tab, rowID, nutrient, yesterday) {
+    updateRow(user, tab, rowID, nutrient, yesterday);
 }
 
-// _________________________________ "edit row" event handler ___________________________________
+// _______________________________ delete row from the table ________________________________________
 
-async function onRowEdit(user, yesterday, rowID, feeding, origin) {
-    await editRow(user, yesterday, rowID, feeding);
-    updateHeaderCalories(origin, user, yesterday);
+function deleteRow(user, tab, rowID, nutrient, yesterday) {
+
+    $.ajax({
+        url: `/reports/${user}/${tab}?row_id=${rowID}`,
+        type: 'DELETE',
+        success: function (res) {
+            $(`#nav-${tab} .${nutrient} table`).DataTable().ajax.reload();
+            updateCaloriesGot(user, yesterday);
+        },
+        error: function(res) {
+            console.log(`Delete ${tab} ${nutrient} table row error`)
+        }
+    });
 }
-// "delete row" event handler
-async function onRowDelete(user, yesterday, rowID, feeding, origin) {
-    await deleteRow(user, yesterday, rowID, feeding);
-    updateHeaderCalories(origin, user, yesterday);
+
+function onRowDelete(user, tab, rowID, nutrient, yesterday) {
+    deleteRow(user, tab, rowID, nutrient, yesterday);
 }
 
 // ____________________________ init datatables && "add meal" button _____________________________
@@ -97,7 +105,8 @@ function setButtonOnclick(tab) {
 
             $.post(`/reports/${user}/${tab}`, { id: id, weight: weight })
             .done(function(res) {
-                $(`#nav-${tab} .proteins table`).DataTable().ajax().reload();
+                $(`#nav-${tab} .proteins table`).DataTable().ajax.reload();
+                updateCaloriesGot(user, yesterday);
             })
             .fail(function() { console.log(`Error: post to /reports/${user}/${tab}`) });
         });
@@ -113,8 +122,6 @@ $(document).ready(function() {
     // get user data
     $.get(`/data/${user}`)
     .done(function(res) {
-
-        console.log(res);
 
         // get mealsPerDay
         mealsPerDay = res.mealsPerDay;
@@ -156,7 +163,7 @@ $(document).ready(function() {
     })
     .fail(function() { });
 
-    updateCaloriesGot(origin, user, yesterday);
+    updateCaloriesGot(user, yesterday);
 
 
     let tab = null;
@@ -184,8 +191,9 @@ $(document).ready(function() {
 
                     paging: false,
                     info: false,
+                    searching: false,
 
-                    ajax: `${origin}/reports/${user}/breakfast/proteins`,
+                    ajax: `${origin}/reports/${user}/breakfast/proteins?yesterday=${yesterday}`,
             
                     columns: [
                         {
@@ -198,7 +206,8 @@ $(document).ready(function() {
                             data: "weight.eaten",
                             orderable: false,
                             render: function(data, type, row, meta) {
-                                return `<input type="number" min="1" value="${data}" id="${row._id}" onblur="onRowEdit('${user}', '${yesterday}', '${row._id}', 'breakfast', '${origin}')" />`;
+                                return `<input type="number" min="1" value="${data}" id="${row._id}" 
+                                    onblur="onRowUpdate('${user}', 'breakfast', '${row._id}', 'proteins', '${yesterday}')" />`;
                             }
                         },
                         {
@@ -213,7 +222,9 @@ $(document).ready(function() {
                             data: null,
                             render: function(data, type, row, meta) {
                                 return `
-                                <a href="javascript:;" onclick="onRowDelete('${user}', '${yesterday}', '${row._id}', 'breakfast', '${origin}')" >
+                                <a href="javascript:;" 
+                                    onclick="onRowDelete('${user}', 'breakfast', '${row._id}', 'proteins', '${yesterday}')"
+                                >
                                     delete
                                 </a>`;
                             }

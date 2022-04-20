@@ -2,20 +2,15 @@ const express = require('express');
 const router = express.Router();
 
 const Report = require('../../models/report');
-const getReqDate = require('../get-req-date');
+const getReport = require('../get-report');
 
-router.get('/reports/:id/:tab/:nutrient', async (req, res) => {
+router.get('/reports/:user/:tab/:nutrient', async (req, res) => {
     try {
-        const id = req.params.id;
-        const tab = req.params.tab;
-        const nutrient = req.params.nutrient;
-        
-        let date = getReqDate(req.query.yesterday);
 
-        report = await Report.findOne({ user: id, date: date });
+        let report = await getReport(req.params, req.query);
 
-        await report.populate(`${tab}.meals.food`);
-        switch (tab) {
+        await report.populate(`${req.params.tab}.meals.food`);
+        switch (req.params.tab) {
             case 'breakfast': report = report.breakfast;
             break;
 
@@ -36,8 +31,9 @@ router.get('/reports/:id/:tab/:nutrient', async (req, res) => {
 
         let response = [];
         for (item of report.meals) {
-            if (item.food.group == nutrient) {
+            if (item.food.group == req.params.nutrient) {
                 response.push({ 
+                    _id: item._id,
                     name: item.food.name,
                     weight: item.weight,
                 });
