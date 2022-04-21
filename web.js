@@ -5,8 +5,10 @@ const cors = require('cors');
 // _________________________________________
 
 const time = require('./time');
+
 const Report = require('./models/report');
 const Meal = require('./models/meal');
+const User = require('./models/user');
 
 const app = express();
 
@@ -19,11 +21,23 @@ app.use(cors());
 
 app.get('/', async (req, res) => {
     try {
-        let id = req.query.id;
 
-        let exists = Boolean(await Report.exists({ user: id, date: time.today.date() }));
+        const exists = Boolean(await Report.exists({ user: req.query.user, date: time.today.date() }));
         if (!(exists)) {
-            let report = new Report({ user: id });
+
+
+            const user = await User.findOne({ _id: req.query.user });
+
+            const report = new Report({ 
+                user: user._id,
+
+                calories: {
+                    target: user.caloriesToLoose,
+                },
+                mealsPerDay: user.mealsPerDay,
+
+            });
+
             await report.save();
         }
 

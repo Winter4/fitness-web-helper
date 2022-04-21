@@ -3,10 +3,6 @@ const mongoose = require('mongoose');
 const time = require('../time');
 const meal = require('./meal');
 
-const User = require('./user');
-
-// 5 similar fields may be not okay
-
 const reportSchema = new mongoose.Schema({
     user: {
         type: Number,
@@ -20,7 +16,14 @@ const reportSchema = new mongoose.Schema({
         immutable: true,
     },
     
-    breakfast: {
+    tabs: [{
+        /* Tabs:
+        *   0 - breakfast
+        *   1 - lunch 1
+        *   2 - dinner
+        *   3 - lunch 2
+        *   4 - supper
+        */
         meals: [{
             _id: mongoose.Schema.Types.ObjectId,
             food: { 
@@ -33,86 +36,22 @@ const reportSchema = new mongoose.Schema({
             },
 
         }],
-        caloriesTarget: Number,
+        calories: {
+
+            target: Number,
+        },
         nutrientRates: {
-            proteins: {
-                type: Number,
-                default: 0.35,
-                immutable: true,
-            },
-            fats: {
-                type: Number,
-                default: 0.25,
-                immutable: true,
-            },
-            carbons: {
-                type: Number,
-                default: 0.4,
-                immutable: true,
-            },
-        }
-    },
-    dinner: [{
-        _id: {
-            type: mongoose.Schema.Types.ObjectId,
-            required: true,
-        },
-        meal: { 
-            type: mongoose.Schema.Types.ObjectId, 
-            ref: 'meal',
-        },
-        caloriesTarget: {
-            type: Number,
-            min: 0,
-        }
-    }],
-    supper: [{
-        _id: {
-            type: mongoose.Schema.Types.ObjectId,
-            required: true,
-        },
-        meal: { 
-            type: mongoose.Schema.Types.ObjectId, 
-            ref: 'meal',
-        },
-        caloriesTarget: {
-            type: Number,
-            min: 0,
-        }
-    }],
-    lunch1: [{
-        _id: {
-            type: mongoose.Schema.Types.ObjectId,
-            required: true,
-        },
-        meal: { 
-            type: mongoose.Schema.Types.ObjectId, 
-            ref: 'meal',
-        },
-        caloriesTarget: {
-            type: Number,
-            min: 0,
-        }
-    }],
-    lunch2: [{
-        _id: {
-            type: mongoose.Schema.Types.ObjectId,
-            required: true,
-        },
-        meal: { 
-            type: mongoose.Schema.Types.ObjectId, 
-            ref: 'meal',
-        },
-        caloriesTarget: {
-            type: Number,
-            min: 0,
+            'proteins': Number,
+            'fats': Number,
+            'carbons': Number,
         }
     }],
 
     calories: {
         got: Number,
         target: Number,
-    }
+    },
+    mealsPerDay: Number,
 
 }, { collection: 'reports', versionKey: false });
 
@@ -121,117 +60,74 @@ const reportSchema = new mongoose.Schema({
 // calculate calories-got in the report
 reportSchema.pre('save', async function() {
 
-    let cals = Number(0);
+    this.calories.got = Number(0);
 
-    await this.populate('breakfast.meals.food');
+    await this.populate('tabs.meals.food');
 
-    for (item of this.breakfast.meals) {
-        cals += Number(item.food.calories * item.weight.eaten);
+    for (tab of this.tabs) {
+        for (meal of tab.meals) {
+            this.calories.got += Number(meal.food.calories * meal.weight.eaten);
+        }
     }
-    /*
-    await this.populate('dinner.meals.food');
-    for (item of this.dinner.meals) 
-        this.calories += item.meal.getCaloriesByWeight(item.weight);
-
-    await this.populate('supper.meals.food');
-    for (item of this.supper.meals) 
-        this.calories += item.meal.getCaloriesByWeight(item.weight);
-
-    await this.populate('lunch1.meals.food');
-    for (item of this.lunch1.meals) 
-        this.calories += item.meal.getCaloriesByWeight(item.weight);
-
-    await this.populate('lunch2.meals.food');
-    for (item of this.lunch2.meals) 
-        this.calories += item.meal.getCaloriesByWeight(item.weight);
-    */
-    
-    this.calories.got = cals.toFixed();
 });
 
 // ____________________________________________________________________
 
-reportSchema.methods.getTab = function(tab) {
-
-    let meal;
-    switch(tab) {
-        case 'breakfast':
-            meal = this.breakfast;
-            break;
-
-        case 'launch1':
-            meal = this.launch1;
-            break;
-
-        case 'dinner':
-            meal = this.dinner;
-            break;
-
-        case 'launch2':
-            meal = this.launch2;
-            break;
-
-        case 'supper':
-            meal = this.supper;
-            break;
-    }
-
-    return meal;
-}
-
 // calc toEat weight for each food
+const { tabAtoi } = require('../_commons');
 reportSchema.methods.calcToEatWeights = async function(tab, nutrient) {
 
-    let meal = this.getTab(tab);
+    const curTab = this.tabs[ tabAtoi[tab] ];
+    await curTab.populate('meals.food');
 
-    await meal.populate('meals.food');
-
-    let newCaloriesGot = 0;
     // calc new calories per nutrient sum
-    for (item of meal.meals) {
-        if (item.food.group == nutrient)
-            newCaloriesGot += item.food.calories * item.weight.eaten;
+    let newCaloriesGot = 0;
+    for (let meal of curTab.meals) {
+        if (meal.food.group == nutrient)
+            newCaloriesGot += meal.food.calories * meal.weight.eaten;
     }
 
-    let rate = 0;
-    switch (nutrient) {
-        case 'proteins':
-            rate = meal.nutrientRates.proteins;
-            break;
+    const rate = curTab.nutrientRates[nutrient];
+    const caloriesToEat = curTab.calories.target * rate - newCaloriesGot;
 
-        case 'fats':
-            rate = meal.nutrientRates.fats;
-            break;
-
-        case 'carbons':
-            rate = meal.nutrientRates.carbons;
-            break;
-    }
-
-    const caloriesToEat = meal.caloriesTarget * rate - newCaloriesGot;
-
-    // calc new weights toEat
-    for (item of meal.meals) {
-        item.weight.toEat = (caloriesToEat / item.food.calories).toFixed();
+    // calc new weights to eat
+    for (let meal of curTab.meals) {
+        if (meal.food.group == nutrient)
+            meal.weight.toEat = (caloriesToEat / meal.food.calories).toFixed();
     }
 };
 
-// calc all the target calories in the
+// calc all the target calories in the report
 reportSchema.methods.calcTargetCalories = function() {
 
-    this.calories.target = this.user.caloriesToLose;
+    /* Tabs:
+    *   0 - breakfast
+    *   1 - lunch 1
+    *   2 - dinner
+    *   3 - lunch 2
+    *   4 - supper
+    */
 
-    switch(this.user.mealsPerDay) {
+    switch(this.mealsPerDay) {
         case 3:
-            this.breakfast.caloriesTarget = (this.calories.target * 0.4).toFixed();
+            this.tabs[0].calories.target = (this.calories.target * 0.3).toFixed();
+            this.tabs[2].calories.target = (this.calories.target * 0.45).toFixed();
+            this.tabs[4].calories.target = (this.calories.target * 0.25).toFixed();
             break;
 
         case 4:
-            this.breakfast.caloriesTarget = (this.calories.target * 0.25).toFixed();
+            this.tabs[0].calories.target = (this.calories.target * 0.25).toFixed();
+            this.tabs[1].calories.target = (this.calories.target * 0.15).toFixed();
+            this.tabs[2].calories.target = (this.calories.target * 0.4).toFixed();
+            this.tabs[4].calories.target = (this.calories.target * 0.2).toFixed();
             break;
 
         case 5:
-            this.breakfast.caloriesTarget = (this.calories.target * 0.25).toFixed();
+            this.tabs[0].calories.target = (this.calories.target * 0.25).toFixed();
+            this.tabs[1].calories.target = (this.calories.target * 0.15).toFixed();
+            this.tabs[2].calories.target = (this.calories.target * 0.35).toFixed();
+            this.tabs[3].calories.target = (this.calories.target * 0.1).toFixed();
+            this.tabs[4].calories.target = (this.calories.target * 0.15).toFixed();
             break;
     }
 };

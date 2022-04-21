@@ -4,13 +4,12 @@ const router = express.Router();
 const Report = require('../models/report');
 const time = require('../time');
 
-const getReport = require('./get-report');
+const { getReport } = require('../_commons');
 
 router.get('/data/:user', async (req, res) => {
     try {
 
         let report = await getReport(req.params, req.query);
-        await report.populate('user');
         report.calcTargetCalories();
         report.save();
 
@@ -19,14 +18,14 @@ router.get('/data/:user', async (req, res) => {
             yesterday: time.yesterday.date(), 
             yesterdayExists: await Report.exists({ user: req.params.user, date: time.yesterday.date() }),
 
-            mealsPerDay: report.user.mealsPerDay,
-            caloriesTarget: report.user.caloriesToLose,
+            mealsPerDay: report.mealsPerDay,
+            caloriesTarget: report.calories.target,
             caloriesPerTabs: {
-                breakfast: report.breakfast.caloriesTarget,
-                lunch1: report.lunch1.caloriesTarget,
-                dinner: report.dinner.caloriesTarget,
-                lunch2: report.lunch2.caloriesTarget,
-                supper: report.supper.caloriesTarget,
+                breakfast: report.tabs[0].calories.target,
+                lunch1: report.tabs[1].calories.target,
+                dinner: report.tabs[2].calories.target,
+                lunch2: report.tabs[3].calories.target,
+                supper: report.tabs[4].calories.target,
             }
         });
     } catch (e) {

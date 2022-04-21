@@ -2,40 +2,26 @@ const express = require('express');
 const router = express.Router();
 
 const Report = require('../../models/report');
-const getReport = require('../get-report');
+
+const { getReport, tabAtoi } = require('../../_commons');
 
 router.get('/reports/:user/:tab/:nutrient', async (req, res) => {
     try {
 
         let report = await getReport(req.params, req.query);
 
-        await report.populate(`${req.params.tab}.meals.food`);
-        switch (req.params.tab) {
-            case 'breakfast': report = report.breakfast;
-            break;
+        const tabIndex = tabAtoi[req.params.tab];
+        await report.populate(`tabs.${tabIndex}.meals.food`);
 
-            case 'dinner': report = report.dinner;
-            break;
-
-            case 'supper': report = report.supper;
-            break;
-
-            case 'lunch1': report = report.lunch1;
-            break;
-
-            case 'lunch2': report = report.lunch2;
-            break;
-        }
-        
-        await report.populate('meals.food');
+        const tab = report.tabs[tabIndex];
 
         let response = [];
-        for (item of report.meals) {
-            if (item.food.group == req.params.nutrient) {
+        for (let meal of tab.meals) {
+            if (meal.food.group == req.params.nutrient) {
                 response.push({ 
-                    _id: item._id,
-                    name: item.food.name,
-                    weight: item.weight,
+                    _id: meal._id,
+                    name: meal.food.name,
+                    weight: meal.weight,
                 });
             }
         }

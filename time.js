@@ -1,7 +1,4 @@
 const moment = require('moment');
-const timezone = 'Europe/Moscow';
-
-module.exports.timezone = timezone;
 
 module.exports.today = {
     dayOfWeek: () => moment().day(),

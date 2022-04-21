@@ -194,7 +194,7 @@ function setButtonOnclick(tab, nutrient) {
             let id = $(`#nav-${tab} .${nutrient} select`).val();
             let weight = $(`#nav-${tab} .${nutrient} input.weight`).val();
 
-            $.post(`/reports/${user}/${tab}`, { id: id, weight: weight })
+            $.post(`/reports/${user}/${tab}`, { meal_id: id, meal_weight: weight })
             .done(function(res) {
                 $(`#nav-${tab} .${nutrient} table`).DataTable().ajax.reload();
                 updateCaloriesGot(user, yesterday);

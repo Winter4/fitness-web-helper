@@ -4,42 +4,27 @@ const mongoose = require('mongoose');
 
 const Report = require('../../models/report');
 const Meal = require('../../models/meal');
-const getReport = require('../get-report');
+
+const { getReport, tabAtoi } = require('../../_commons');
 
 router.use(express.urlencoded({ extended: false }));
 
 router.post('/reports/:user/:tab', async (req, res) => {
     try {
 
-        let report = await getReport(req.params, req.query);
-
-        let mealObject = { 
+        let newMeal = { 
             _id: new mongoose.Types.ObjectId, 
-            food: mongoose.Types.ObjectId(req.body.id), 
+            food: mongoose.Types.ObjectId(req.body.meal_id), 
             weight: {
-                eaten: req.body.weight,
+                eaten: req.body.meal_weight,
                 toEat: -1,
             }
         };
-        switch (req.params.tab) {
-            case 'breakfast': report.breakfast.meals.push(mealObject);
-            break;
 
-            case 'dinner': report.dinner.push(mealObject);
-            break;
+        let report = await getReport(req.params, req.query);
+        report.tabs[ tabAtoi[req.params.tab] ].meals.push(newMeal);
 
-            case 'supper': report.supper.push(mealObject);
-            break;
-
-            case 'lunch1': report.lunch1.push(mealObject);
-            break;
-
-            case 'lunch2': report.lunch2.push(mealObject);
-            break;
-        }
-
-        console.log(req.body.id);
-        const mealData = await Meal.findById(req.body.id);
+        const mealData = await Meal.findById(req.body.meal_id);
         await report.calcToEatWeights(req.params.tab, mealData.group);
         await report.save();
 

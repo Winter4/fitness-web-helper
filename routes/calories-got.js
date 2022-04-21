@@ -4,7 +4,7 @@ const router = express.Router();
 const Report = require('../models/report');
 const time = require('../time');
 
-const getReport = require('./get-report');
+const { getReport } = require('../_commons');
 
 router.get('/calories-got/:user/:yesterday', async (req, res) => {
     try {
