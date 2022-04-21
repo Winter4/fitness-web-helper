@@ -18,7 +18,7 @@ const origin = protocol + host;
 
 const url = new URL(location.href).href;
 
-const user = getQueryParam('id', url);
+const user = getQueryParam('user', url);
 const yesterday = Number(getQueryParam('yesterday', url));
 // _____________ //
 
@@ -61,7 +61,7 @@ async function onRowUpdate(user, tab, rowID, nutrient, yesterday) {
 function deleteRow(user, tab, rowID, nutrient, yesterday) {
 
     $.ajax({
-        url: `/reports/${user}/${tab}?row_id=${rowID}`,
+        url: `/reports/${user}/${tab}?row_id=${rowID}&nutrient=${nutrient}`,
         type: 'DELETE',
         success: function (res) {
             $(`#nav-${tab} .${nutrient} table`).DataTable().ajax.reload();

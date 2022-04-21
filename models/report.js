@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const time = require('../time');
-const meal = require('./meal');
 
 const reportSchema = new mongoose.Schema({
     user: {
@@ -36,10 +35,7 @@ const reportSchema = new mongoose.Schema({
             },
 
         }],
-        calories: {
-
-            target: Number,
-        },
+        calories: { target: Number },
         nutrientRates: {
             'proteins': Number,
             'fats': Number,
@@ -69,16 +65,29 @@ reportSchema.pre('save', async function() {
             this.calories.got += Number(meal.food.calories * meal.weight.eaten);
         }
     }
+
+    this.calories.got = (this.calories.got).toFixed();
 });
 
 // ____________________________________________________________________
 
 // calc toEat weight for each food
-const { tabAtoi } = require('../_commons');
 reportSchema.methods.calcToEatWeights = async function(tab, nutrient) {
 
+    // copied from the _commons.js because 
+    // requiring caused errors
+    // change the both instances if needed
+    const tabAtoi = {
+        'breakfast': 0,
+        'lunch1': 1,
+        'dinner': 2,
+        'lunch2': 3,
+        'supper': 4,
+    };
+
+    
+    await this.populate(`tabs.${tabAtoi[tab]}.meals.food`);
     const curTab = this.tabs[ tabAtoi[tab] ];
-    await curTab.populate('meals.food');
 
     // calc new calories per nutrient sum
     let newCaloriesGot = 0;
@@ -107,7 +116,6 @@ reportSchema.methods.calcTargetCalories = function() {
     *   3 - lunch 2
     *   4 - supper
     */
-
     switch(this.mealsPerDay) {
         case 3:
             this.tabs[0].calories.target = (this.calories.target * 0.3).toFixed();

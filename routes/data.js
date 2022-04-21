@@ -10,8 +10,6 @@ router.get('/data/:user', async (req, res) => {
     try {
 
         let report = await getReport(req.params, req.query);
-        report.calcTargetCalories();
-        report.save();
 
         res.json({ 
             today: time.today.date(),

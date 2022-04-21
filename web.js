@@ -25,25 +25,49 @@ app.get('/', async (req, res) => {
         const exists = Boolean(await Report.exists({ user: req.query.user, date: time.today.date() }));
         if (!(exists)) {
 
-
             const user = await User.findOne({ _id: req.query.user });
 
             const report = new Report({ 
                 user: user._id,
+                tabs: [{}, {}, {}, {}, {}],
 
-                calories: {
-                    target: user.caloriesToLoose,
+                calories: { 
+                    got: 0, 
+                    target: user.caloriesToLose, 
                 },
                 mealsPerDay: user.mealsPerDay,
-
             });
 
+            // init the tabs
+            for (let i in report.tabs) {
+
+                // fill the nutrient rates
+                if (i == report.tabs.length - 1) {
+                    report.tabs[i].nutrientRates = {
+                        'proteins': 0.5,
+                        'fats': 0.25,
+                        'carbons': 0.25,
+                    }
+                }
+                else {
+                     report.tabs[i].nutrientRates = {
+                        'proteins': 0.35,
+                        'fats': 0.25,
+                        'carbons': 0.4,
+                    }
+                }
+
+                // create the field
+                report.tabs[i].calories.target = -1;
+            }
+
+            report.calcTargetCalories();
             await report.save();
         }
 
         res.sendFile(__dirname + '/views/index.html');
     } catch (e) {
-        console.log(e);
+        console.error(e);
     }
 });
 
