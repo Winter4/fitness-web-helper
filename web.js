@@ -42,20 +42,10 @@ app.use(require('./routes/reports/post'));
 app.use(require('./routes/reports/put'));
 app.use(require('./routes/reports/delete'));
 
-
-app.get('/meals', async (req, res) => {
+app.get('/meals/:nutrient', async (req, res) => {
     try {
-        let answer = await Meal.find({}, { _id: true, name: true, group: true });
-        res.json(answer);
-    } catch (e) {
-        console.log(e);
-    }
-});
-
-app.get('/meals/:id', async (req, res) => {
-    try {
-        let id = req.params.id;
-        res.json({ data: await Meal.findOne({ _id: mongoose.Types.ObjectId(id) }) });
+        const meals = await Meal.find({ group: req.params.nutrient });
+        res.json(meals);
     } catch (e) {
         console.log(e);
     }

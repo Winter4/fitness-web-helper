@@ -36,7 +36,7 @@
      -->
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css" type="text/css">
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
 
     <!-- Custom JS -->
     <script defer src="/js/script.js"></script>
@@ -59,11 +59,15 @@
 
             <nav>
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                    <button class="nav-link" id="nav-breakfast-tab" data-bs-toggle="tab" data-bs-target="#nav-breakfast" type="button" role="tab" aria-controls="nav-breakfast" aria-selected="false">Завтрак</button>
-                    <button class="nav-link" id="nav-lunch1-tab" data-bs-toggle="tab" data-bs-target="#nav-lunch1" type="button" role="tab" aria-controls="nav-lunch1" aria-selected="false">Перекус 1</button>
-                    <button class="nav-link" id="nav-dinner-tab" data-bs-toggle="tab" data-bs-target="#nav-dinner" type="button" role="tab" aria-controls="nav-dinner" aria-selected="false">Обед</button>
-                    <button class="nav-link" id="nav-lunch2-tab" data-bs-toggle="tab" data-bs-target="#nav-lunch2" type="button" role="tab" aria-controls="nav-lunch2" aria-selected="false">Перекус 2</button>
-                    <button class="nav-link" id="nav-supper-tab" data-bs-toggle="tab" data-bs-target="#nav-supper" type="button" role="tab" aria-controls="nav-supper" aria-selected="false">Ужин</button>
+                    <button class="nav-link disabled" id="nav-breakfast-tab" data-bs-toggle="tab" data-bs-target="#nav-breakfast" type="button" role="tab" aria-controls="nav-breakfast" aria-selected="false">Завтрак</button>
+
+                    <button class="nav-link disabled" id="nav-lunch1-tab" data-bs-toggle="tab" data-bs-target="#nav-lunch1" type="button" role="tab" aria-controls="nav-lunch1" aria-selected="false">Перекус 1</button>
+
+                    <button class="nav-link disabled" id="nav-dinner-tab" data-bs-toggle="tab" data-bs-target="#nav-dinner" type="button" role="tab" aria-controls="nav-dinner" aria-selected="false">Обед</button>
+
+                    <button class="nav-link disabled" id="nav-lunch2-tab" data-bs-toggle="tab" data-bs-target="#nav-lunch2" type="button" role="tab" aria-controls="nav-lunch2" aria-selected="false">Перекус 2</button>
+
+                    <button class="nav-link disabled" id="nav-supper-tab" data-bs-toggle="tab" data-bs-target="#nav-supper" type="button" role="tab" aria-controls="nav-supper" aria-selected="false">Ужин</button>
                 </div>
             </nav>
         </header>
@@ -78,10 +82,11 @@
                 <!-- Breakfast tab -->
                 <div class="tab-pane fade" id="nav-breakfast" role="tabpanel" aria-labelledby="nav-breakfast-tab">
 
-                    <div class="proteins">
-                        <table class="display" cellspacing="0" width="100%"></table>
+                    <!-- Carbons table -->
+                    <div class="carbons">
+                        <table></table>
 
-                        <label>Выберите продукт: <select></select></label>
+                        <label class="select-label">Выберите продукт: </label>
                         <br>
                         <label>
                             Введите массу в граммах: 
@@ -90,43 +95,242 @@
                         <br>
                         <button>Добавить</button>
                     </div>
+                    <!-- Carbons table over -->
+
+                    <!-- Proteins table -->
+                    <div class="proteins">
+                        <table></table>
+
+                        <label class="select-label">Выберите продукт: </label>
+                        <br>
+                        <label>
+                            Введите массу в граммах: 
+                            <input class="weight" type="number" min="1" value="100" />
+                        </label>
+                        <br>
+                        <button>Добавить</button>
+                    </div>
+                    <!-- Proteins table over -->
+
+                    <!-- Fats table -->
+                    <div class="fats">
+                        <table></table>
+
+                        <label class="select-label">Выберите продукт: </label>
+                        <br>
+                        <label>
+                            Введите массу в граммах: 
+                            <input class="weight" type="number" min="1" value="100" />
+                        </label>
+                        <br>
+                        <button>Добавить</button>
+                    </div>
+                    <!-- Fats table over -->
 
                 </div>
                 <!-- Breakfast tab over -->
 
                 <!-- Lunch-1 tab -->
                 <div class="tab-pane fade" id="nav-lunch1" role="tabpanel" aria-labelledby="nav-lunch1-tab">
-                    <!-- Table -->
-                    <table id="lunch1-table" class="display" cellspacing="0" width="100%">
-                    </table>
-                    <!-- Table over -->
+
+                    <!-- Carbons table -->
+                    <div class="carbons">
+                        <table></table>
+
+                        <label class="select-label">Выберите продукт: </label>
+                        <br>
+                        <label>
+                            Введите массу в граммах: 
+                            <input class="weight" type="number" min="1" value="100" />
+                        </label>
+                        <br>
+                        <button>Добавить</button>
+                    </div>
+                    <!-- Carbons table over -->
+
+                    <!-- Proteins table -->
+                    <div class="proteins">
+                        <table></table>
+
+                        <label class="select-label">Выберите продукт: </label>
+                        <br>
+                        <label>
+                            Введите массу в граммах: 
+                            <input class="weight" type="number" min="1" value="100" />
+                        </label>
+                        <br>
+                        <button>Добавить</button>
+                    </div>
+                    <!-- Proteins table over -->
+
+                    <!-- Fats table -->
+                    <div class="fats">
+                        <table></table>
+
+                        <label class="select-label">Выберите продукт: </label>
+                        <br>
+                        <label>
+                            Введите массу в граммах: 
+                            <input class="weight" type="number" min="1" value="100" />
+                        </label>
+                        <br>
+                        <button>Добавить</button>
+                    </div>
+                    <!-- Fats table over -->
+
                 </div>
                 <!-- Lunch-1 tab over -->
 
                 <!-- Dinner tab -->
                 <div class="tab-pane fade" id="nav-dinner" role="tabpanel" aria-labelledby="nav-dinner-tab">
-                    <!-- Table -->
-                    <table id="dinner-table" class="display" cellspacing="0" width="100%">
-                    </table>
-                    <!-- Table over -->
+
+                    <!-- Carbons table -->
+                    <div class="carbons">
+                        <table></table>
+
+                        <label class="select-label">Выберите продукт: </label>
+                        <br>
+                        <label>
+                            Введите массу в граммах: 
+                            <input class="weight" type="number" min="1" value="100" />
+                        </label>
+                        <br>
+                        <button>Добавить</button>
+                    </div>
+                    <!-- Carbons table over -->
+
+                    <!-- Proteins table -->
+                    <div class="proteins">
+                        <table></table>
+
+                        <label class="select-label">Выберите продукт: </label>
+                        <br>
+                        <label>
+                            Введите массу в граммах: 
+                            <input class="weight" type="number" min="1" value="100" />
+                        </label>
+                        <br>
+                        <button>Добавить</button>
+                    </div>
+                    <!-- Proteins table over -->
+
+                    <!-- Fats table -->
+                    <div class="fats">
+                        <table></table>
+
+                        <label class="select-label">Выберите продукт: </label>
+                        <br>
+                        <label>
+                            Введите массу в граммах: 
+                            <input class="weight" type="number" min="1" value="100" />
+                        </label>
+                        <br>
+                        <button>Добавить</button>
+                    </div>
+                    <!-- Fats table over -->
+
                 </div>
                 <!-- Dinner tab over -->
 
                 <!-- Lunch-2 tab -->
-                <div class="tab-pane fade" id="nav-lunch2" role="tabpanel" aria-labelledby="nav-lunch2-tab">
-                    <!-- Table -->
-                    <table id="lunch2-table" class="display" cellspacing="0" width="100%">
-                    </table>
-                    <!-- Table over -->
+               <div class="tab-pane fade" id="nav-lunch2" role="tabpanel" aria-labelledby="nav-lunch2-tab">
+
+                    <!-- Carbons table -->
+                    <div class="carbons">
+                        <table></table>
+
+                        <label class="select-label">Выберите продукт: </label>
+                        <br>
+                        <label>
+                            Введите массу в граммах: 
+                            <input class="weight" type="number" min="1" value="100" />
+                        </label>
+                        <br>
+                        <button>Добавить</button>
+                    </div>
+                    <!-- Carbons table over -->
+
+                    <!-- Proteins table -->
+                    <div class="proteins">
+                        <table></table>
+
+                        <label class="select-label">Выберите продукт: </label>
+                        <br>
+                        <label>
+                            Введите массу в граммах: 
+                            <input class="weight" type="number" min="1" value="100" />
+                        </label>
+                        <br>
+                        <button>Добавить</button>
+                    </div>
+                    <!-- Proteins table over -->
+
+                    <!-- Fats table -->
+                    <div class="fats">
+                        <table></table>
+
+                        <label class="select-label">Выберите продукт: </label>
+                        <br>
+                        <label>
+                            Введите массу в граммах: 
+                            <input class="weight" type="number" min="1" value="100" />
+                        </label>
+                        <br>
+                        <button>Добавить</button>
+                    </div>
+                    <!-- Fats table over -->
+
                 </div>
                 <!-- Lunch-2 tab over -->
 
                 <!-- Supper tab -->
-                <div class="tab-pane fade" id="nav-supper" role="tabpanel" aria-labelledby="nav-supper-tab">
-                    <!-- Table -->
-                    <table id="supper-table" class="display" cellspacing="0" width="100%">
-                    </table>
-                    <!-- Table over -->
+               <div class="tab-pane fade" id="nav-supper" role="tabpanel" aria-labelledby="nav-supper-tab">
+
+                    <!-- Carbons table -->
+                    <div class="carbons">
+                        <table></table>
+
+                        <label class="select-label">Выберите продукт: </label>
+                        <br>
+                        <label>
+                            Введите массу в граммах: 
+                            <input class="weight" type="number" min="1" value="100" />
+                        </label>
+                        <br>
+                        <button>Добавить</button>
+                    </div>
+                    <!-- Carbons table over -->
+
+                    <!-- Proteins table -->
+                    <div class="proteins">
+                        <table></table>
+
+                        <label class="select-label">Выберите продукт: </label>
+                        <br>
+                        <label>
+                            Введите массу в граммах: 
+                            <input class="weight" type="number" min="1" value="100" />
+                        </label>
+                        <br>
+                        <button>Добавить</button>
+                    </div>
+                    <!-- Proteins table over -->
+
+                    <!-- Fats table -->
+                    <div class="fats">
+                        <table></table>
+
+                        <label class="select-label">Выберите продукт: </label>
+                        <br>
+                        <label>
+                            Введите массу в граммах: 
+                            <input class="weight" type="number" min="1" value="100" />
+                        </label>
+                        <br>
+                        <button>Добавить</button>
+                    </div>
+                    <!-- Fats table over -->
+
                 </div>
                 <!-- Supper tab over -->
 

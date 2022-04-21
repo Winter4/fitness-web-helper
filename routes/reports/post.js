@@ -38,7 +38,8 @@ router.post('/reports/:user/:tab', async (req, res) => {
             break;
         }
 
-        const mealData = await Meal.findOne({ _id: req.body.id });
+        console.log(req.body.id);
+        const mealData = await Meal.findById(req.body.id);
         await report.calcToEatWeights(req.params.tab, mealData.group);
         await report.save();
 

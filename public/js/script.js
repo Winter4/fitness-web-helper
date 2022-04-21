@@ -1,5 +1,5 @@
 
-// ______________________________ get query object of the URL _____________________________________
+// __________________________ get query object of the URL __________________________________ //
 
 function getQueryParam(param, url) {
 
@@ -11,7 +11,7 @@ function getQueryParam(param, url) {
     return qString ? qString[1] : null;
 }
 
-// globals
+// G L O B A L S
 const protocol = 'http://';
 const host = 'localhost:8080';
 const origin = protocol + host;
@@ -20,8 +20,9 @@ const url = new URL(location.href).href;
 
 const user = getQueryParam('id', url);
 const yesterday = Number(getQueryParam('yesterday', url));
+// _____________ //
 
-// _______________________________ update header calories ____________________________________
+// ______________________________ update header calories ___________________________________ //
 
 function updateCaloriesGot(user, yesterday) {
 
@@ -32,7 +33,7 @@ function updateCaloriesGot(user, yesterday) {
     .fail(function(err) { console.log('Update calories got:'); console.log(err); });
 }
 
-// _______________________________ edit row after weigth changing ___________________________________
+// _________________________ edit row after weigth changing _________________________________ //
 
 function updateRow(user, tab, rowID, nutrient, yesterday) {
 
@@ -55,7 +56,7 @@ async function onRowUpdate(user, tab, rowID, nutrient, yesterday) {
     updateRow(user, tab, rowID, nutrient, yesterday);
 }
 
-// _______________________________ delete row from the table ________________________________________
+// ___________________________ delete row from the table ______________________________ //
 
 function deleteRow(user, tab, rowID, nutrient, yesterday) {
 
@@ -76,58 +77,15 @@ function onRowDelete(user, tab, rowID, nutrient, yesterday) {
     deleteRow(user, tab, rowID, nutrient, yesterday);
 }
 
-// ____________________________ init datatables && "add meal" button _____________________________
+// __________________________ Main .ready script ___________________________________ //
 
-function getTabContent(tab) {
-
-    // get selectors content
-    $.get(`/meals`)
-    .done(function(res) {
-        const proteinsSelect = $(`#nav-${tab} .proteins select`);
-
-        $.each(res, function(i, item) {
-            proteinsSelect.append($('<option>', { 
-                value: item._id,
-                text : item.name 
-            }));
-        });
-    })
-    .fail(function() { console.log(`Get ${tab} select data error`) });
-}
-
-function setButtonOnclick(tab) {
-
-    $(document).ready(function() {
-        $(`#nav-${tab} .proteins button`).on('click', function() {
-
-            let id = $(`#nav-${tab} .proteins select`).val();
-            let weight = $(`#nav-${tab} .proteins input.weight`).val();
-
-            $.post(`/reports/${user}/${tab}`, { id: id, weight: weight })
-            .done(function(res) {
-                $(`#nav-${tab} .proteins table`).DataTable().ajax.reload();
-                updateCaloriesGot(user, yesterday);
-            })
-            .fail(function() { console.log(`Error: post to /reports/${user}/${tab}`) });
-        });
-    });
-}
-
-
-// main .ready script
 $(document).ready(function() {
 
-    let mealsPerDay;
+    // - - - - - - - - - - Functions used below - - - - - - - - - - - - - 
 
-    // get user data
-    $.get(`/data/${user}`)
-    .done(function(res) {
-
-        // get mealsPerDay
-        mealsPerDay = res.mealsPerDay;
-
-        // insert links
+    const createHeaderLinks = (res, yesterday) => {
         let html = '';
+
         let linkID = 'yesterdayLink';
         if (yesterday) 
             html = `Отчёт за вчера (${res.yesterday})   |   <a href="${origin}/?id=${user}">Отчёт за сегодня (${res.today})</a>`;
@@ -136,110 +94,169 @@ $(document).ready(function() {
         $('header div.links').html(html);
 
         if (!(res.yesterdayExists)) $(`#${linkID}`).addClass('disabled').append(' отсутствует');
-        /////////////////////////////////
+    };
+
+    const insertTabs = (res) => {
+
+        const createSelector = (nutrient) => {
+            let selector = $('<select>');
+
+            $.get(`/meals/${nutrient}`)
+            .done(function(res) {
+                $.each(res, function(i, item) {
+                    selector.append($('<option>', { 
+                        value: item._id,
+                        text : item.name 
+                    }));
+                });
+            })
+            .fail(function() { console.log(`Get ${nutrient} select options error`) });
+
+            return selector;
+        };
+
+        const selectors = {
+            proteins: createSelector('proteins'),
+            fats: createSelector('fats'),
+            carbons: createSelector('carbons'),
+        };
+
+
+        const initTab = (tab) => {
+            $(`#nav-${tab}-tab`).one('click', function() { 
+                initTable(tab, 'proteins', yesterday, selectors.proteins);
+                initTable(tab, 'fats', yesterday, selectors.fats);
+                initTable(tab, 'carbons', yesterday, selectors.carbons);
+            });
+        };
+
+    // - - - - - - - - - - - - - - Init Tabs - - - - - - - - - - - - - - - - - 
+
+        let tab;
+        switch(res.mealsPerDay) {
+
+            // ATTENTION: 'break' statements ARE NOT missed here
+            // it's how it works :)
+            case 5:
+                tab = 'lunch2';
+                initTab(tab);
+                $(`#nav-${tab}-tab`).removeClass('disabled');
+                $(`#nav-${tab}-tab`).append(` (${res.caloriesPerTabs.lunch2} кал)`);
+
+            case 4:
+                tab = 'lunch1';
+                initTab(tab);
+                $(`#nav-${tab}-tab`).removeClass('disabled');
+                $(`#nav-${tab}-tab`).append(` (${res.caloriesPerTabs.lunch1} кал)`);
+
+            case 3:
+                tab = 'breakfast';
+                initTab(tab);
+                $(`#nav-${tab}-tab`).removeClass('disabled');
+                $(`#nav-${tab}-tab`).append(` (${res.caloriesPerTabs.breakfast} кал)`);
+
+                tab = 'dinner';
+                initTab(tab);
+                $(`#nav-${tab}-tab`).removeClass('disabled');
+                $(`#nav-${tab}-tab`).append(` (${res.caloriesPerTabs.dinner} кал)`);
+
+                tab = 'supper';
+                initTab(tab);
+                $(`#nav-${tab}-tab`).removeClass('disabled');
+                $(`#nav-${tab}-tab`).append(` (${res.caloriesPerTabs.supper} кал)`);
+        }
+    };
+
+    // - - - - - - - - - - - - - - - - Call all the funcs - - - - - - - - - - - - - - - - - - - - - 
+
+    // get user data
+    $.get(`/data/${user}`)
+    .done(function(res) {
+
+        createHeaderLinks(res, yesterday);
+        insertTabs(res);
 
         // fill header calories-target
         $('header div.calories div.target').html('/' + res.caloriesTarget);
-
-        switch (mealsPerDay) {
-            case 3: 
-                $('#nav-lunch1-tab').addClass('disabled');
-                $('#nav-lunch2-tab').addClass('disabled');
-                break;
-
-            case 4: 
-                $('#nav-lunch2-tab').addClass('disabled');
-                $('#nav-lunch1-tab').append(` (${res.caloriesPerTabs.lunch1} кал)`);
-                break;
-
-            case 5:
-                $('#nav-lunch1-tab').append(` (${res.caloriesPerTabs.lunch1} кал)`);
-                $('#nav-lunch2-tab').append(` (${res.caloriesPerTabs.lunch2} кал)`);
-                break;
-        }
-        $('#nav-breakfast-tab').append(` (${res.caloriesPerTabs.breakfast} кал)`);
-        $('#nav-dinner-tab').append(` (${res.caloriesPerTabs.dinner} кал)`);
-        $('#nav-supper-tab').append(` (${res.caloriesPerTabs.supper} кал)`);
     })
     .fail(function() { });
 
     updateCaloriesGot(user, yesterday);
+});
 
+// ___________________________ DataTable Create funcs ______________________________________ //
 
-    let tab = null;
+function setButtonOnclick(tab, nutrient) {
 
+    $(document).ready(function() {
+        $(`#nav-${tab} .${nutrient} button`).on('click', function() {
 
-    let bTab  = null; // breakfast tab
-    let l1Tab = null; // launch 1 tab
-    let dTab  = null; // dinner tab
-    let l2Tab = null; // launch 2 tab
-    let sTab  = null; // supper tab
+            let id = $(`#nav-${tab} .${nutrient} select`).val();
+            let weight = $(`#nav-${tab} .${nutrient} input.weight`).val();
 
-    $('#nav-breakfast-tab').on('click', function() { 
+            $.post(`/reports/${user}/${tab}`, { id: id, weight: weight })
+            .done(function(res) {
+                $(`#nav-${tab} .${nutrient} table`).DataTable().ajax.reload();
+                updateCaloriesGot(user, yesterday);
+            })
+            .fail(function() { console.log(`Error: post to /reports/${user}/${tab}`) });
+        });
+    });
+}
 
-        tab = 'breakfast'; 
+function initTable(tab, nutrient, yesterday, selector) {
 
-        try {
-            if (bTab == null) {
-                bTab = true;
+    $(`#nav-${tab} .${nutrient} table`).DataTable({
 
-                $('#nav-breakfast .proteins table').DataTable({
+        language: {
+            url: "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
+        },
 
-                    language: {
-                        url: "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
-                    },
+        paging: false,
+        info: false,
+        searching: false,
 
-                    paging: false,
-                    info: false,
-                    searching: false,
+        ajax: `${origin}/reports/${user}/${tab}/${nutrient}?yesterday=${yesterday}`,
 
-                    ajax: `${origin}/reports/${user}/breakfast/proteins?yesterday=${yesterday}`,
-            
-                    columns: [
-                        {
-                            title: "Продукт",
-                            data: "name",
-                            orderable: false,
-                        },
-                        {
-                            title: "Съедено, г",
-                            data: "weight.eaten",
-                            orderable: false,
-                            render: function(data, type, row, meta) {
-                                return `<input type="number" min="1" value="${data}" id="${row._id}" 
-                                    onblur="onRowUpdate('${user}', 'breakfast', '${row._id}', 'proteins', '${yesterday}')" />`;
-                            }
-                        },
-                        {
-                            title: "Осталось съесть, г",
-                            data: "weight.toEat",
-                            orderable: false,
-                            render: function(data, type, row, meta) { return data }
-                        },
-                        {
-                            title: "",
-                            orderable: false,
-                            data: null,
-                            render: function(data, type, row, meta) {
-                                return `
-                                <a href="javascript:;" 
-                                    onclick="onRowDelete('${user}', 'breakfast', '${row._id}', 'proteins', '${yesterday}')"
-                                >
-                                    delete
-                                </a>`;
-                            }
-                        },
-                    ]
-                });
-
-                getTabContent(tab);
-                setButtonOnclick(tab);
-                
-            }
-        } catch (e) {
-            console.log(e);
-        }
+        columns: [
+            {
+                title: "Продукт",
+                data: "name",
+                orderable: false,
+            },
+            {
+                title: "Съедено, г",
+                data: "weight.eaten",
+                orderable: false,
+                render: function(data, type, row, meta) {
+                    return `<input type="number" min="1" value="${data}" id="${row._id}" 
+                        onblur="onRowUpdate('${user}', '${tab}', '${row._id}', '${nutrient}', '${yesterday}')" />`;
+                }
+            },
+            {
+                title: "Осталось съесть, г",
+                data: "weight.toEat",
+                orderable: false,
+                render: function(data, type, row, meta) { return data }
+            },
+            {
+                title: "",
+                orderable: false,
+                data: null,
+                render: function(data, type, row, meta) {
+                    return `
+                    <a href="javascript:;" 
+                        onclick="onRowDelete('${user}', '${tab}', '${row._id}', '${nutrient}', '${yesterday}')"
+                    >
+                        delete
+                    </a>`;
+                }
+            },
+        ]
     });
 
-    
-});
+    // add selector to the table form
+    $(`#nav-${tab} .${nutrient} label.select-label`).append(selector);
+    // set button click script (add meal)
+    setButtonOnclick(tab, nutrient);
+}
