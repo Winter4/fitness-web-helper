@@ -26,7 +26,7 @@ const yesterday = Number(getQueryParam('yesterday', url));
 
 function updateCaloriesGot(user, yesterday) {
 
-    $.get(`/calories-got/${user}/${yesterday}`)
+    $.get(`/calories-got/${user}?yesterday=${yesterday}`)
     .done(function(res) {
         $('header div.calories div.got').html(res.caloriesGot);
     })
@@ -40,7 +40,7 @@ function updateRow(user, tab, rowID, nutrient, yesterday) {
     let newWeight = $(`#${rowID}`).val();
 
     $.ajax({
-        url: `/reports/${user}/${tab}?row_id=${rowID}&row_weight=${newWeight}&nutrient=${nutrient}`,
+        url: `/reports/${user}/${tab}/${nutrient}?yesterday=${yesterday}&row_id=${rowID}&row_weight=${newWeight}`,
         type: 'PUT',
         success: function (res) {
             $(`#nav-${tab} .${nutrient} table`).DataTable().ajax.reload();
@@ -61,7 +61,7 @@ async function onRowUpdate(user, tab, rowID, nutrient, yesterday) {
 function deleteRow(user, tab, rowID, nutrient, yesterday) {
 
     $.ajax({
-        url: `/reports/${user}/${tab}?row_id=${rowID}&nutrient=${nutrient}`,
+        url: `/reports/${user}/${tab}/${nutrient}?yesterday=${yesterday}&row_id=${rowID}`,
         type: 'DELETE',
         success: function (res) {
             $(`#nav-${tab} .${nutrient} table`).DataTable().ajax.reload();
@@ -170,7 +170,7 @@ $(document).ready(function() {
     // - - - - - - - - - - - - - - - - Call all the funcs - - - - - - - - - - - - - - - - - - - - -
 
     // get user data
-    $.get(`/data/${user}`)
+    $.get(`/data/${user}?yesterday=${yesterday}`)
     .done(function(res) {
 
         createHeaderLinks(res, yesterday);
@@ -194,7 +194,7 @@ function setButtonOnclick(tab, nutrient) {
             let id = $(`#nav-${tab} .${nutrient} select`).val();
             let weight = $(`#nav-${tab} .${nutrient} input.weight`).val();
 
-            $.post(`/reports/${user}/${tab}`, { meal_id: id, meal_weight: weight })
+            $.post(`/reports/${user}/${tab}?yesterday=${yesterday}`, { meal_id: id, meal_weight: weight })
             .done(function(res) {
                 $(`#nav-${tab} .${nutrient} table`).DataTable().ajax.reload();
                 updateCaloriesGot(user, yesterday);

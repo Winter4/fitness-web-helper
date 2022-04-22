@@ -14,14 +14,14 @@ const deleteByID = (array, id) => {
     }
 };
 
-router.delete('/reports/:user/:tab/', async (req, res) => {
+router.delete('/reports/:user/:tab/:nutrient', async (req, res) => {
     try {
         
         let report = await getReport(req.params, req.query);
 
         deleteByID(report.tabs[ tabAtoi[req.params.tab] ].meals, req.query.row_id);
 
-        await report.calcToEatWeights(req.params.tab, req.query.nutrient);
+        await report.calcToEatWeights(req.params.tab, req.params.nutrient);
         await report.save();
 
         res.send();

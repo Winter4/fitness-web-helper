@@ -13,14 +13,14 @@ const changeByID = (array, id, newWeight) => {
     }
 };
 
-router.put('/reports/:user/:tab/', async (req, res) => {
+router.put('/reports/:user/:tab/:nutrient', async (req, res) => {
     try {
 
         const report = await getReport(req.params, req.query);
 
         changeByID(report.tabs[ tabAtoi[req.params.tab] ].meals, req.query.row_id, req.query.row_weight);
 
-        await report.calcToEatWeights(req.params.tab, req.query.nutrient);
+        await report.calcToEatWeights(req.params.tab, req.params.nutrient);
         await report.save();
 
         res.send();
