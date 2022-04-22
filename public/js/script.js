@@ -81,16 +81,16 @@ function onRowDelete(user, tab, rowID, nutrient, yesterday) {
 
 $(document).ready(function() {
 
-    // - - - - - - - - - - Functions used below - - - - - - - - - - - - - 
+    // - - - - - - - - - - Functions used below - - - - - - - - - - - - -
 
     const createHeaderLinks = (res, yesterday) => {
         let html = '';
 
         let linkID = 'yesterdayLink';
-        if (yesterday) 
-            html = `Отчёт за вчера (${res.yesterday})   |   <a href="${origin}/?id=${user}">Отчёт за сегодня (${res.today})</a>`;
-        else 
-            html = `<a id="${linkID}" href="${origin}?id=${user}&yesterday=1">Отчёт за вчера (${res.yesterday})</a>   |   Отчёт за сегодня (${res.today})`;
+        if (yesterday)
+            html = `Отчёт за вчера (${res.yesterday})   |   <a href="${origin}/?user=${user}">Отчёт за сегодня (${res.today})</a>`;
+        else
+            html = `<a id="${linkID}" href="${origin}?user=${user}&yesterday=1">Отчёт за вчера (${res.yesterday})</a>   |   Отчёт за сегодня (${res.today})`;
         $('header div.links').html(html);
 
         if (!(res.yesterdayExists)) $(`#${linkID}`).addClass('disabled').append(' отсутствует');
@@ -104,9 +104,9 @@ $(document).ready(function() {
             $.get(`/meals/${nutrient}`)
             .done(function(res) {
                 $.each(res, function(i, item) {
-                    selector.append($('<option>', { 
+                    selector.append($('<option>', {
                         value: item._id,
-                        text : item.name 
+                        text : item.name
                     }));
                 });
             })
@@ -123,14 +123,14 @@ $(document).ready(function() {
 
 
         const initTab = (tab) => {
-            $(`#nav-${tab}-tab`).one('click', function() { 
+            $(`#nav-${tab}-tab`).one('click', function() {
                 initTable(tab, 'proteins', yesterday, selectors.proteins);
                 initTable(tab, 'fats', yesterday, selectors.fats);
                 initTable(tab, 'carbons', yesterday, selectors.carbons);
             });
         };
 
-    // - - - - - - - - - - - - - - Init Tabs - - - - - - - - - - - - - - - - - 
+    // - - - - - - - - - - - - - - Init Tabs - - - - - - - - - - - - - - - - -
 
         let tab;
         switch(res.mealsPerDay) {
@@ -167,7 +167,7 @@ $(document).ready(function() {
         }
     };
 
-    // - - - - - - - - - - - - - - - - Call all the funcs - - - - - - - - - - - - - - - - - - - - - 
+    // - - - - - - - - - - - - - - - - Call all the funcs - - - - - - - - - - - - - - - - - - - - -
 
     // get user data
     $.get(`/data/${user}`)
@@ -229,7 +229,7 @@ function initTable(tab, nutrient, yesterday, selector) {
                 data: "weight.eaten",
                 orderable: false,
                 render: function(data, type, row, meta) {
-                    return `<input type="number" min="1" value="${data}" id="${row._id}" 
+                    return `<input type="number" min="1" value="${data}" id="${row._id}"
                         onblur="onRowUpdate('${user}', '${tab}', '${row._id}', '${nutrient}', '${yesterday}')" />`;
                 }
             },
@@ -245,7 +245,7 @@ function initTable(tab, nutrient, yesterday, selector) {
                 data: null,
                 render: function(data, type, row, meta) {
                     return `
-                    <a href="javascript:;" 
+                    <a href="javascript:;"
                         onclick="onRowDelete('${user}', '${tab}', '${row._id}', '${nutrient}', '${yesterday}')"
                     >
                         delete
