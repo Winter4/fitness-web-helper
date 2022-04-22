@@ -2,14 +2,14 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 
-const Report = require('../../models/report');
-const Meal = require('../../models/meal');
+const Report = require('../../../models/report');
+const Meal = require('../../../models/meal');
 
-const { getReport, tabAtoi } = require('../../_commons');
+const { getReport, tabAtoi } = require('../../../_commons');
 
 router.use(express.urlencoded({ extended: false }));
 
-router.post('/reports/:user/:tab', async (req, res) => {
+router.post('/reports/nutr/:user/:tab', async (req, res) => {
     try {
 
         let newMeal = { 

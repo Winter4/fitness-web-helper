@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-const Report = require('../../models/report');
+const Report = require('../../../models/report');
 
-const { getReport, tabAtoi } = require('../../_commons');
+const { getReport, tabAtoi } = require('../../../_commons');
 
-router.get('/reports/:user/:tab/:nutrient', async (req, res) => {
+router.get('/reports/nutr/:user/:tab/:nutrient', async (req, res) => {
     try {
 
         let report = await getReport(req.params, req.query);

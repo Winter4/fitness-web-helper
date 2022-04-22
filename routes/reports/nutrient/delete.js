@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
-const Report = require('../../models/report');
+const Report = require('../../../models/report');
 
-const { getReport, tabAtoi } = require('../../_commons');
+const { getReport, tabAtoi } = require('../../../_commons');
 
 const deleteByID = (array, id) => {
     for (let i in array) {
@@ -14,7 +14,7 @@ const deleteByID = (array, id) => {
     }
 };
 
-router.delete('/reports/:user/:tab/:nutrient', async (req, res) => {
+router.delete('/reports/nutr/:user/:tab/:nutrient', async (req, res) => {
     try {
         
         let report = await getReport(req.params, req.query);

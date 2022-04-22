@@ -33,6 +33,33 @@ function updateCaloriesGot(user, yesterday) {
     .fail(function(err) { console.log('Update calories got:'); console.log(err); });
 }
 
+// _______________________________ update & get vegetables weights __________________________ //
+
+function updateVegetablesInput() {
+    const newVal = $('div.vegetables input').val();
+
+    $.ajax({
+        url: `/reports/non-nutr/vegetables/${user}?yesterday=${yesterday}&veg_weight=${newVal}`,
+        type: 'PUT',
+        success: function (res) {
+            getVegetablesInput();
+        },
+        error: function(res) {
+            
+        }
+    });
+}
+
+function getVegetablesInput() {
+
+    $.get(`/reports/non-nutr/vegetables/${user}?yesterday=${yesterday}`)
+    .done(function(res) {
+        $('div.vegetables input').val(res.eatenWeight);
+        $('div.vegetables #toEatVegetablesWeight').html(res.toEatWeight);
+    })
+    .fail(function() { });
+}
+
 // _________________________ edit row after weigth changing _________________________________ //
 
 function updateRow(user, tab, rowID, nutrient, yesterday) {
@@ -40,7 +67,7 @@ function updateRow(user, tab, rowID, nutrient, yesterday) {
     let newWeight = $(`#${rowID}`).val();
 
     $.ajax({
-        url: `/reports/${user}/${tab}/${nutrient}?yesterday=${yesterday}&row_id=${rowID}&row_weight=${newWeight}`,
+        url: `/reports/nutr/${user}/${tab}/${nutrient}?yesterday=${yesterday}&row_id=${rowID}&row_weight=${newWeight}`,
         type: 'PUT',
         success: function (res) {
             $(`#nav-${tab} .${nutrient} table`).DataTable().ajax.reload();
@@ -61,7 +88,7 @@ async function onRowUpdate(user, tab, rowID, nutrient, yesterday) {
 function deleteRow(user, tab, rowID, nutrient, yesterday) {
 
     $.ajax({
-        url: `/reports/${user}/${tab}/${nutrient}?yesterday=${yesterday}&row_id=${rowID}`,
+        url: `/reports/nutr/${user}/${tab}/${nutrient}?yesterday=${yesterday}&row_id=${rowID}`,
         type: 'DELETE',
         success: function (res) {
             $(`#nav-${tab} .${nutrient} table`).DataTable().ajax.reload();
@@ -178,6 +205,9 @@ $(document).ready(function() {
 
         // fill header calories-target
         $('header div.calories div.target').html('/' + res.caloriesTarget);
+
+        // fill vegetables input table
+        getVegetablesInput();
     })
     .fail(function() { });
 
@@ -194,7 +224,7 @@ function setButtonOnclick(tab, nutrient) {
             let id = $(`#nav-${tab} .${nutrient} select`).val();
             let weight = $(`#nav-${tab} .${nutrient} input.weight`).val();
 
-            $.post(`/reports/${user}/${tab}?yesterday=${yesterday}`, { meal_id: id, meal_weight: weight })
+            $.post(`/reports/nutr/${user}/${tab}?yesterday=${yesterday}`, { meal_id: id, meal_weight: weight })
             .done(function(res) {
                 $(`#nav-${tab} .${nutrient} table`).DataTable().ajax.reload();
                 updateCaloriesGot(user, yesterday);
@@ -216,7 +246,7 @@ function initTable(tab, nutrient, yesterday, selector) {
         info: false,
         searching: false,
 
-        ajax: `${origin}/reports/${user}/${tab}/${nutrient}?yesterday=${yesterday}`,
+        ajax: `${origin}/reports/nutr/${user}/${tab}/${nutrient}?yesterday=${yesterday}`,
 
         columns: [
             {

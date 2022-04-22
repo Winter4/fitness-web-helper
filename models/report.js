@@ -43,6 +43,17 @@ const reportSchema = new mongoose.Schema({
         }
     }],
 
+    nonNutrientMealsWeights: {
+        vegetables: {
+            got: Number,
+            target: {
+                type: Number,
+                default: 300,
+                immutable: true,
+            }
+        },
+    },
+
     calories: {
         got: Number,
         target: Number,

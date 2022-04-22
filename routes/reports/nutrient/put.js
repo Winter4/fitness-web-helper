@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const Report = require('../../models/report');
-const { getReport, tabAtoi } = require('../../_commons');
+const Report = require('../../../models/report');
+const { getReport, tabAtoi } = require('../../../_commons');
 
 const changeByID = (array, id, newWeight) => {
     for (let item of array) {
@@ -13,7 +13,7 @@ const changeByID = (array, id, newWeight) => {
     }
 };
 
-router.put('/reports/:user/:tab/:nutrient', async (req, res) => {
+router.put('/reports/nutr/:user/:tab/:nutrient', async (req, res) => {
     try {
 
         const report = await getReport(req.params, req.query);

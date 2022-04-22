@@ -31,11 +31,12 @@ app.get('/', async (req, res) => {
                 user: user._id,
                 tabs: [{}, {}, {}, {}, {}],
 
-                calories: { 
-                    got: 0, 
-                    target: user.caloriesToLose, 
-                },
+                calories: { got: 0, target: user.caloriesToLose, },
                 mealsPerDay: user.mealsPerDay,
+
+                nonNutrientMealsWeights: {
+                    vegetables: { got: 0, },
+                }
             });
 
             // init the tabs
@@ -75,10 +76,12 @@ app.get('/', async (req, res) => {
 app.use(require('./routes/data'));
 app.use(require('./routes/calories-got'));
 
-app.use(require('./routes/reports/get'));
-app.use(require('./routes/reports/post'));
-app.use(require('./routes/reports/put'));
-app.use(require('./routes/reports/delete'));
+app.use(require('./routes/reports/nutrient/get'));
+app.use(require('./routes/reports/nutrient/post'));
+app.use(require('./routes/reports/nutrient/put'));
+app.use(require('./routes/reports/nutrient/delete'));
+
+app.use(require('./routes/reports/non-nutrient/vegetables'));
 
 app.get('/meals/:nutrient', async (req, res) => {
     try {
