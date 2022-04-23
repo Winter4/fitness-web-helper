@@ -8,12 +8,14 @@ router.get('/reports/non-nutr/vegetables/:user', async (req, res) => {
 	try {
 
 		const report = await getReport(req.params, req.query);
-		const veg = report.nonNutrientMeals.vegetables;
+		const veg = report.nonNutrientMeals.vegetables.weight;
 
-		res.json({ 
+		const response = { 
 			eatenWeight: veg.eaten,
 			toEatWeight: veg.target - veg.eaten,
-		});
+		};
+
+		res.json(response);
 	} catch (e) {
 		console.log(e);
         res.statusCode = 502;
