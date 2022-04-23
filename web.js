@@ -22,7 +22,7 @@ app.use(cors());
 app.get('/', async (req, res) => {
     try {
 
-        const report = await Report.findOne({ user: req.query.user, date: time.today.date() });
+        let report = await Report.findOne({ user: req.query.user, date: time.today.date() });
         const user = await User.findOne({ _id: req.query.user });
 
         if (report == null) {
