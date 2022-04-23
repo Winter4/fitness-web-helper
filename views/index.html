@@ -337,30 +337,92 @@
                 </div>
                 <!-- Supper tab over -->
 
-                <!-- Vegetables table -->
-                <div class="vegetables">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Продукт</th>
-                                <th>Съедено, г</th>
-                                <th>Осталось съесть, г</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Салат, овощи</td>
-                                <td><input type="number" min="0" onblur="updateVegetablesInput()"></td>
-                                <td id="toEatVegetablesWeight"></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
             </div>
             <!--------------------------------------- Tabs content over ------------------------------------------->
 
-            
+            <!-- Vegetables table -->
+            <div class="vegetables">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Продукт</th>
+                            <th>Съедено, г</th>
+                            <th>Осталось съесть, г</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Салат, овощи</td>
+                            <td><input type="number" min="0" onblur="updateVegetablesInput()"></td>
+                            <td id="toEatVegetablesWeight"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Vegetables table over -->
+
+            <br><br>
+            <!-- Junkfood content-->
+            <div class="junk">
+
+                <table></table>
+
+                <!-- Alcohol form -->
+                <form class="alcohol" onsubmit="return false;">
+                    <label class="select-label">
+                        Выберите продукт: 
+                        <select></select>
+                    </label>
+
+                    <br>
+                    <label>
+                        Введите массу в граммах: 
+                        <input class="weight" type="number" min="1" value="100" />
+                    </label>
+
+                    <br>
+                    <button>Добавить</button>
+                </form>
+                <!-- Alcohol form over -->
+
+                <!-- Soda form -->
+                <form class="soda" onsubmit="return false;">
+                    <label class="select-label">
+                        Выберите продукт: 
+                        <select></select>
+                    </label>
+
+                    <br>
+                    <label>
+                        Введите массу в граммах: 
+                        <input class="weight" type="number" min="1" value="100" />
+                    </label>
+
+                    <br>
+                    <button>Добавить</button>
+                </form>
+                <!-- Soda form over -->
+
+                <!-- Sweets form -->
+                <form class="sweets" onsubmit="return false;">
+                    <label class="select-label">
+                        Выберите продукт: 
+                        <select></select>
+                    </label>
+
+                    <br>
+                    <label>
+                        Введите массу в граммах: 
+                        <input class="weight" type="number" min="1" value="100" />
+                    </label>
+
+                    <br>
+                    <button>Добавить</button>
+                </form>
+                <!-- Sweets form over -->
+
+            </div>
+            <!-- Junkfood content over -->
 
         </main>
         <!-- Content over -->

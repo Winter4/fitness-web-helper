@@ -12,6 +12,7 @@ const changeByID = (array, id, newWeight) => {
         }
     }
 };
+module.exports.changeByID = changeByID;
 
 router.put('/reports/nutr/:user/:tab/:nutrient', async (req, res) => {
     try {
@@ -31,4 +32,4 @@ router.put('/reports/nutr/:user/:tab/:nutrient', async (req, res) => {
     }
 });
 
-module.exports = router;
+module.exports.router = router;

@@ -34,29 +34,27 @@ app.get('/', async (req, res) => {
                 calories: { got: 0, target: user.caloriesToLose, },
                 mealsPerDay: user.mealsPerDay,
 
-                nonNutrientMealsWeights: {
-                    vegetables: { got: 0, },
+                nonNutrientMeals: {
+                    vegetables: { 
+                        weight: { eaten: 0, },
+                    }
                 }
             });
 
             // init the tabs
             for (let i in report.tabs) {
 
-                // fill the nutrient rates
-                if (i == report.tabs.length - 1) {
-                    report.tabs[i].nutrientRates = {
+                report.tabs[i].nutrientRates = i == report.tabs.length - 1 ?
+                    {
                         'proteins': 0.5,
                         'fats': 0.25,
                         'carbons': 0.25,
-                    }
-                }
-                else {
-                     report.tabs[i].nutrientRates = {
+                    } :
+                    {
                         'proteins': 0.35,
                         'fats': 0.25,
                         'carbons': 0.4,
                     }
-                }
 
                 // create the field
                 report.tabs[i].calories.target = -1;
@@ -78,13 +76,19 @@ app.use(require('./routes/calories-got'));
 
 app.use(require('./routes/reports/nutrient/get'));
 app.use(require('./routes/reports/nutrient/post'));
-app.use(require('./routes/reports/nutrient/put'));
-app.use(require('./routes/reports/nutrient/delete'));
+app.use(require('./routes/reports/nutrient/put').router);
+app.use(require('./routes/reports/nutrient/delete').router);
 
 app.use(require('./routes/reports/non-nutrient/vegetables'));
 
+app.use(require('./routes/reports/non-nutrient/junk/get'));
+app.use(require('./routes/reports/non-nutrient/junk/post'));
+app.use(require('./routes/reports/non-nutrient/junk/put'));
+app.use(require('./routes/reports/non-nutrient/junk/delete'));
+
 app.get('/meals/:nutrient', async (req, res) => {
     try {
+
         const meals = await Meal.find({ group: req.params.nutrient });
         res.json(meals);
     } catch (e) {

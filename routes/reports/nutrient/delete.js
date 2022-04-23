@@ -13,6 +13,7 @@ const deleteByID = (array, id) => {
         }
     }
 };
+module.exports.deleteByID = deleteByID;
 
 router.delete('/reports/nutr/:user/:tab/:nutrient', async (req, res) => {
     try {
@@ -32,4 +33,4 @@ router.delete('/reports/nutr/:user/:tab/:nutrient', async (req, res) => {
     }
 });
 
-module.exports = router;
+module.exports.router = router;

@@ -62,7 +62,7 @@ function getVegetablesInput() {
 
 // _________________________ edit row after weigth changing _________________________________ //
 
-function updateRow(user, tab, rowID, nutrient, yesterday) {
+function updateNutrRow(user, tab, rowID, nutrient, yesterday) {
 
     let newWeight = $(`#${rowID}`).val();
 
@@ -78,15 +78,32 @@ function updateRow(user, tab, rowID, nutrient, yesterday) {
         }
     });
 }
+async function onNutrRowUpdate(user, tab, rowID, nutrient, yesterday) {
+    updateNurRow(user, tab, rowID, nutrient, yesterday);
+}
 
-async function onRowUpdate(user, tab, rowID, nutrient, yesterday) {
-    updateRow(user, tab, rowID, nutrient, yesterday);
+function updateJunkRow(user, rowID, yesterday) {
+    let newWeight = $(`#${rowID}`).val();
+
+    $.ajax({
+        url: `/reports/non-nutr/junk/${user}?yesterday=${yesterday}&row_id=${rowID}&row_weight=${newWeight}`,
+        type: 'PUT',
+        success: function (res) {
+            $(`div.junk table`).DataTable().ajax.reload();
+            //updateCaloriesGot(user, yesterday);
+        },
+        error: function(res) {
+            console.log(`Update ${tab} ${nutrient} table data error`)
+        }
+    });
+}
+async function onJunkRowUpdate(user, rowID, yesterday) {
+    updateJunkRow(user, rowID, yesterday);
 }
 
 // ___________________________ delete row from the table ______________________________ //
 
-function deleteRow(user, tab, rowID, nutrient, yesterday) {
-
+function deleteNutrRow(user, tab, rowID, nutrient, yesterday) {
     $.ajax({
         url: `/reports/nutr/${user}/${tab}/${nutrient}?yesterday=${yesterday}&row_id=${rowID}`,
         type: 'DELETE',
@@ -99,9 +116,25 @@ function deleteRow(user, tab, rowID, nutrient, yesterday) {
         }
     });
 }
-
-function onRowDelete(user, tab, rowID, nutrient, yesterday) {
+async function onNutrRowDelete(user, tab, rowID, nutrient, yesterday) {
     deleteRow(user, tab, rowID, nutrient, yesterday);
+}
+
+function deleteJunkRow(user, rowID, yesterday) {
+    $.ajax({
+        url: `/reports/non-nutr/junk/${user}?yesterday=${yesterday}&row_id=${rowID}`,
+        type: 'DELETE',
+        success: function (res) {
+            $(`div.junk table`).DataTable().ajax.reload();
+            //updateCaloriesGot(user, yesterday);
+        },
+        error: function(res) {
+            console.log(`Delete ${tab} ${nutrient} table row error`)
+        }
+    });
+}
+async function onJunkRowDelete(user, rowID, yesterday) {
+    deleteJunkRow(user, rowID, yesterday);
 }
 
 // __________________________ Main .ready script ___________________________________ //
@@ -157,7 +190,7 @@ $(document).ready(function() {
             });
         };
 
-    // - - - - - - - - - - - - - - Init Tabs - - - - - - - - - - - - - - - - -
+        // - - - - - - - - - - - - - - Init Tabs - - - - - - - - - - - - - - - - -
 
         let tab;
         switch(res.mealsPerDay) {
@@ -194,6 +227,89 @@ $(document).ready(function() {
         }
     };
 
+    const initJunkTable = () => {
+
+        // create the table itself
+        $('div.junk table').DataTable({
+
+            language: {
+                url: "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
+            },
+
+            paging: false,
+            info: false,
+            searching: false,
+
+            ajax: `${origin}/reports/non-nutr/junk/${user}?yesterday=${yesterday}`,
+
+            columns: [
+                {
+                    title: "Продукт",
+                    data: "name",
+                    orderable: false,
+                },
+                {
+                    title: "Съедено, г",
+                    data: "weight.eaten",
+                    orderable: false,
+                    render: function(data, type, row, meta) {
+                        return `<input type="number" min="1" value="${data}" id="${row._id}"
+                            onblur="onJunkRowUpdate('${user}', '${row._id}', '${yesterday}')" />`;
+                    }
+                },
+                {
+                    title: "",
+                    orderable: false,
+                    data: null,
+                    render: function(data, type, row, meta) {
+                        return `
+                        <a href="javascript:;"
+                            onclick="onJunkRowDelete('${user}', '${row._id}', '${yesterday}')"
+                        >
+                            delete
+                        </a>`;
+                    }
+                },
+            ]
+        });
+
+        const initForm = async (group) => {
+
+            // fill the selector
+            const selector = $(`div.junk .${group} select`);
+            $.get(`/meals/${group}`)
+            .done(function(res) {
+                $.each(res, function(i, item) {
+                    selector.append($('<option>', {
+                        value: item._id,
+                        text : item.name
+                    }));
+                });
+            })
+            .fail(function() { console.log(`Get ${nutrient} select options error`) });
+
+            // set onclick button script
+            $(`div.junk .${group} button`).on('click', function() {
+
+                const id = $(`div.junk .${group} select`).val();
+                const weight = $(`div.junk .${group} input`).val();
+
+                $.post(`/reports/non-nutr/junk/${user}?yesterday=${yesterday}`, { meal_id: id, meal_weight: weight })
+                .done(function(res) {
+                    $(`div.junk table`).DataTable().ajax.reload();
+                    //updateCaloriesGot(user, yesterday);
+                })
+                .fail(function() { console.log(`Error: post to /reports/non-nutr/junk/${group}`) });
+            });
+        };
+
+        // fill the selectors
+        initForm('alcohol');
+        initForm('soda');
+        initForm('sweets');
+        
+    };
+
     // - - - - - - - - - - - - - - - - Call all the funcs - - - - - - - - - - - - - - - - - - - - -
 
     // get user data
@@ -208,6 +324,9 @@ $(document).ready(function() {
 
         // fill vegetables input table
         getVegetablesInput();
+
+        // create junk table and its selectors
+        initJunkTable();
     })
     .fail(function() { });
 
@@ -218,19 +337,17 @@ $(document).ready(function() {
 
 function setButtonOnclick(tab, nutrient) {
 
-    $(document).ready(function() {
-        $(`#nav-${tab} .${nutrient} button`).on('click', function() {
+    $(`#nav-${tab} .${nutrient} button`).on('click', function() {
 
-            let id = $(`#nav-${tab} .${nutrient} select`).val();
-            let weight = $(`#nav-${tab} .${nutrient} input.weight`).val();
+        let id = $(`#nav-${tab} .${nutrient} select`).val();
+        let weight = $(`#nav-${tab} .${nutrient} input.weight`).val();
 
-            $.post(`/reports/nutr/${user}/${tab}?yesterday=${yesterday}`, { meal_id: id, meal_weight: weight })
-            .done(function(res) {
-                $(`#nav-${tab} .${nutrient} table`).DataTable().ajax.reload();
-                updateCaloriesGot(user, yesterday);
-            })
-            .fail(function() { console.log(`Error: post to /reports/${user}/${tab}`) });
-        });
+        $.post(`/reports/nutr/${user}/${tab}?yesterday=${yesterday}`, { meal_id: id, meal_weight: weight })
+        .done(function(res) {
+            $(`#nav-${tab} .${nutrient} table`).DataTable().ajax.reload();
+            updateCaloriesGot(user, yesterday);
+        })
+        .fail(function() { console.log(`Error: post to /reports/${user}/${tab}`) });
     });
 }
 
@@ -260,7 +377,7 @@ function initTable(tab, nutrient, yesterday, selector) {
                 orderable: false,
                 render: function(data, type, row, meta) {
                     return `<input type="number" min="1" value="${data}" id="${row._id}"
-                        onblur="onRowUpdate('${user}', '${tab}', '${row._id}', '${nutrient}', '${yesterday}')" />`;
+                        onblur="onNutrRowUpdate('${user}', '${tab}', '${row._id}', '${nutrient}', '${yesterday}')" />`;
                 }
             },
             {
@@ -276,7 +393,7 @@ function initTable(tab, nutrient, yesterday, selector) {
                 render: function(data, type, row, meta) {
                     return `
                     <a href="javascript:;"
-                        onclick="onRowDelete('${user}', '${tab}', '${row._id}', '${nutrient}', '${yesterday}')"
+                        onclick="onNutrRowDelete('${user}', '${tab}', '${row._id}', '${nutrient}', '${yesterday}')"
                     >
                         delete
                     </a>`;

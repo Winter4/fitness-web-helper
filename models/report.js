@@ -43,15 +43,27 @@ const reportSchema = new mongoose.Schema({
         }
     }],
 
-    nonNutrientMealsWeights: {
+    nonNutrientMeals: {
         vegetables: {
-            got: Number,
-            target: {
-                type: Number,
-                default: 300,
-                immutable: true,
+            weight: {
+                eaten: Number,
+                target: {
+                    type: Number,
+                    default: 300,
+                    immutable: true,
+                }
             }
         },
+        junk: [{
+            _id: mongoose.Schema.Types.ObjectId,
+            food: { 
+                type: mongoose.Schema.Types.ObjectId, 
+                ref: 'meal',
+            },
+            weight: {
+                eaten: Number,
+            },
+        }],
     },
 
     calories: {
