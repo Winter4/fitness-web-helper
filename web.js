@@ -22,17 +22,16 @@ app.use(cors());
 app.get('/', async (req, res) => {
     try {
 
-        const exists = Boolean(await Report.exists({ user: req.query.user, date: time.today.date() }));
-        if (!(exists)) {
+        const report = await Report.findOne({ user: req.query.user, date: time.today.date() });
+        const user = await User.findOne({ _id: req.query.user });
 
-            const user = await User.findOne({ _id: req.query.user });
+        if (report == null) {
 
-            const report = new Report({ 
+            report = new Report({ 
                 user: user._id,
                 tabs: [{}, {}, {}, {}, {}],
 
                 calories: { got: 0, target: user.caloriesToLose, },
-                mealsPerDay: user.mealsPerDay,
 
                 nonNutrientMeals: {
                     vegetables: { 
@@ -58,11 +57,12 @@ app.get('/', async (req, res) => {
 
                 // create the field
                 report.tabs[i].calories.target = -1;
-            }
-
-            report.calcTargetCalories();
-            await report.save();
+            }  
         }
+
+        report.mealsPerDay = user.mealsPerDay;
+        report.calcTargetCalories();
+        await report.save();
 
         res.sendFile(__dirname + '/views/index.html');
     } catch (e) {
