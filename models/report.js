@@ -82,12 +82,15 @@ reportSchema.pre('save', async function() {
     this.calories.got = Number(0);
 
     await this.populate('tabs.meals.food');
-
     for (tab of this.tabs) {
         for (meal of tab.meals) {
             this.calories.got += Number(meal.food.calories * meal.weight.eaten);
         }
     }
+
+    await this.populate('nonNutrientMeals.junk.food');
+    for (meal of this.nonNutrientMeals.junk)
+        this.calories.got += Number(meal.food.calories * meal.weight.eaten);
 
     this.calories.got = (this.calories.got).toFixed();
 });

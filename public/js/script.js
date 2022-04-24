@@ -79,7 +79,7 @@ function updateNutrRow(user, tab, rowID, nutrient, yesterday) {
     });
 }
 async function onNutrRowUpdate(user, tab, rowID, nutrient, yesterday) {
-    updateNurRow(user, tab, rowID, nutrient, yesterday);
+    updateNutrRow(user, tab, rowID, nutrient, yesterday);
 }
 
 function updateJunkRow(user, rowID, yesterday) {
@@ -90,7 +90,7 @@ function updateJunkRow(user, rowID, yesterday) {
         type: 'PUT',
         success: function (res) {
             $(`div.junk table`).DataTable().ajax.reload();
-            //updateCaloriesGot(user, yesterday);
+            updateCaloriesGot(user, yesterday);
         },
         error: function(res) {
             console.log(`Update ${tab} ${nutrient} table data error`)
@@ -117,7 +117,7 @@ function deleteNutrRow(user, tab, rowID, nutrient, yesterday) {
     });
 }
 async function onNutrRowDelete(user, tab, rowID, nutrient, yesterday) {
-    deleteRow(user, tab, rowID, nutrient, yesterday);
+    deleteNutrRow(user, tab, rowID, nutrient, yesterday);
 }
 
 function deleteJunkRow(user, rowID, yesterday) {
@@ -126,7 +126,7 @@ function deleteJunkRow(user, rowID, yesterday) {
         type: 'DELETE',
         success: function (res) {
             $(`div.junk table`).DataTable().ajax.reload();
-            //updateCaloriesGot(user, yesterday);
+            updateCaloriesGot(user, yesterday);
         },
         error: function(res) {
             console.log(`Delete ${tab} ${nutrient} table row error`)
@@ -297,7 +297,7 @@ $(document).ready(function() {
                 $.post(`/reports/non-nutr/junk/${user}?yesterday=${yesterday}`, { meal_id: id, meal_weight: weight })
                 .done(function(res) {
                     $(`div.junk table`).DataTable().ajax.reload();
-                    //updateCaloriesGot(user, yesterday);
+                    updateCaloriesGot(user, yesterday);
                 })
                 .fail(function() { console.log(`Error: post to /reports/non-nutr/junk/${group}`) });
             });
@@ -319,14 +319,14 @@ $(document).ready(function() {
         createHeaderLinks(res, yesterday);
         insertTabs(res);
 
-        // fill header calories-target
-        $('header div.calories div.target').html('/' + res.caloriesTarget);
-
         // fill vegetables input table
         getVegetablesInput();
 
         // create junk table and its selectors
         initJunkTable();
+
+        // fill header calories-target
+        $('header div.calories div.target').html('/' + res.caloriesTarget);
     })
     .fail(function() { });
 
