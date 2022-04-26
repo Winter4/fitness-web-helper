@@ -1,16 +1,37 @@
+
+
 .container {
     padding-top: 25px;
+    max-width: 1150px;
+
+    font-family: 'Arial';
 }
+
+/* Шапка */
 
 header {
     text-align: center;
     margin: 0 auto;
+    margin-bottom: 20px;
 }
 
-.nav {
+header .calories {
+    display: flex;
+    margin-top: 10px;
     justify-content: center;
-    margin-top: 15px;
 }
+
+header .calories p {
+    margin-right: 5px;
+}
+
+/* Навбар */
+
+header nav .nav {
+    justify-content: center;
+}
+
+/* Контент */
 
 .content {
     margin: 0 auto;
@@ -21,26 +42,110 @@ header {
 }
 
 table {
+    text-align: left;
+}
+
+td {
+    padding-right: 0;
+}
+
+.row {
+    margin-bottom: 30px;
+}
+
+.block {
+    padding: 15px;
+    background-color: #9ACD32;
+
+    border-radius: 15px;
+    border: 2px solid #669900;
+}
+
+.block.tables-header {
+    padding: 0;
+    padding-left: 25px;
+}
+
+.block .form > * {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
     text-align: center;
+    margin-bottom: 5px;
 }
 
-.add-meal-form {
-    margin-top: 15px;
-    margin-left: 5%;
+.block .form select,
+.block .form input {
+    width: 100%;
+    margin-top: 2px;
 }
 
-form.add-meal-form > * {
-    margin: 8px;
+.block .form button {
+    margin: 20px auto;
 }
 
-form.add-meal-form input[type="submit"] {
-    margin-top: 15px;
+.block table.dataTable.no-footer,
+.block .block-tables table.block-rows {
+    border-bottom: 0;
+    border-spacing: 3px 4px;
+
+    color: white;
+}
+
+table.dataTable thead th, 
+table.dataTable thead td {
+    border-bottom: 0;
+}
+
+
+.block .block-tables table.block-type {
+    width: 100%;
+    text-align: center;
+
+    margin-bottom: -10px;
+}
+
+.block .block-tables table.block-type thead th {
+    border-bottom: 2px solid black;
+    padding: 1px;
+}
+
+.carbons .block-tables table.block-rows td,
+.proteins .block-tables table.block-rows td,
+.fats .block-tables table.block-rows td,
+.vegetables .block-tables table td,
+.junk .block-tables table.block-rows td {
+   border-radius: 3px;
+}
+
+.carbons .block-tables table.block-rows td,
+.proteins .block-tables table.block-rows td,
+.fats .block-tables table.block-rows td,
+.vegetables .block-tables table td,
+.junk .block-tables table.block-rows td {
+   background-color: #669900;
+
+}
+
+.vegetables {
+    margin-top: 50px;
 }
 
 .disabled {
     pointer-events: none; /* делаем ссылку некликабельной */
     cursor: default;  /* устанавливаем курсор в виде стрелки */
-    color: #999; /* цвет текста для нективной ссылки */
+    color: #999; /* цвет текста для нективной ссылки */   
+}
 
+.invisible {
     visibility: hidden;
+}
+
+.color-green {
+    color: #7CFC00;
+}
+
+.color-red {
+    color: red;
 }

@@ -29,11 +29,8 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jq-3.6.0/dt-1.11.5/rg-1.1.4/datatables.min.css"/>
     <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-3.6.0/dt-1.11.5/rg-1.1.4/datatables.min.js"></script>
 
-
-    <!--  JQuery Selectize plugin 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/js/selectize.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/css/selectize.bootstrap2.min.css">
-     -->
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" type="text/css" href="/css/fontawesome.css">
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/style.css" type="text/css">
@@ -56,21 +53,22 @@
         <header>
             <div class="links"></div>
             <div class="calories">
+                <p>Калории: </p>
                 <div class="got"></div>
                 <div class="target"></div>
             </div>
 
             <nav>
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                    <button class="nav-link disabled" id="nav-breakfast-tab" data-bs-toggle="tab" data-bs-target="#nav-breakfast" type="button" role="tab" aria-controls="nav-breakfast" aria-selected="false">Завтрак</button>
+                    <button class="nav-link invisible" id="nav-breakfast-tab" data-bs-toggle="tab" data-bs-target="#nav-breakfast" type="button" role="tab" aria-controls="nav-breakfast" aria-selected="false">Завтрак</button>
 
-                    <button class="nav-link disabled" id="nav-lunch1-tab" data-bs-toggle="tab" data-bs-target="#nav-lunch1" type="button" role="tab" aria-controls="nav-lunch1" aria-selected="false">Перекус 1</button>
+                    <button class="nav-link invisible" id="nav-lunch1-tab" data-bs-toggle="tab" data-bs-target="#nav-lunch1" type="button" role="tab" aria-controls="nav-lunch1" aria-selected="false">Перекус 1</button>
 
-                    <button class="nav-link disabled" id="nav-dinner-tab" data-bs-toggle="tab" data-bs-target="#nav-dinner" type="button" role="tab" aria-controls="nav-dinner" aria-selected="false">Обед</button>
+                    <button class="nav-link invisible" id="nav-dinner-tab" data-bs-toggle="tab" data-bs-target="#nav-dinner" type="button" role="tab" aria-controls="nav-dinner" aria-selected="false">Обед</button>
 
-                    <button class="nav-link disabled" id="nav-lunch2-tab" data-bs-toggle="tab" data-bs-target="#nav-lunch2" type="button" role="tab" aria-controls="nav-lunch2" aria-selected="false">Перекус 2</button>
+                    <button class="nav-link invisible" id="nav-lunch2-tab" data-bs-toggle="tab" data-bs-target="#nav-lunch2" type="button" role="tab" aria-controls="nav-lunch2" aria-selected="false">Перекус 2</button>
 
-                    <button class="nav-link disabled" id="nav-supper-tab" data-bs-toggle="tab" data-bs-target="#nav-supper" type="button" role="tab" aria-controls="nav-supper" aria-selected="false">Ужин</button>
+                    <button class="nav-link invisible" id="nav-supper-tab" data-bs-toggle="tab" data-bs-target="#nav-supper" type="button" role="tab" aria-controls="nav-supper" aria-selected="false">Ужин</button>
                 </div>
             </nav>
         </header>
@@ -79,6 +77,56 @@
         <!-- Content -->
         <main>
             
+            <!-- Tables header -->
+            <div class="row justify-content-end">
+                <div class="block tables-header col-9">
+                    <table class="dataTable">
+                        <thead>
+                            <tr>
+                                <th>Продукт</th>
+                                <th>Съедено, г</th>
+                                <th>Осталось съесть, г</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <!-- Tables header over -->
+
+            <!-- Vegetables table -->
+            <div class="vegetables block row">
+
+                <div class="block-tables">
+                    <div class="row justify-content-end">
+                        <div class="col-9">
+                            <table class="block-type">
+                                <thead>
+                                    <tr>
+                                        <th colspan="4">Овощи</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row  justify-content-end">
+                        <div class="col-9">
+                            <table class="block-rows">
+                                <tbody>
+                                    <tr>
+                                        <td>Салат, овощи</td>
+                                        <td><input type="number" min="0" onblur="updateVegetablesInput()"></td>
+                                    <td id="toEatVegetablesWeight"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- Vegetables table over -->
+
             <!-------------------------------------- Tabs content ------------------------------------------------>
             <div class="tab-content" id="nav-tabContent">
 
@@ -86,47 +134,83 @@
                 <div class="tab-pane fade" id="nav-breakfast" role="tabpanel" aria-labelledby="nav-breakfast-tab">
 
                     <!-- Carbons table -->
-                    <div class="carbons">
-                        <table></table>
+                    <div class="carbons block row">
+                        <div class="form col-3 align-self-center">
+                            <label class="select-label">Продукт: </label>
+                            
+                            <label>
+                                Масса, г: 
+                                <input class="weight" type="number" min="1" value="100" />
+                            </label>
+                            
+                            <button>Добавить</button>
+                        </div>
 
-                        <label class="select-label">Выберите продукт: </label>
-                        <br>
-                        <label>
-                            Введите массу в граммах: 
-                            <input class="weight" type="number" min="1" value="100" />
-                        </label>
-                        <br>
-                        <button>Добавить</button>
+                        <div class="block-tables col-9">
+                            <table class="block-type">
+                                <thead>
+                                    <tr>
+                                        <th colspan="4">Углеводы</th>
+                                    </tr>
+                                </thead>
+                            </table>
+
+                            <table class="block-rows"></table>
+                        </div>
                     </div>
                     <!-- Carbons table over -->
 
                     <!-- Proteins table -->
-                    <div class="proteins">
-                        <table></table>
+                    <div class="proteins block row">
+                        <div class="form col-3 align-self-center">
+                            <label class="select-label">Продукт: </label>
+                            
+                            <label>
+                                Масса, г: 
+                                <input class="weight" type="number" min="1" value="100" />
+                            </label>
+                            
+                            <button>Добавить</button>
+                        </div>
 
-                        <label class="select-label">Выберите продукт: </label>
-                        <br>
-                        <label>
-                            Введите массу в граммах: 
-                            <input class="weight" type="number" min="1" value="100" />
-                        </label>
-                        <br>
-                        <button>Добавить</button>
+                        <div class="block-tables col-9">
+                            <table class="block-type">
+                                <thead>
+                                    <tr>
+                                        <th colspan="4">Белки</th>
+                                    </tr>
+                                </thead>
+                            </table>
+
+                            <table class="block-rows"></table>
+                        </div>
                     </div>
                     <!-- Proteins table over -->
 
                     <!-- Fats table -->
-                    <div class="fats">
-                        <table></table>
+                    <div class="fats block row">
+                        <div class="form col-3 align-self-center">
+                            <label class="select-label">Продукт: </label>
+                            
+                            <label>
+                                Масса, г: 
+                                <input class="weight" type="number" min="1" value="100" />
+                            </label>
+                            
+                            <button>Добавить</button>
+                        </div>
 
-                        <label class="select-label">Выберите продукт: </label>
-                        <br>
-                        <label>
-                            Введите массу в граммах: 
-                            <input class="weight" type="number" min="1" value="100" />
-                        </label>
-                        <br>
-                        <button>Добавить</button>
+                        <div class="block-tables col-9">
+                            <table class="block-type">
+                                <thead>
+                                    <tr>
+                                        <th colspan="4">Жиры</th>
+                                    </tr>
+                                </thead>
+                            </table>
+
+                            <table class="block-rows"></table>
+                        </div>
                     </div>
                     <!-- Fats table over -->
 
@@ -137,47 +221,83 @@
                 <div class="tab-pane fade" id="nav-lunch1" role="tabpanel" aria-labelledby="nav-lunch1-tab">
 
                     <!-- Carbons table -->
-                    <div class="carbons">
-                        <table></table>
+                    <div class="carbons block row">
+                        <div class="form col-3 align-self-center">
+                            <label class="select-label">Продукт: </label>
+                            
+                            <label>
+                                Масса, г: 
+                                <input class="weight" type="number" min="1" value="100" />
+                            </label>
+                            
+                            <button>Добавить</button>
+                        </div>
 
-                        <label class="select-label">Выберите продукт: </label>
-                        <br>
-                        <label>
-                            Введите массу в граммах: 
-                            <input class="weight" type="number" min="1" value="100" />
-                        </label>
-                        <br>
-                        <button>Добавить</button>
+                        <div class="block-tables col-9">
+                            <table class="block-type">
+                                <thead>
+                                    <tr>
+                                        <th colspan="4">Углеводы</th>
+                                    </tr>
+                                </thead>
+                            </table>
+
+                            <table class="block-rows"></table>
+                        </div>
                     </div>
                     <!-- Carbons table over -->
 
                     <!-- Proteins table -->
-                    <div class="proteins">
-                        <table></table>
+                    <div class="proteins block row">
+                        <div class="form col-3 align-self-center">
+                            <label class="select-label">Продукт: </label>
+                            
+                            <label>
+                                Масса, г: 
+                                <input class="weight" type="number" min="1" value="100" />
+                            </label>
+                            
+                            <button>Добавить</button>
+                        </div>
 
-                        <label class="select-label">Выберите продукт: </label>
-                        <br>
-                        <label>
-                            Введите массу в граммах: 
-                            <input class="weight" type="number" min="1" value="100" />
-                        </label>
-                        <br>
-                        <button>Добавить</button>
+                        <div class="block-tables col-9">
+                            <table class="block-type">
+                                <thead>
+                                    <tr>
+                                        <th colspan="4">Белки</th>
+                                    </tr>
+                                </thead>
+                            </table>
+
+                            <table class="block-rows"></table>
+                        </div>
                     </div>
                     <!-- Proteins table over -->
 
                     <!-- Fats table -->
-                    <div class="fats">
-                        <table></table>
+                    <div class="fats block row">
+                        <div class="form col-3 align-self-center">
+                            <label class="select-label">Продукт: </label>
+                            
+                            <label>
+                                Масса, г: 
+                                <input class="weight" type="number" min="1" value="100" />
+                            </label>
+                            
+                            <button>Добавить</button>
+                        </div>
 
-                        <label class="select-label">Выберите продукт: </label>
-                        <br>
-                        <label>
-                            Введите массу в граммах: 
-                            <input class="weight" type="number" min="1" value="100" />
-                        </label>
-                        <br>
-                        <button>Добавить</button>
+                        <div class="block-tables col-9">
+                            <table class="block-type">
+                                <thead>
+                                    <tr>
+                                        <th colspan="4">Жиры</th>
+                                    </tr>
+                                </thead>
+                            </table>
+
+                            <table class="block-rows"></table>
+                        </div>
                     </div>
                     <!-- Fats table over -->
 
@@ -188,47 +308,83 @@
                 <div class="tab-pane fade" id="nav-dinner" role="tabpanel" aria-labelledby="nav-dinner-tab">
 
                     <!-- Carbons table -->
-                    <div class="carbons">
-                        <table></table>
+                    <div class="carbons block row">
+                        <div class="form col-3 align-self-center">
+                            <label class="select-label">Продукт: </label>
+                            
+                            <label>
+                                Масса, г: 
+                                <input class="weight" type="number" min="1" value="100" />
+                            </label>
+                            
+                            <button>Добавить</button>
+                        </div>
 
-                        <label class="select-label">Выберите продукт: </label>
-                        <br>
-                        <label>
-                            Введите массу в граммах: 
-                            <input class="weight" type="number" min="1" value="100" />
-                        </label>
-                        <br>
-                        <button>Добавить</button>
+                        <div class="block-tables col-9">
+                            <table class="block-type">
+                                <thead>
+                                    <tr>
+                                        <th colspan="4">Углеводы</th>
+                                    </tr>
+                                </thead>
+                            </table>
+
+                            <table class="block-rows"></table>
+                        </div>
                     </div>
                     <!-- Carbons table over -->
 
                     <!-- Proteins table -->
-                    <div class="proteins">
-                        <table></table>
+                    <div class="proteins block row">
+                        <div class="form col-3 align-self-center">
+                            <label class="select-label">Продукт: </label>
+                            
+                            <label>
+                                Масса, г: 
+                                <input class="weight" type="number" min="1" value="100" />
+                            </label>
+                            
+                            <button>Добавить</button>
+                        </div>
 
-                        <label class="select-label">Выберите продукт: </label>
-                        <br>
-                        <label>
-                            Введите массу в граммах: 
-                            <input class="weight" type="number" min="1" value="100" />
-                        </label>
-                        <br>
-                        <button>Добавить</button>
+                        <div class="block-tables col-9">
+                            <table class="block-type">
+                                <thead>
+                                    <tr>
+                                        <th colspan="4">Белки</th>
+                                    </tr>
+                                </thead>
+                            </table>
+
+                            <table class="block-rows"></table>
+                        </div>
                     </div>
                     <!-- Proteins table over -->
 
                     <!-- Fats table -->
-                    <div class="fats">
-                        <table></table>
+                    <div class="fats block row">
+                        <div class="form col-3 align-self-center">
+                            <label class="select-label">Продукт: </label>
+                            
+                            <label>
+                                Масса, г: 
+                                <input class="weight" type="number" min="1" value="100" />
+                            </label>
+                            
+                            <button>Добавить</button>
+                        </div>
 
-                        <label class="select-label">Выберите продукт: </label>
-                        <br>
-                        <label>
-                            Введите массу в граммах: 
-                            <input class="weight" type="number" min="1" value="100" />
-                        </label>
-                        <br>
-                        <button>Добавить</button>
+                        <div class="block-tables col-9">
+                            <table class="block-type">
+                                <thead>
+                                    <tr>
+                                        <th colspan="4">Жиры</th>
+                                    </tr>
+                                </thead>
+                            </table>
+
+                            <table class="block-rows"></table>
+                        </div>
                     </div>
                     <!-- Fats table over -->
 
@@ -239,47 +395,83 @@
                <div class="tab-pane fade" id="nav-lunch2" role="tabpanel" aria-labelledby="nav-lunch2-tab">
 
                     <!-- Carbons table -->
-                    <div class="carbons">
-                        <table></table>
+                    <div class="carbons block row">
+                        <div class="form col-3 align-self-center">
+                            <label class="select-label">Продукт: </label>
+                            
+                            <label>
+                                Масса, г: 
+                                <input class="weight" type="number" min="1" value="100" />
+                            </label>
+                            
+                            <button>Добавить</button>
+                        </div>
 
-                        <label class="select-label">Выберите продукт: </label>
-                        <br>
-                        <label>
-                            Введите массу в граммах: 
-                            <input class="weight" type="number" min="1" value="100" />
-                        </label>
-                        <br>
-                        <button>Добавить</button>
+                        <div class="block-tables col-9">
+                            <table class="block-type">
+                                <thead>
+                                    <tr>
+                                        <th colspan="4">Углеводы</th>
+                                    </tr>
+                                </thead>
+                            </table>
+
+                            <table class="block-rows"></table>
+                        </div>
                     </div>
                     <!-- Carbons table over -->
 
                     <!-- Proteins table -->
-                    <div class="proteins">
-                        <table></table>
+                    <div class="proteins block row">
+                        <div class="form col-3 align-self-center">
+                            <label class="select-label">Продукт: </label>
+                            
+                            <label>
+                                Масса, г: 
+                                <input class="weight" type="number" min="1" value="100" />
+                            </label>
+                            
+                            <button>Добавить</button>
+                        </div>
 
-                        <label class="select-label">Выберите продукт: </label>
-                        <br>
-                        <label>
-                            Введите массу в граммах: 
-                            <input class="weight" type="number" min="1" value="100" />
-                        </label>
-                        <br>
-                        <button>Добавить</button>
+                        <div class="block-tables col-9">
+                            <table class="block-type">
+                                <thead>
+                                    <tr>
+                                        <th colspan="4">Белки</th>
+                                    </tr>
+                                </thead>
+                            </table>
+
+                            <table class="block-rows"></table>
+                        </div>
                     </div>
                     <!-- Proteins table over -->
 
                     <!-- Fats table -->
-                    <div class="fats">
-                        <table></table>
+                    <div class="fats block row">
+                        <div class="form col-3 align-self-center">
+                            <label class="select-label">Продукт: </label>
+                            
+                            <label>
+                                Масса, г: 
+                                <input class="weight" type="number" min="1" value="100" />
+                            </label>
+                            
+                            <button>Добавить</button>
+                        </div>
 
-                        <label class="select-label">Выберите продукт: </label>
-                        <br>
-                        <label>
-                            Введите массу в граммах: 
-                            <input class="weight" type="number" min="1" value="100" />
-                        </label>
-                        <br>
-                        <button>Добавить</button>
+                        <div class="block-tables col-9">
+                            <table class="block-type">
+                                <thead>
+                                    <tr>
+                                        <th colspan="4">Жиры</th>
+                                    </tr>
+                                </thead>
+                            </table>
+
+                            <table class="block-rows"></table>
+                        </div>
                     </div>
                     <!-- Fats table over -->
 
@@ -290,47 +482,83 @@
                <div class="tab-pane fade" id="nav-supper" role="tabpanel" aria-labelledby="nav-supper-tab">
 
                     <!-- Carbons table -->
-                    <div class="carbons">
-                        <table></table>
+                    <div class="carbons block row">
+                        <div class="form col-3 align-self-center">
+                            <label class="select-label">Продукт: </label>
+                            
+                            <label>
+                                Масса, г: 
+                                <input class="weight" type="number" min="1" value="100" />
+                            </label>
+                            
+                            <button>Добавить</button>
+                        </div>
 
-                        <label class="select-label">Выберите продукт: </label>
-                        <br>
-                        <label>
-                            Введите массу в граммах: 
-                            <input class="weight" type="number" min="1" value="100" />
-                        </label>
-                        <br>
-                        <button>Добавить</button>
+                        <div class="block-tables col-9">
+                            <table class="block-type">
+                                <thead>
+                                    <tr>
+                                        <th colspan="4">Углеводы</th>
+                                    </tr>
+                                </thead>
+                            </table>
+
+                            <table class="block-rows"></table>
+                        </div>
                     </div>
                     <!-- Carbons table over -->
 
                     <!-- Proteins table -->
-                    <div class="proteins">
-                        <table></table>
+                    <div class="proteins block row">
+                        <div class="form col-3 align-self-center">
+                            <label class="select-label">Продукт: </label>
+                            
+                            <label>
+                                Масса, г: 
+                                <input class="weight" type="number" min="1" value="100" />
+                            </label>
+                            
+                            <button>Добавить</button>
+                        </div>
 
-                        <label class="select-label">Выберите продукт: </label>
-                        <br>
-                        <label>
-                            Введите массу в граммах: 
-                            <input class="weight" type="number" min="1" value="100" />
-                        </label>
-                        <br>
-                        <button>Добавить</button>
+                        <div class="block-tables col-9">
+                            <table class="block-type">
+                                <thead>
+                                    <tr>
+                                        <th colspan="4">Белки</th>
+                                    </tr>
+                                </thead>
+                            </table>
+
+                            <table class="block-rows"></table>
+                        </div>
                     </div>
                     <!-- Proteins table over -->
 
                     <!-- Fats table -->
-                    <div class="fats">
-                        <table></table>
+                    <div class="fats block row">
+                        <div class="form col-3 align-self-center">
+                            <label class="select-label">Продукт: </label>
+                            
+                            <label>
+                                Масса, г: 
+                                <input class="weight" type="number" min="1" value="100" />
+                            </label>
+                            
+                            <button>Добавить</button>
+                        </div>
 
-                        <label class="select-label">Выберите продукт: </label>
-                        <br>
-                        <label>
-                            Введите массу в граммах: 
-                            <input class="weight" type="number" min="1" value="100" />
-                        </label>
-                        <br>
-                        <button>Добавить</button>
+                        <div class="block-tables col-9">
+                            <table class="block-type">
+                                <thead>
+                                    <tr>
+                                        <th colspan="4">Жиры</th>
+                                    </tr>
+                                </thead>
+                            </table>
+
+                            <table class="block-rows"></table>
+                        </div>
                     </div>
                     <!-- Fats table over -->
 
@@ -340,86 +568,66 @@
             </div>
             <!--------------------------------------- Tabs content over ------------------------------------------->
 
-            <!-- Vegetables table -->
-            <div class="vegetables">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Продукт</th>
-                            <th>Съедено, г</th>
-                            <th>Осталось съесть, г</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Салат, овощи</td>
-                            <td><input type="number" min="0" onblur="updateVegetablesInput()"></td>
-                            <td id="toEatVegetablesWeight"></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <!-- Vegetables table over -->
-
-            <br><br>
+            
             <!-- Junkfood content-->
-            <div class="junk">
-
-                <table></table>
+            <div class="junk block row">
 
                 <!-- Alcohol form -->
-                <form class="alcohol" onsubmit="return false;">
+                <div class="alcohol form col-3">
                     <label class="select-label">
                         Выберите продукт: 
                         <select></select>
                     </label>
 
-                    <br>
+                    
                     <label>
                         Введите массу в граммах: 
                         <input class="weight" type="number" min="1" value="100" />
                     </label>
 
-                    <br>
+                    
                     <button>Добавить</button>
-                </form>
+                </div>
                 <!-- Alcohol form over -->
 
                 <!-- Soda form -->
-                <form class="soda" onsubmit="return false;">
+                <div class="soda form col-3">
                     <label class="select-label">
                         Выберите продукт: 
                         <select></select>
                     </label>
 
-                    <br>
+                    
                     <label>
                         Введите массу в граммах: 
                         <input class="weight" type="number" min="1" value="100" />
                     </label>
 
-                    <br>
+                    
                     <button>Добавить</button>
-                </form>
+                </div>
                 <!-- Soda form over -->
 
                 <!-- Sweets form -->
-                <form class="sweets" onsubmit="return false;">
+                <div class="sweets form col-3">
                     <label class="select-label">
                         Выберите продукт: 
                         <select></select>
                     </label>
 
-                    <br>
+                    
                     <label>
                         Введите массу в граммах: 
                         <input class="weight" type="number" min="1" value="100" />
                     </label>
 
-                    <br>
+                    
                     <button>Добавить</button>
-                </form>
+                </div>
                 <!-- Sweets form over -->
+
+
+                <table></table>
 
             </div>
             <!-- Junkfood content over -->
