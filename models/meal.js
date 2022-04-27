@@ -28,6 +28,10 @@ const mealSchema = new mongoose.Schema({
     group: {
         type: String,
         immutable: true,
+    },
+    title: {
+        type: String,
+        immutable: true,
     }
 }, { collection: 'meals', versionKey: false });
 

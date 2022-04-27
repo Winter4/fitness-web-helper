@@ -22,6 +22,7 @@ router.get('/reports/nutr/:user/:tab/:nutrient', async (req, res) => {
                     _id: meal._id,
                     name: meal.food.name,
                     weight: meal.weight,
+                    title: meal.food.title,
                 });
             }
         }

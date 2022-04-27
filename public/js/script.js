@@ -55,7 +55,13 @@ function getVegetablesInput() {
     $.get(`/reports/non-nutr/vegetables/${user}?yesterday=${yesterday}`)
     .done(function(res) {
         $('div.vegetables input').val(res.eatenWeight);
-        $('div.vegetables #toEatVegetablesWeight').html(res.toEatWeight);
+        
+        let toEat = '';
+        if (Number(res.toEatWeight) > 0) {
+            toEat = '<i class="fa-solid fa-arrow-up color-green"></i> ' + res.toEatWeight;
+        }
+        $('div.vegetables #toEatVegetablesWeight').html(toEat);
+
     })
     .fail(function() { });
 }
@@ -183,9 +189,9 @@ $(document).ready(function() {
 
         const initTab = (tab) => {
             $(`#nav-${tab}-tab`).one('click', function() {
+                initTable(tab, 'carbons', yesterday, selectors.carbons, 'Углеводы');
                 initTable(tab, 'proteins', yesterday, selectors.proteins, 'Белки');
                 initTable(tab, 'fats', yesterday, selectors.fats, 'Жиры');
-                initTable(tab, 'carbons', yesterday, selectors.carbons, 'Углеводы');
             });
         };
 
@@ -266,6 +272,8 @@ function setButtonOnclick(tab, nutrient) {
         let id = $(`#nav-${tab} .${nutrient} select`).val();
         let weight = $(`#nav-${tab} .${nutrient} input.weight`).val();
 
+        if (weight == '') return;
+
         $.post(`/reports/nutr/${user}/${tab}?yesterday=${yesterday}`, { meal_id: id, meal_weight: weight })
         .done(function(res) {
             $(`#nav-${tab} .${nutrient} .block-table table.block-rows`).DataTable().ajax.reload();
@@ -289,10 +297,10 @@ const createBlock = (formsNames, nutrient, name) => {
         const form = $('<div>', { 'class': 'form col-3 align-self-center' });
         for (let name of formsNames) {
             const div = $('<div>', { 'class': `${name}` });
-            const input = $('<input>', { 'class': 'weight', 'type': 'number', 'min': '1', 'value': '100' });
+            const input = $('<input>', { 'class': 'weight', 'type': 'number', 'min': '1', 'placeholder': 'Масса' });
 
-            div.append($('<label>', { 'class': 'select-label', 'text': 'Продукт: ' }))
-            .append($('<label>', { 'text': 'Масса, г: ' }).append(input))
+            div.append($('<label>', { 'class': 'select-label' }))
+            .append($('<label>').append(input))
             .append($('<button>', { 'text': 'Добавить' }));
 
             form.append(div);
@@ -334,6 +342,9 @@ function initTable(tab, nutrient, yesterday, selector, name) {
             {
                 //title: "Продукт",
                 data: "name",
+                render: function(data, type, row, metat) {
+                    return `<span>${data} <i class="fa-solid fa-circle-info" title="${row.title}"></i> </span>`
+                },
             },
             {
                 data: "weight.eaten",
@@ -364,14 +375,15 @@ function initTable(tab, nutrient, yesterday, selector, name) {
                 render: function(data, type, row, meta) {
                     return `
                     <a href="javascript:;"
+                        class="delete-icon"
                         onclick="onNutrRowDelete('${user}', '${tab}', '${row._id}', '${nutrient}', '${yesterday}')"
                     >
-                        delete
+                        <i class="fa-solid fa-trash-can"></i>
                     </a>`;
                 }
             },
         ]
-    });   
+    });  
 }
 
 const initJunkTable = () => {
@@ -388,6 +400,8 @@ const initJunkTable = () => {
         $(`div.junk .form .${group} button`).on('click', function() {
             const id = $(`div.junk .form .${group} select`).val();
             const weight = $(`div.junk .form .${group} input`).val();
+
+            if (weight == '') return;
 
             $.post(`/reports/non-nutr/junk/${user}?yesterday=${yesterday}`, { meal_id: id, meal_weight: weight })
             .done(function(res) {
@@ -409,34 +423,30 @@ const initJunkTable = () => {
         paging: false,
         info: false,
         searching: false,
+        ordering: false,
 
         ajax: `${origin}/reports/non-nutr/junk/${user}?yesterday=${yesterday}`,
 
         columns: [
             {
-                title: "Продукт",
                 data: "name",
-                orderable: false,
             },
             {
-                title: "Съедено, г",
                 data: "weight.eaten",
-                orderable: false,
                 render: function(data, type, row, meta) {
                     return `<input type="number" min="1" value="${data}" id="${row._id}"
                         onblur="onJunkRowUpdate('${user}', '${row._id}', '${yesterday}')" />`;
                 }
             },
             {
-                title: "",
-                orderable: false,
                 data: null,
                 render: function(data, type, row, meta) {
                     return `
                     <a href="javascript:;"
+                        class="delete-icon"
                         onclick="onJunkRowDelete('${user}', '${row._id}', '${yesterday}')"
                     >
-                        delete
+                        <i class="fa-solid fa-trash-can"></i>
                     </a>`;
                 }
             },

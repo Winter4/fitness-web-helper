@@ -24,10 +24,15 @@
         crossorigin="anonymous">
     </script>
 
+    <!-- JQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" 
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous">
+    </script>
 
-    <!-- JQuery + Datatables + DT RowGroup extension -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jq-3.6.0/dt-1.11.5/rg-1.1.4/datatables.min.css"/>
-    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-3.6.0/dt-1.11.5/rg-1.1.4/datatables.min.js"></script>
+    <!-- Datatables -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.5/datatables.min.css"/>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.5/datatables.min.js"></script>
+
 
     <!-- Font Awesome CSS -->
     <link rel="stylesheet" type="text/css" href="/css/fontawesome.css">
@@ -37,6 +42,7 @@
 
     <!-- Custom JS -->
     <script defer src="/js/script.js"></script>
+
 
     <!-- Icon -->
     <link type="image/ico" sizes="96x96" rel="icon" href="/ico/favicon.ico">
@@ -93,22 +99,7 @@
             </div>
             <!-------- Tables header over ------>
 
-            <!-------- Vegetables table -------->
-            <div class="row vegetables block justify-content-end">
-                <div class="col-9">
-                    <h6 class="block-type-header">Овощи</h6>
-                    <table class="block-rows">
-                        <tbody>
-                            <tr>
-                                <td>Салат, овощи</td>
-                                <td><input type="number" min="0" onblur="updateVegetablesInput()"></td>
-                                <td id="toEatVegetablesWeight"></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <!------- Vegetables table over ----->
+            
 
             <!-------------------------------- Tabs content --------------------------------------->
             <div class="tab-content" id="nav-tabContent">
@@ -140,6 +131,23 @@
 
             </div>
             <!------------------------------- Tabs content over ------------------------------------->
+
+            <!-------- Vegetables table -------->
+            <div class="row vegetables block justify-content-end">
+                <div class="col-9">
+                    <h6 class="block-type-header">Овощи</h6>
+                    <table class="block-rows">
+                        <tbody>
+                            <tr>
+                                <td>Салат, овощи</td>
+                                <td><input type="number" min="0" onblur="updateVegetablesInput()"></td>
+                                <td id="toEatVegetablesWeight"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!------- Vegetables table over ----->
 
 
         </main>

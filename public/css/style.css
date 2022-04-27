@@ -66,6 +66,10 @@ td {
     padding-left: 25px;
 }
 
+.block .form {
+    padding: 5px;
+}
+
 .block .form > * {
     display: flex;
     flex-direction: column;
@@ -73,16 +77,40 @@ td {
 
     text-align: center;
     margin-bottom: 5px;
+    padding: 8px;
+
+    background-color: #669900;
+    border-radius: 5px;
+}
+
+.block .form > * > label {
+    margin-bottom: 10px;
+    color: black;
+}
+
+.block .form {
+    color: white;
 }
 
 .block .form select,
-.block .form input {
+.block input {
     width: 100%;
-    margin-top: 2px;
+    text-align: center;
+    color: white;
+    background-color: transparent;
+
+    border: 0;
+    border-bottom: 1px solid white;
+
+    margin: 3px;
 }
 
 .block .form button {
-    margin: 20px auto;
+    margin: 10px auto;
+}
+
+.block table {
+    text-align: center;
 }
 
 .block table.dataTable.no-footer,
@@ -96,6 +124,10 @@ td {
 table.dataTable thead th, 
 table.dataTable thead td {
     border-bottom: 0;
+}
+
+.delete-icon {
+    color: white;
 }
 
 
