@@ -111,21 +111,17 @@ table.dataTable thead td {
     padding: 1px;
 }
 
-.carbons .block-tables table.block-rows td,
-.proteins .block-tables table.block-rows td,
-.fats .block-tables table.block-rows td,
-.vegetables .block-tables table td,
-.junk .block-tables table.block-rows td {
-   border-radius: 3px;
+.block-type-header {
+    border-bottom: 2px solid black;
+    font-weight: bold;
+    text-align: center;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
 }
 
-.carbons .block-tables table.block-rows td,
-.proteins .block-tables table.block-rows td,
-.fats .block-tables table.block-rows td,
-.vegetables .block-tables table td,
-.junk .block-tables table.block-rows td {
+table.block-rows td {
+   border-radius: 3px;
    background-color: #669900;
-
 }
 
 .vegetables {
@@ -135,7 +131,7 @@ table.dataTable thead td {
 .disabled {
     pointer-events: none; /* делаем ссылку некликабельной */
     cursor: default;  /* устанавливаем курсор в виде стрелки */
-    color: #999; /* цвет текста для нективной ссылки */   
+    color: #999; /* цвет текста для нективной ссылки */
 }
 
 .invisible {
@@ -148,4 +144,24 @@ table.dataTable thead td {
 
 .color-red {
     color: red;
+}
+
+table.dataTable {
+    width: 100% !important;
+}
+
+.vegetables .block-rows {
+    width: 100%;
+    border-spacing: 3px 4px;
+    border-collapse: separate;
+}
+
+.vegetables .block-rows td {
+    padding: 8px 10px;
+    box-sizing: content-box;
+    color: white;
+}
+
+.block-tables table.dataTable thead th {
+    padding: 0;
 }

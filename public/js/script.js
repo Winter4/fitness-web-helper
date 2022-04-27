@@ -143,6 +143,13 @@ $(document).ready(function() {
 
     // - - - - - - - - - - Functions used below - - - - - - - - - - - - -
 
+    const createBlock = () => {
+
+        const createForm = () => {
+
+        };
+    };
+
     const createHeaderLinks = (res, yesterday) => {
         let html = '';
 
@@ -332,6 +339,13 @@ $(document).ready(function() {
     .fail(function() { });
 
     updateCaloriesGot(user, yesterday);
+
+    // set send-report button onclick
+    $('#send-report').on('click', function() {
+        $.get(`/send-report/${user}?yesterday=${yesterday}`)
+        .done(function(res) {} )
+        .fail(function() { console.error('send to tg') } );
+    });
 });
 
 // ___________________________ DataTable Create funcs ______________________________________ //

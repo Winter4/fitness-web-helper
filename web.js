@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
+require('dotenv').config({ path: 'C:/Users/Vladimir/Desktop/.env' });
+
 // _________________________________________
 
 const time = require('./time');
@@ -73,6 +75,7 @@ app.get('/', async (req, res) => {
 
 app.use(require('./routes/data'));
 app.use(require('./routes/calories-got'));
+app.use(require('./routes/send-report'));
 
 app.use(require('./routes/reports/nutrient/get'));
 app.use(require('./routes/reports/nutrient/post'));
@@ -86,17 +89,19 @@ app.use(require('./routes/reports/non-nutrient/junk/post'));
 app.use(require('./routes/reports/non-nutrient/junk/put'));
 app.use(require('./routes/reports/non-nutrient/junk/delete'));
 
+
 app.get('/meals/:nutrient', async (req, res) => {
     try {
 
         const meals = await Meal.find({ group: req.params.nutrient });
         res.json(meals);
+
     } catch (e) {
         console.log(e);
     }
 });
 
 app.listen(8080, () => {
-    mongoose.connect(require('./env').MONGO_URL, () => console.log('Connected to DB'));
+    mongoose.connect(process.env.MONGO_URL, () => console.log('Connected to DB'));
     console.log('Server started at 8080');
 });
