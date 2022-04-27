@@ -78,7 +78,7 @@ app.use(require('./routes/calories-got'));
 app.use(require('./routes/send-report'));
 
 app.use(require('./routes/reports/nutrient/get'));
-app.use(require('./routes/reports/nutrient/post'));
+app.use(require('./routes/reports/nutrient/post').router);
 app.use(require('./routes/reports/nutrient/put').router);
 app.use(require('./routes/reports/nutrient/delete').router);
 

@@ -7,6 +7,7 @@ const Report = require('../../../../models/report');
 const { getReport } = require('../../../../_commons');
 
 router.use(express.urlencoded({ extended: false }));
+const { pushByID } = require('../../nutrient/post');
 
 router.post('/reports/non-nutr/junk/:user', async (req, res) => {
     try {
@@ -20,7 +21,7 @@ router.post('/reports/non-nutr/junk/:user', async (req, res) => {
         };
 
         const report = await getReport(req.params, req.query);
-        report.nonNutrientMeals.junk.push(newMeal);
+        pushByID(report.nonNutrientMeals.junk, newMeal);
 
         await report.save();
 

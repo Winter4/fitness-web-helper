@@ -9,6 +9,18 @@ const { getReport, tabAtoi } = require('../../../_commons');
 
 router.use(express.urlencoded({ extended: false }));
 
+const pushByID  = (array, mealObject) => {
+    for (let item of array) {
+        if (mealObject.food == `${item.food.toString()}`) {
+            item.weight.eaten += Number(mealObject.weight.eaten);
+            return;
+        }
+    }
+
+    array.push(mealObject);
+};
+module.exports.pushByID = pushByID;
+
 router.post('/reports/nutr/:user/:tab', async (req, res) => {
     try {
 
@@ -22,7 +34,7 @@ router.post('/reports/nutr/:user/:tab', async (req, res) => {
         };
 
         let report = await getReport(req.params, req.query);
-        report.tabs[ tabAtoi[req.params.tab] ].meals.push(newMeal);
+        pushByID(report.tabs[ tabAtoi[req.params.tab] ].meals, newMeal);
 
         const mealData = await Meal.findById(req.body.meal_id);
         await report.calcToEatWeights(req.params.tab, mealData.group);
@@ -34,4 +46,4 @@ router.post('/reports/nutr/:user/:tab', async (req, res) => {
     }
 });
 
-module.exports = router;
+module.exports.router = router;
