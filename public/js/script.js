@@ -70,7 +70,7 @@ function updateNutrRow(user, tab, rowID, nutrient, yesterday) {
         url: `/reports/nutr/${user}/${tab}/${nutrient}?yesterday=${yesterday}&row_id=${rowID}&row_weight=${newWeight}`,
         type: 'PUT',
         success: function (res) {
-            $(`#nav-${tab} .${nutrient} .block-tables table.block-rows`).DataTable().ajax.reload();
+            $(`#nav-${tab} .${nutrient} .block-table table.block-rows`).DataTable().ajax.reload();
             updateCaloriesGot(user, yesterday);
         },
         error: function(res) {
@@ -108,7 +108,7 @@ function deleteNutrRow(user, tab, rowID, nutrient, yesterday) {
         url: `/reports/nutr/${user}/${tab}/${nutrient}?yesterday=${yesterday}&row_id=${rowID}`,
         type: 'DELETE',
         success: function (res) {
-            $(`#nav-${tab} .${nutrient} .block-tables table.block-rows`).DataTable().ajax.reload();
+            $(`#nav-${tab} .${nutrient} .block-table table.block-rows`).DataTable().ajax.reload();
             updateCaloriesGot(user, yesterday);
         },
         error: function(res) {
@@ -139,16 +139,26 @@ async function onJunkRowDelete(user, rowID, yesterday) {
 
 // __________________________ Main .ready script ___________________________________ //
 
+const createSelector = (nutrient) => {
+    let selector = $('<select>');
+
+    $.get(`/meals/${nutrient}`)
+    .done(function(res) {
+        $.each(res, function(i, item) {
+            selector.append($('<option>', {
+                value: item._id,
+                text : item.name
+            }));
+        });
+    })
+    .fail(function() { console.log(`Get ${nutrient} select options error`) });
+
+    return selector;
+};
+
 $(document).ready(function() {
 
     // - - - - - - - - - - Functions used below - - - - - - - - - - - - -
-
-    const createBlock = () => {
-
-        const createForm = () => {
-
-        };
-    };
 
     const createHeaderLinks = (res, yesterday) => {
         let html = '';
@@ -165,35 +175,17 @@ $(document).ready(function() {
 
     const insertTabs = (res) => {
 
-        const createSelector = (nutrient) => {
-            let selector = $('<select>');
-
-            $.get(`/meals/${nutrient}`)
-            .done(function(res) {
-                $.each(res, function(i, item) {
-                    selector.append($('<option>', {
-                        value: item._id,
-                        text : item.name
-                    }));
-                });
-            })
-            .fail(function() { console.log(`Get ${nutrient} select options error`) });
-
-            return selector;
-        };
-
         const selectors = {
             proteins: createSelector('proteins'),
             fats: createSelector('fats'),
             carbons: createSelector('carbons'),
         };
 
-
         const initTab = (tab) => {
             $(`#nav-${tab}-tab`).one('click', function() {
-                initTable(tab, 'proteins', yesterday, selectors.proteins);
-                initTable(tab, 'fats', yesterday, selectors.fats);
-                initTable(tab, 'carbons', yesterday, selectors.carbons);
+                initTable(tab, 'proteins', yesterday, selectors.proteins, 'Белки');
+                initTable(tab, 'fats', yesterday, selectors.fats, 'Жиры');
+                initTable(tab, 'carbons', yesterday, selectors.carbons, 'Углеводы');
             });
         };
 
@@ -233,89 +225,6 @@ $(document).ready(function() {
                 $(`#nav-${tab}-tab`).removeClass(cssInvisible);
                 $(`#nav-${tab}-tab`).append(` (${res.caloriesPerTabs.supper} кал)`);
         }
-    };
-
-    const initJunkTable = () => {
-
-        // create the table itself
-        $('div.junk table').DataTable({
-
-            language: {
-                url: "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
-            },
-
-            paging: false,
-            info: false,
-            searching: false,
-
-            ajax: `${origin}/reports/non-nutr/junk/${user}?yesterday=${yesterday}`,
-
-            columns: [
-                {
-                    title: "Продукт",
-                    data: "name",
-                    orderable: false,
-                },
-                {
-                    title: "Съедено, г",
-                    data: "weight.eaten",
-                    orderable: false,
-                    render: function(data, type, row, meta) {
-                        return `<input type="number" min="1" value="${data}" id="${row._id}"
-                            onblur="onJunkRowUpdate('${user}', '${row._id}', '${yesterday}')" />`;
-                    }
-                },
-                {
-                    title: "",
-                    orderable: false,
-                    data: null,
-                    render: function(data, type, row, meta) {
-                        return `
-                        <a href="javascript:;"
-                            onclick="onJunkRowDelete('${user}', '${row._id}', '${yesterday}')"
-                        >
-                            delete
-                        </a>`;
-                    }
-                },
-            ]
-        });
-
-        const initForm = async (group) => {
-
-            // fill the selector
-            const selector = $(`div.junk .${group} select`);
-            $.get(`/meals/${group}`)
-            .done(function(res) {
-                $.each(res, function(i, item) {
-                    selector.append($('<option>', {
-                        value: item._id,
-                        text : item.name
-                    }));
-                });
-            })
-            .fail(function() { console.log(`Get ${nutrient} select options error`) });
-
-            // set onclick button script
-            $(`div.junk .${group} button`).on('click', function() {
-
-                const id = $(`div.junk .${group} select`).val();
-                const weight = $(`div.junk .${group} input`).val();
-
-                $.post(`/reports/non-nutr/junk/${user}?yesterday=${yesterday}`, { meal_id: id, meal_weight: weight })
-                .done(function(res) {
-                    $(`div.junk table`).DataTable().ajax.reload();
-                    updateCaloriesGot(user, yesterday);
-                })
-                .fail(function() { console.log(`Error: post to /reports/non-nutr/junk/${group}`) });
-            });
-        };
-
-        // fill the selectors
-        initForm('alcohol');
-        initForm('soda');
-        initForm('sweets');
-        
     };
 
     // - - - - - - - - - - - - - - - - Call all the funcs - - - - - - - - - - - - - - - - - - - - -
@@ -359,16 +268,56 @@ function setButtonOnclick(tab, nutrient) {
 
         $.post(`/reports/nutr/${user}/${tab}?yesterday=${yesterday}`, { meal_id: id, meal_weight: weight })
         .done(function(res) {
-            $(`#nav-${tab} .${nutrient} .block-tables table.block-rows`).DataTable().ajax.reload();
+            $(`#nav-${tab} .${nutrient} .block-table table.block-rows`).DataTable().ajax.reload();
             updateCaloriesGot(user, yesterday);
         })
         .fail(function() { console.log(`Error: post to /reports/${user}/${tab}`) });
     });
 }
 
-function initTable(tab, nutrient, yesterday, selector) {
+const createTable = (name) => {
+    const table = $('<div>', { 'class': 'block-table col-9' });
 
-    $(`#nav-${tab} .${nutrient} .block-tables table.block-rows`).DataTable({
+    table.append($('<h6>', { 'class': 'block-type-header', 'text': `${name}` }))
+    .append($('<table>', { 'class': 'block-rows' }));
+
+    return table;
+}
+
+const createBlock = (formsNames, nutrient, name) => {
+
+        const form = $('<div>', { 'class': 'form col-3 align-self-center' });
+        for (let name of formsNames) {
+            const div = $('<div>', { 'class': `${name}` });
+            const input = $('<input>', { 'class': 'weight', 'type': 'number', 'min': '1', 'value': '100' });
+
+            div.append($('<label>', { 'class': 'select-label', 'text': 'Продукт: ' }))
+            .append($('<label>', { 'text': 'Масса, г: ' }).append(input))
+            .append($('<button>', { 'text': 'Добавить' }));
+
+            form.append(div);
+        }
+        
+        const table = createTable(name);
+
+        const block = $('<div>', { 'class': `${nutrient} block row` });
+        block.append(form).append(table);
+
+        return block;
+    };
+
+function initTable(tab, nutrient, yesterday, selector, name) {
+
+    const block = createBlock([nutrient], nutrient, name); // 1 - number of forms
+    $(`#nav-${tab}`).append(block);
+
+    // add selector to the table form
+    $(`#nav-${tab} .${nutrient} .form label.select-label`).append(selector);
+
+    // set button click script (add meal)
+    setButtonOnclick(tab, nutrient);
+
+    $(`#nav-${tab} .${nutrient} .block-table table.block-rows`).DataTable({
 
         language: {
             url: "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
@@ -422,10 +371,75 @@ function initTable(tab, nutrient, yesterday, selector) {
                 }
             },
         ]
-    });
-
-    // add selector to the table form
-    $(`#nav-${tab} .${nutrient} label.select-label`).append(selector);
-    // set button click script (add meal)
-    setButtonOnclick(tab, nutrient);
+    });   
 }
+
+const initJunkTable = () => {
+
+    const groups = ['alcohol', 'soda', 'sweets'];
+
+    const block = createBlock(groups, 'junk', 'Вредная еда'); // 3 - number of forms
+    $('main').append(block);
+
+    // add selectors to the table forms
+    for (let group of groups) {
+        $(`div.junk .form .${group} label.select-label`).append(createSelector(group));
+
+        $(`div.junk .form .${group} button`).on('click', function() {
+            const id = $(`div.junk .form .${group} select`).val();
+            const weight = $(`div.junk .form .${group} input`).val();
+
+            $.post(`/reports/non-nutr/junk/${user}?yesterday=${yesterday}`, { meal_id: id, meal_weight: weight })
+            .done(function(res) {
+                $(`div.junk .block-table table`).DataTable().ajax.reload();
+                updateCaloriesGot(user, yesterday);
+            })
+            .fail(function() { console.log(`Error: post to /reports/non-nutr/junk/${group}`) });
+        });
+    }
+
+
+    // create the table itself
+    $('div.junk table').DataTable({
+
+        language: {
+            url: "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
+        },
+
+        paging: false,
+        info: false,
+        searching: false,
+
+        ajax: `${origin}/reports/non-nutr/junk/${user}?yesterday=${yesterday}`,
+
+        columns: [
+            {
+                title: "Продукт",
+                data: "name",
+                orderable: false,
+            },
+            {
+                title: "Съедено, г",
+                data: "weight.eaten",
+                orderable: false,
+                render: function(data, type, row, meta) {
+                    return `<input type="number" min="1" value="${data}" id="${row._id}"
+                        onblur="onJunkRowUpdate('${user}', '${row._id}', '${yesterday}')" />`;
+                }
+            },
+            {
+                title: "",
+                orderable: false,
+                data: null,
+                render: function(data, type, row, meta) {
+                    return `
+                    <a href="javascript:;"
+                        onclick="onJunkRowDelete('${user}', '${row._id}', '${yesterday}')"
+                    >
+                        delete
+                    </a>`;
+                }
+            },
+        ]
+    });
+};

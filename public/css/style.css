@@ -86,7 +86,7 @@ td {
 }
 
 .block table.dataTable.no-footer,
-.block .block-tables table.block-rows {
+.block .block-table table.block-rows {
     border-bottom: 0;
     border-spacing: 3px 4px;
 
@@ -99,14 +99,14 @@ table.dataTable thead td {
 }
 
 
-.block .block-tables table.block-type {
+.block .block-table table.block-type {
     width: 100%;
     text-align: center;
 
     margin-bottom: -10px;
 }
 
-.block .block-tables table.block-type thead th {
+.block .block-table table.block-type thead th {
     border-bottom: 2px solid black;
     padding: 1px;
 }
@@ -162,6 +162,6 @@ table.dataTable {
     color: white;
 }
 
-.block-tables table.dataTable thead th {
+.block-table table.dataTable thead th {
     padding: 0;
 }
