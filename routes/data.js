@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { log } = require('../logger');
 
 const Report = require('../models/report');
 const time = require('../time');
@@ -8,9 +9,9 @@ const { getReport } = require('../_commons');
 
 router.get('/data/:user', async (req, res) => {
     try {
-
         let report = await getReport(req.params, req.query);
 
+        log.info('Response for GET with userData json OK', { route: req.url });
         res.json({ 
             today: time.today.date(),
             yesterday: time.yesterday.date(), 
@@ -26,8 +27,11 @@ router.get('/data/:user', async (req, res) => {
                 supper: report.tabs[4].calories.target,
             }
         });
+
     } catch (e) {
-        console.log(e);
+        log.error({ route: req.url, error: e.message });
+        res.statusCode = 500;
+        res.send('Возникла непредвиденная ошибка на стороне сервера :(');
     }
 });
 

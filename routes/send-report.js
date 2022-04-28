@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { log } = require('../logger');
 
 const User = require('../models/user');
 const Report = require('../models/report');
@@ -69,7 +70,6 @@ const examineTab = (tab, name) => {
 
 router.get('/send-report/:user', async (req, res) => {
     try {
-
         const user = await User.findById(req.params.user);
 
         const report = await getReport(req.params, req.query);
@@ -93,7 +93,7 @@ router.get('/send-report/:user', async (req, res) => {
                 '4': 'Отлично!',
                 '3': 'Хорошо!',
                 '2': 'Норма!',
-                '1': 'Не удовлетворительно!',
+                '1': 'Неудовлетворительно!',
             };
 
             return `<b><u>${tab.name}:</u></b>
@@ -111,13 +111,17 @@ router.get('/send-report/:user', async (req, res) => {
         if (user.mealsPerDay == 5) text += generateTab(tabs.lunch2);
         text += generateTab(tabs.supper);
 
-
+        log.info('Sending report to bot', { user: user._id, date: report.date });
         tgClient.sendMessage(req.params.user, text, { parse_mode: 'HTML' });
+        log.info('Sent report to bot', { user: user._id, date: report.date });
 
+        log.info('Response for GET with OK', { route: req.url });
         res.send();
 
     } catch (e) {
-        console.error(e);
+        log.error({ route: req.url, error: e.message });
+        res.statusCode = 500;
+        res.send('Возникла непредвиденная ошибка на стороне сервера :(');
     }
 });
 
