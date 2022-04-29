@@ -62,35 +62,45 @@
 
         <!--------------------------------- Header ------------------------------------->
         <header>
-            <div class="user-data">
-                <div class="hello">Привет, Александр!</div>
+            <div class="header-content">
+                <div class="user-data">
+                    <div class="hello"><i class="fa-solid fa-user color-green"></i> Привет, <span class="name"></span>!</div>
 
-                <div class="calories">
-                    <p>калорий за сегодня: </p>
-                    <div class="got"></div>
-                    из
-                    <div class="target"></div>
+                    <div class="calories">
+                        <p>калорий за сегодня: </p>
+                        <div class="got"></div>
+                        из
+                        <div class="target"></div>
+                    </div>
+
+                    <div class="links">
+                        <div class="get-reports">
+                            <span class="today-link"></span>
+                            <span class="yesterday-link"></span>
+                        </div>
+                        <div class="send-report" id="send-report">
+                            <button>Отправить отчёт</button>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="links">
-                    <div class="get-reports"></div>
-                    <div class="send-report" id="send-report"><button>Отправить отчёт</button></div>
-                </div>
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <button class="nav-link invisible" id="nav-breakfast-tab" data-bs-toggle="tab" data-bs-target="#nav-breakfast" type="button" role="tab" aria-controls="nav-breakfast" aria-selected="false">Завтрак</button>
+
+                        <button class="nav-link invisible" id="nav-lunch1-tab" data-bs-toggle="tab" data-bs-target="#nav-lunch1" type="button" role="tab" aria-controls="nav-lunch1" aria-selected="false">Перекус 1</button>
+
+                        <button class="nav-link invisible" id="nav-dinner-tab" data-bs-toggle="tab" data-bs-target="#nav-dinner" type="button" role="tab" aria-controls="nav-dinner" aria-selected="false">Обед</button>
+
+                        <button class="nav-link invisible" id="nav-lunch2-tab" data-bs-toggle="tab" data-bs-target="#nav-lunch2" type="button" role="tab" aria-controls="nav-lunch2" aria-selected="false">Перекус 2</button>
+
+                        <button class="nav-link invisible" id="nav-supper-tab" data-bs-toggle="tab" data-bs-target="#nav-supper" type="button" role="tab" aria-controls="nav-supper" aria-selected="false">Ужин</button>
+                    </div>
+                </nav>
             </div>
 
-            <nav>
-                <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                    <button class="nav-link invisible" id="nav-breakfast-tab" data-bs-toggle="tab" data-bs-target="#nav-breakfast" type="button" role="tab" aria-controls="nav-breakfast" aria-selected="false">Завтрак</button>
+            
 
-                    <button class="nav-link invisible" id="nav-lunch1-tab" data-bs-toggle="tab" data-bs-target="#nav-lunch1" type="button" role="tab" aria-controls="nav-lunch1" aria-selected="false">Перекус 1</button>
-
-                    <button class="nav-link invisible" id="nav-dinner-tab" data-bs-toggle="tab" data-bs-target="#nav-dinner" type="button" role="tab" aria-controls="nav-dinner" aria-selected="false">Обед</button>
-
-                    <button class="nav-link invisible" id="nav-lunch2-tab" data-bs-toggle="tab" data-bs-target="#nav-lunch2" type="button" role="tab" aria-controls="nav-lunch2" aria-selected="false">Перекус 2</button>
-
-                    <button class="nav-link invisible" id="nav-supper-tab" data-bs-toggle="tab" data-bs-target="#nav-supper" type="button" role="tab" aria-controls="nav-supper" aria-selected="false">Ужин</button>
-                </div>
-            </nav>
         </header>
         <!-------------------------------- Header over ---------------------------------->
 
@@ -114,6 +124,33 @@
                 </div>
             </div>
             -------- Tables header over ------>
+
+            <!-------- Vegetables table -------->
+            <div class="vegetables block row justify-content-end">
+                <div class="block-header col-12"><h5>Овощи</h5></div>
+
+                <div class="block-content">
+                    <div class="block-table col-9">
+                        <table class="dataTable">
+                            <thead>
+                                <tr>
+                                    <th>Продукт</th>
+                                    <th>Съедено, г</th>
+                                    <th>Осталось съесть, г</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Салат, овощи</td>
+                                    <td><input type="number" min="0" maxlength="3" onblur="updateVegetablesInput()"></td>
+                                    <td id="toEatVegetablesWeight"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!------- Vegetables table over ----->
 
             
 
@@ -147,28 +184,6 @@
 
             </div>
             <!------------------------------- Tabs content over ------------------------------------->
-
-            <!-------- Vegetables table -------->
-            <div class="vegetables block row justify-content-end">
-                <div class="col-9">
-                    <div class="block-header"><h5>Овощи</h5></div>
-                    <div class="block-content row">
-                        <div class="block-table">
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td>Салат, овощи</td>
-                                        <td><input type="number" min="0" maxlength="3" onblur="updateVegetablesInput()"></td>
-                                        <td id="toEatVegetablesWeight"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!------- Vegetables table over ----->
-
 
         </main>
         <!-- Content over -->

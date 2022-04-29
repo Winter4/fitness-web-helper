@@ -1,14 +1,14 @@
 :root {
     --color-green: #0BA765;
+    --color-grey: #868686;
+    --color-soft-grey: #D3D3D3;
+    --color-orange: #ECA51B;
+
+    --header-background: #F0F0F0;
+    --page-width: 1150px;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * */
-
-.disabled {
-    pointer-events: none; /* делаем ссылку некликабельной */
-    cursor: default;  /* устанавливаем курсор в виде стрелки */
-    color: #999; /* цвет текста для нективной ссылки */
-}
 
 .invisible {
     visibility: hidden;
@@ -25,17 +25,33 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-.container {
-    max-width: 1100px;
-
+body {
     font-family: 'Open Sans', sans-serif;
 }
 
+.container {
+    width: 100%;
+    padding: 0;
+    padding-bottom: 153px;
+    margin: 0 auto;
+}
+
 header {
-    background-color: var(--color-green);
+    background-color: var(--header-background);
+
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+
+    z-index: 2;
+}
+
+header .header-content {
+    height: 153px;
     padding: 30px 20px 0px 20px;
-    margin-bottom: 10px;
-    border-radius: 0 0 15px 15px;
+    max-width: var(--page-width);
+    margin: 0 auto;
 }
 
 header .user-data > * {
@@ -44,11 +60,43 @@ header .user-data > * {
     margin-left: 35px;
 }
 
+header .user-data .hello {
+    font-weight: bold;
+    font-size: 18pt;
+}
 
 header .user-data .links {
     float: right;
-    margin-right: 20px;
     margin-top: -7px;
+    margin-right: 75px;
+}
+
+header .user-data .links span:first-child {
+    margin-right: 10px;
+}
+
+header .user-data .links span,
+header .user-data .links button {
+    background-color: var(--color-green);
+    color: white;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.35);
+    border-radius: 8px;
+
+    padding: 5px 20px;
+    font-size: 10pt;
+
+    transition: 0.2s;
+}
+
+header .user-data .links span:hover,
+header .user-data .links button:hover {
+    box-shadow: 4px 4px 7px rgba(0, 0, 0, 0.45);
+    transition: 0.2s;
+}
+
+header .user-data .links .get-reports a {
+    text-decoration: none;
+    color: white;
 }
 
 header .user-data .links .send-report {
@@ -58,10 +106,23 @@ header .user-data .links .send-report {
 
 header .user-data .links .send-report button {
     width: 100%;
+    background-color: var(--color-orange);
+    border: 0;
+    font-size: 8pt;
 }
 
 header .user-data .calories > * {
     display: inline-block;
+}
+
+header .user-data .calories {
+    color: var(--color-green);
+    font-weight: bold;
+}
+
+header .user-data .calories p {
+    color: var(--color-grey);
+    font-weight: normal;
 }
 
 header nav {
@@ -72,10 +133,29 @@ header .nav {
     justify-content: center;
 }
 
+header .nav button {
+    color: var(--color-grey);
+    font-weight: bold;
+    border: 0;
+}
+
+header .nav button:hover {
+    color: black;
+    box-shadow: 10px -10px 22px -12px rgba(0,0,0,0.3);
+}
+
+header .nav-tabs .nav-link.active {
+    color: var(--color-green);
+
+    background-color: transparent;
+    border-bottom: 3px solid var(--color-green);
+}
+
 /* * * * * * * * * * * * * * * * * * * * * * * * */
 
 main {
-    margin-top: 30px;
+    max-width: var(--page-width);
+    margin: 150px auto;
 }
 
 main .block {
@@ -83,8 +163,10 @@ main .block {
     padding: 20px;
     /*background-color: #228B22;*/
 
-    display: block;
+    display: flex;
+    flex-direction: column;
 }
+
 
 main .block table tr th:nth-child(1),
 main .block table tr td:nth-child(1)
@@ -132,6 +214,12 @@ main .tables-header table tr th:last-child {
 }
 */
 
+main .block .block-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
 main .block .block-header h5 {
     text-align: center;
     padding-bottom: 7px;
@@ -160,12 +248,18 @@ main .block .block-form .form-header {
 
 main .block .block-form .form-tip {
     text-align: center;
+    color: var(--color-grey);
+
     font-size: 10pt;
     margin-bottom: 12px;
 }
 
+main .block .block-form .form-elements {
+    margin: 5px;
+}
+
 main .block .block-form .form-elements > * {
-    margin: 0 auto;
+    margin: 20px auto;
     width: 90%;
 }
 
@@ -199,6 +293,13 @@ main .block .block-form .form-elements input {
     border: 1px solid #868686;
     box-sizing: border-box;
     border-radius: 10px;
+
+    transition: 0.3s;
+}
+
+main .block .block-form .form-elements input:focus {
+    outline-color: var(--color-green);
+    transition: 0.3s;
 }
 
 main .block .block-form .form-elements button {
@@ -207,24 +308,25 @@ main .block .block-form .form-elements button {
 
     background: var(--color-green);
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.25);
+    border: 0;
     border-radius: 10px;
 
     color: white;
+
+    transition: 0.2s;
+}
+
+main .block .block-form .form-elements button:hover {
+    box-shadow: 4px 4px 7px rgba(0, 0, 0, 0.45);
+    transition: 0.2s;
 }
 
 
 /* * * * * * * * * * * * * * */
 
-
-main .block .block-table table {
+main .block .block-content .block-table table {
     width: 100% !important;
     border-spacing: 0px 10px;
-
-    
-}
-
-main .block .block-table thead {
-    
 }
 
 main .block .block-table table,
@@ -240,7 +342,7 @@ main .block .block-table tr {
 }
 
 main .block .block-table table tbody tr td {
-    border-right: 1px solid black;
+    border-right: 2px solid var(--color-soft-grey);
 }
 
 main .block .block-table table tbody tr td:last-child {
@@ -250,16 +352,42 @@ main .block .block-table table tbody tr td:last-child {
 main .block .block-table table tbody tr td input {
     width: 100%;
     border: 0;
-    border-bottom: 1px solid black;
+    border-bottom: 2px solid var(--color-soft-grey);
     text-align: center;
+    transition: 0.4s;
 }
 
 main .block .block-table table tbody tr td input:focus {
     outline-width: 0;
+    border-color: var(--color-green);
+    transition: 0.6s;
 }
 
 main .block .block-table table tbody tr td:nth-last-child(1),
 main .block .block-table table tbody tr td:nth-last-child(2)
 {
     text-align: center;
+}
+
+/* * * * * * * * * * */
+
+.fa-trash-can {
+    transition: 0.2s;
+}
+
+.fa-trash-can:hover {
+    font-size: 18pt;
+    transition: 0.2s;
+}
+
+.disabled {
+    pointer-events: none; /* делаем ссылку некликабельной */
+    cursor: default;  /* устанавливаем курсор в виде стрелки */
+    color: var(--color-green) !important; /* цвет текста для нективной ссылки */
+    border: 1px solid var(--color-green);
+    background-color: var(--header-background) !important;
+}
+
+.disabled a {
+    color: var(--color-green) !important;
 }

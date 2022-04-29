@@ -3,6 +3,7 @@ const router = express.Router();
 const { log } = require('../logger');
 
 const Report = require('../models/report');
+const User = require('../models/user');
 const time = require('../time');
 
 const { getReport } = require('../_commons');
@@ -10,6 +11,7 @@ const { getReport } = require('../_commons');
 router.get('/data/:user', async (req, res) => {
     try {
         let report = await getReport(req.params, req.query);
+        const user = await User.findById(req.params.user);
 
         log.info('Response for GET with userData json OK', { route: req.url });
         res.json({ 
@@ -18,6 +20,7 @@ router.get('/data/:user', async (req, res) => {
             yesterdayExists: await Report.exists({ user: req.params.user, date: time.yesterday.date() }),
 
             mealsPerDay: report.mealsPerDay,
+            username: user.name,
             caloriesTarget: report.calories.target,
             caloriesPerTabs: {
                 breakfast: report.tabs[0].calories.target,

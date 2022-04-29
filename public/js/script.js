@@ -167,16 +167,24 @@ $(document).ready(function() {
     // - - - - - - - - - - Functions used below - - - - - - - - - - - - -
 
     const createHeaderLinks = (res, yesterday) => {
-        let html = '';
 
-        let linkID = 'yesterdayLink';
-        if (yesterday)
-            html = `<a href="${origin}/?user=${user}">Отчёт за сегодня (${res.today})</a>   |   Отчёт за вчера`;
-        else
-            html = `Отчёт за сегодня ${res.today}   |   <a id="${linkID}" href="${origin}?user=${user}&yesterday=1">Отчёт за вчера</a>`;
-        $('header .links .get-reports').html(html);
+        let todayLink = '';
+        let yesterdayLink = '';
 
-        if (!(res.yesterdayExists)) $(`#${linkID}`).addClass('disabled').append(' отсутствует');
+        if (yesterday) {
+            todayLink = `<a href="${origin}/?user=${user}">Отчёт за сегодня ${res.today}</a>`;
+            yesterdayLink = 'Отчёт за вчера';
+        }
+        else {
+            todayLink = `Отчёт за сегодня ${res.today}`;
+            yesterdayLink = `<a href="${origin}?user=${user}&yesterday=1">Отчёт за вчера</a>`;
+        }
+
+        $('header .links .get-reports .today-link').html(todayLink);
+        $('header .links .get-reports .yesterday-link').html(yesterdayLink);
+
+
+        if (!(res.yesterdayExists)) $(`header .links .get-reports .yesterday-link`).addClass('disabled').append(' отсутствует');
     };
 
     const insertTabs = (res) => {
@@ -207,29 +215,29 @@ $(document).ready(function() {
                 tab = 'lunch2';
                 initTab(tab);
                 $(`#nav-${tab}-tab`).removeClass(cssInvisible);
-                $(`#nav-${tab}-tab`).append(` (${res.caloriesPerTabs.lunch2} кал)`);
+                $(`#nav-${tab}-tab`).append(` | ${res.caloriesPerTabs.lunch2} кал`);
 
             case 4:
                 tab = 'lunch1';
                 initTab(tab);
                 $(`#nav-${tab}-tab`).removeClass(cssInvisible);
-                $(`#nav-${tab}-tab`).append(` (${res.caloriesPerTabs.lunch1} кал)`);
+                $(`#nav-${tab}-tab`).append(` | ${res.caloriesPerTabs.lunch1} кал`);
 
             case 3:
                 tab = 'breakfast';
                 initTab(tab);
                 $(`#nav-${tab}-tab`).removeClass(cssInvisible);
-                $(`#nav-${tab}-tab`).append(` (${res.caloriesPerTabs.breakfast} кал)`);
+                $(`#nav-${tab}-tab`).append(` | ${res.caloriesPerTabs.breakfast} кал`);
 
                 tab = 'dinner';
                 initTab(tab);
                 $(`#nav-${tab}-tab`).removeClass(cssInvisible);
-                $(`#nav-${tab}-tab`).append(` (${res.caloriesPerTabs.dinner} кал)`);
+                $(`#nav-${tab}-tab`).append(` | ${res.caloriesPerTabs.dinner} кал`);
 
                 tab = 'supper';
                 initTab(tab);
                 $(`#nav-${tab}-tab`).removeClass(cssInvisible);
-                $(`#nav-${tab}-tab`).append(` (${res.caloriesPerTabs.supper} кал)`);
+                $(`#nav-${tab}-tab`).append(` | ${res.caloriesPerTabs.supper} кал`);
         }
     };
 
@@ -250,6 +258,9 @@ $(document).ready(function() {
 
         // fill header calories-target
         $('header div.calories div.target').html(res.caloriesTarget);
+
+        // insert user name
+        $('.user-data .hello .name').html(res.username);
     })
     .fail(function() { });
 
@@ -294,8 +305,9 @@ const createTable = (name) => {
 const createBlock = (formsNames, nutrient, name) => {
 
         const form = $('<div>', { 'class': 'block-form col-3 align-self-center' });
-        form.append($('<div>', { 'class': 'form-header', text: 'Добавить продукт' }))
-        .append($('<div>', { 'class': 'form-tip', text: 'Выбери и укажи его вес' }));
+        const header = $('<div>', { 'class': 'form-header', text: 'Добавить продукт' });
+        header.append($('<i>', { 'class': 'fa-solid fa-pot-food' })); 
+        form.append(header).append($('<div>', { 'class': 'form-tip', text: 'Выбери и укажи его вес' }));
 
         let formElementsDiv = ($('<div>', { 'class': 'form-elements' }));
 
@@ -349,7 +361,7 @@ function initTable(tab, nutrient, yesterday, selector, name) {
                 title: "Продукт",
                 data: "name",
                 render: function(data, type, row, metat) {
-                    return `<span>${data} <i class="fa-solid fa-circle-info" title="${row.title}"></i> </span>`
+                    return `<span>${data} <i class="fa-solid fa-circle-info color-green" title="${row.title}"></i> </span>`
                 },
             },
             {
@@ -403,17 +415,17 @@ const initJunkTable = () => {
 
     // add selectors to the table forms
     for (let group of groups) {
-        $(`div.junk .form .${group} .select-div`).append(createSelector(group));
+        $(`div.junk .block-content .block-form .form-elements .${group} .select-div`).append(createSelector(group));
 
-        $(`div.junk .form .${group} button`).on('click', function() {
-            const id = $(`div.junk .form .${group} select`).val();
-            const weight = $(`div.junk .form .${group} input`).val();
+        $(`div.junk .block-content .block-form .form-elements .${group} button`).on('click', function() {
+            const id = $(`div.junk .block-content .block-form .form-elements .${group} select`).val();
+            const weight = $(`div.junk .block-content .block-form .form-elements .${group} input`).val();
 
             if (weight == '') return;
 
             $.post(`/reports/non-nutr/junk/${user}?yesterday=${yesterday}`, { meal_id: id, meal_weight: weight })
             .done(function(res) {
-                $(`div.junk .block-table table`).DataTable().ajax.reload();
+                $(`div.junk .block-content .block-table table`).DataTable().ajax.reload();
                 updateCaloriesGot(user, yesterday);
             })
             .fail(function() { console.log(`Error: post to /reports/non-nutr/junk/${group}`) });
@@ -422,7 +434,7 @@ const initJunkTable = () => {
 
 
     // create the table itself
-    $('div.junk table').DataTable({
+    $('div.junk .block-content .block-table table').DataTable({
 
         language: {
             url: "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"

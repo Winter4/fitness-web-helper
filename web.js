@@ -43,6 +43,7 @@ app.get('/', async (req, res) => {
         log.info('Getting report from DB', { route: req.url });
         report = await Report.findOne({ user: req.query.user, date: time.today.date() });
         log.info('Got report from DB', { route: req.url });
+        
         log.info('Getting user from DB', { route: req.url });
         user = await User.findOne({ _id: req.query.user });
         log.info('Got user from DB', { route: req.url });
