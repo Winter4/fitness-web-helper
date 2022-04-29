@@ -111,6 +111,13 @@ router.get('/send-report/:user', async (req, res) => {
         if (user.mealsPerDay == 5) text += generateTab(tabs.lunch2);
         text += generateTab(tabs.supper);
 
+        if (Number(report.nonNutrientMeals.vegetables.weight.eaten) < 300) {
+            text += `Обратите внимание: недостаточное потребление овощей в рационе к недостаточному наличию клетчатки, ` + 
+                `которая «скрабирует» и нормализует работу ЖКТ, помогает избавиться от лишнего веса, выводит шлаки и токсины. ` + 
+                `Достаточное количество клетчатки приводит к медленному усвоению жиров и углеводов, снижает уровень сахара в крови, `
+                + `дает чувство сытости.`;
+        }
+
         log.info('Sending report to bot', { user: user._id, date: report.date });
         tgClient.sendMessage(req.params.user, text, { parse_mode: 'HTML' });
         log.info('Sent report to bot', { user: user._id, date: report.date });

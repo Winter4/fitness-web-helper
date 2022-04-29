@@ -76,7 +76,7 @@ function updateNutrRow(user, tab, rowID, nutrient, yesterday) {
         url: `/reports/nutr/${user}/${tab}/${nutrient}?yesterday=${yesterday}&row_id=${rowID}&row_weight=${newWeight}`,
         type: 'PUT',
         success: function (res) {
-            $(`#nav-${tab} .${nutrient} .block-table table.block-rows`).DataTable().ajax.reload();
+            $(`#nav-${tab} .${nutrient} .block-content .block-table table`).DataTable().ajax.reload();
             updateCaloriesGot(user, yesterday);
         },
         error: function(res) {
@@ -114,7 +114,7 @@ function deleteNutrRow(user, tab, rowID, nutrient, yesterday) {
         url: `/reports/nutr/${user}/${tab}/${nutrient}?yesterday=${yesterday}&row_id=${rowID}`,
         type: 'DELETE',
         success: function (res) {
-            $(`#nav-${tab} .${nutrient} .block-table table.block-rows`).DataTable().ajax.reload();
+            $(`#nav-${tab} .${nutrient} .block-content .block-table table`).DataTable().ajax.reload();
             updateCaloriesGot(user, yesterday);
         },
         error: function(res) {
@@ -171,10 +171,10 @@ $(document).ready(function() {
 
         let linkID = 'yesterdayLink';
         if (yesterday)
-            html = `Отчёт за вчера (${res.yesterday})   |   <a href="${origin}/?user=${user}">Отчёт за сегодня (${res.today})</a>`;
+            html = `<a href="${origin}/?user=${user}">Отчёт за сегодня (${res.today})</a>   |   Отчёт за вчера`;
         else
-            html = `<a id="${linkID}" href="${origin}?user=${user}&yesterday=1">Отчёт за вчера (${res.yesterday})</a>   |   Отчёт за сегодня (${res.today})`;
-        $('header div.links').html(html);
+            html = `Отчёт за сегодня ${res.today}   |   <a id="${linkID}" href="${origin}?user=${user}&yesterday=1">Отчёт за вчера</a>`;
+        $('header .links .get-reports').html(html);
 
         if (!(res.yesterdayExists)) $(`#${linkID}`).addClass('disabled').append(' отсутствует');
     };
@@ -249,7 +249,7 @@ $(document).ready(function() {
         initJunkTable();
 
         // fill header calories-target
-        $('header div.calories div.target').html('/' + res.caloriesTarget);
+        $('header div.calories div.target').html(res.caloriesTarget);
     })
     .fail(function() { });
 
@@ -259,7 +259,7 @@ $(document).ready(function() {
     $('#send-report').on('click', function() {
         $.get(`/send-report/${user}?yesterday=${yesterday}`)
         .done(function(res) {} )
-        .fail(function() { console.error('send to tg') } );
+        .fail(function() {} );
     });
 });
 
@@ -276,7 +276,7 @@ function setButtonOnclick(tab, nutrient) {
 
         $.post(`/reports/nutr/${user}/${tab}?yesterday=${yesterday}`, { meal_id: id, meal_weight: weight })
         .done(function(res) {
-            $(`#nav-${tab} .${nutrient} .block-table table.block-rows`).DataTable().ajax.reload();
+            $(`#nav-${tab} .${nutrient} .block-content .block-table table`).DataTable().ajax.reload();
             updateCaloriesGot(user, yesterday);
         })
         .fail(function() { console.log(`Error: post to /reports/${user}/${tab}`) });
@@ -286,30 +286,36 @@ function setButtonOnclick(tab, nutrient) {
 const createTable = (name) => {
     const table = $('<div>', { 'class': 'block-table col-9' });
 
-    table.append($('<h6>', { 'class': 'block-type-header', 'text': `${name}` }))
-    .append($('<table>', { 'class': 'block-rows' }));
+    table.append($('<table>'));
 
     return table;
 }
 
 const createBlock = (formsNames, nutrient, name) => {
 
-        const form = $('<div>', { 'class': 'form col-3 align-self-center' });
-        for (let name of formsNames) {
-            const div = $('<div>', { 'class': `${name}` });
-            const input = $('<input>', { 'class': 'weight', 'type': 'number', 'min': '1', 'placeholder': 'Масса' });
+        const form = $('<div>', { 'class': 'block-form col-3 align-self-center' });
+        form.append($('<div>', { 'class': 'form-header', text: 'Добавить продукт' }))
+        .append($('<div>', { 'class': 'form-tip', text: 'Выбери и укажи его вес' }));
 
-            div.append($('<label>', { 'class': 'select-label' }))
-            .append($('<label>').append(input))
+        let formElementsDiv = ($('<div>', { 'class': 'form-elements' }));
+
+        for (let formName of formsNames) {
+            const div = $('<div>', { 'class': `${formName}` });
+            const input = $('<input>', { 'class': 'weight', 'type': 'number', 'min': '1', 'placeholder': 'Масса пищи..' });
+
+            div.append($('<div>', { 'class': 'select-div' }))
+            .append($('<div>').append(input))
             .append($('<button>', { 'text': 'Добавить' }));
 
-            form.append(div);
+            formElementsDiv.append(div);
         }
+        form.append(formElementsDiv);
         
         const table = createTable(name);
 
         const block = $('<div>', { 'class': `${nutrient} block row` });
-        block.append(form).append(table);
+        block.append($('<div>', { 'class': 'block-header' }).append($('<h5>', { 'text': `${name}` })));
+        block.append($('<div>', { 'class': 'block-content row'}).append(form).append(table));
 
         return block;
     };
@@ -320,12 +326,12 @@ function initTable(tab, nutrient, yesterday, selector, name) {
     $(`#nav-${tab}`).append(block);
 
     // add selector to the table form
-    $(`#nav-${tab} .${nutrient} .form label.select-label`).append(selector);
+    $(`#nav-${tab} .${nutrient} .block-form .select-div`).append(selector);
 
     // set button click script (add meal)
     setButtonOnclick(tab, nutrient);
 
-    $(`#nav-${tab} .${nutrient} .block-table table.block-rows`).DataTable({
+    $(`#nav-${tab} .${nutrient} .block-content .block-table table`).DataTable({
 
         language: {
             url: "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
@@ -340,20 +346,22 @@ function initTable(tab, nutrient, yesterday, selector, name) {
 
         columns: [
             {
-                //title: "Продукт",
+                title: "Продукт",
                 data: "name",
                 render: function(data, type, row, metat) {
                     return `<span>${data} <i class="fa-solid fa-circle-info" title="${row.title}"></i> </span>`
                 },
             },
             {
+                title: "Съедено, г",
                 data: "weight.eaten",
                 render: function(data, type, row, meta) {
-                    return `<input type="number" min="1" value="${data}" id="${row._id}"
+                    return `<input type="number" min="1" maxlength="3" value="${data}" id="${row._id}"
                         onblur="onNutrRowUpdate('${user}', '${tab}', '${row._id}', '${nutrient}', '${yesterday}')" />`;
                 }
             },
             {
+                title: "Осталось съесть, г",
                 data: "weight.toEat",
                 render: function(data, type, row, meta) { 
                     let res;
@@ -378,7 +386,7 @@ function initTable(tab, nutrient, yesterday, selector, name) {
                         class="delete-icon"
                         onclick="onNutrRowDelete('${user}', '${tab}', '${row._id}', '${nutrient}', '${yesterday}')"
                     >
-                        <i class="fa-solid fa-trash-can"></i>
+                        <i class="fa-solid fa-trash-can color-red"></i>
                     </a>`;
                 }
             },
@@ -395,7 +403,7 @@ const initJunkTable = () => {
 
     // add selectors to the table forms
     for (let group of groups) {
-        $(`div.junk .form .${group} label.select-label`).append(createSelector(group));
+        $(`div.junk .form .${group} .select-div`).append(createSelector(group));
 
         $(`div.junk .form .${group} button`).on('click', function() {
             const id = $(`div.junk .form .${group} select`).val();
@@ -429,16 +437,19 @@ const initJunkTable = () => {
 
         columns: [
             {
+                title: "Продукт",
                 data: "name",
             },
             {
+                title: "Съедено, г",
                 data: "weight.eaten",
                 render: function(data, type, row, meta) {
-                    return `<input type="number" min="1" value="${data}" id="${row._id}"
+                    return `<input type="number" min="1" maxlength="3" value="${data}" id="${row._id}"
                         onblur="onJunkRowUpdate('${user}', '${row._id}', '${yesterday}')" />`;
                 }
             },
             {
+                title: "Осталось съесть, г",
                 data: null,
                 render: function(data, type, row, meta) {
                     return `
@@ -446,7 +457,7 @@ const initJunkTable = () => {
                         class="delete-icon"
                         onclick="onJunkRowDelete('${user}', '${row._id}', '${yesterday}')"
                     >
-                        <i class="fa-solid fa-trash-can"></i>
+                        <i class="fa-solid fa-trash-can color-red"></i>
                     </a>`;
                 }
             },

@@ -1,164 +1,8 @@
-
-
-.container {
-    padding-top: 25px;
-    max-width: 1150px;
-
-    font-family: 'Arial';
+:root {
+    --color-green: #0BA765;
 }
 
-/* Шапка */
-
-header {
-    text-align: center;
-    margin: 0 auto;
-    margin-bottom: 20px;
-}
-
-header .calories {
-    display: flex;
-    margin-top: 10px;
-    justify-content: center;
-}
-
-header .calories p {
-    margin-right: 5px;
-}
-
-/* Навбар */
-
-header nav .nav {
-    justify-content: center;
-}
-
-/* Контент */
-
-.content {
-    margin: 0 auto;
-}
-
-.tab-pane {
-    margin-top: 15px;
-}
-
-table {
-    text-align: left;
-}
-
-td {
-    padding-right: 0;
-}
-
-.row {
-    margin-bottom: 30px;
-}
-
-.block {
-    padding: 15px;
-    background-color: #9ACD32;
-
-    border-radius: 15px;
-    border: 2px solid #669900;
-}
-
-.block.tables-header {
-    padding: 0;
-    padding-left: 25px;
-}
-
-.block .form {
-    padding: 5px;
-}
-
-.block .form > * {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-
-    text-align: center;
-    margin-bottom: 5px;
-    padding: 8px;
-
-    background-color: #669900;
-    border-radius: 5px;
-}
-
-.block .form > * > label {
-    margin-bottom: 10px;
-    color: black;
-}
-
-.block .form {
-    color: white;
-}
-
-.block .form select,
-.block input {
-    width: 100%;
-    text-align: center;
-    color: white;
-    background-color: transparent;
-
-    border: 0;
-    border-bottom: 1px solid white;
-
-    margin: 3px;
-}
-
-.block .form button {
-    margin: 10px auto;
-}
-
-.block table {
-    text-align: center;
-}
-
-.block table.dataTable.no-footer,
-.block .block-table table.block-rows {
-    border-bottom: 0;
-    border-spacing: 3px 4px;
-
-    color: white;
-}
-
-table.dataTable thead th, 
-table.dataTable thead td {
-    border-bottom: 0;
-}
-
-.delete-icon {
-    color: white;
-}
-
-
-.block .block-table table.block-type {
-    width: 100%;
-    text-align: center;
-
-    margin-bottom: -10px;
-}
-
-.block .block-table table.block-type thead th {
-    border-bottom: 2px solid black;
-    padding: 1px;
-}
-
-.block-type-header {
-    border-bottom: 2px solid black;
-    font-weight: bold;
-    text-align: center;
-    padding-bottom: 5px;
-    margin-bottom: 15px;
-}
-
-table.block-rows td {
-   border-radius: 3px;
-   background-color: #669900;
-}
-
-.vegetables {
-    margin-top: 50px;
-}
+/* * * * * * * * * * * * * * * * * * * * * * * * */
 
 .disabled {
     pointer-events: none; /* делаем ссылку некликабельной */
@@ -171,29 +15,251 @@ table.block-rows td {
 }
 
 .color-green {
-    color: #7CFC00;
+    color: var(--color-green);
 }
 
 .color-red {
     color: red;
 }
 
-table.dataTable {
-    width: 100% !important;
+/* * * * * * * * * * * * * * * * * * * * * * * * */
+
+
+.container {
+    max-width: 1100px;
+
+    font-family: 'Open Sans', sans-serif;
 }
 
-.vegetables .block-rows {
+header {
+    background-color: var(--color-green);
+    padding: 30px 20px 0px 20px;
+    margin-bottom: 10px;
+    border-radius: 0 0 15px 15px;
+}
+
+header .user-data > * {
+    display: inline-block;
+    margin: 5px;
+    margin-left: 35px;
+}
+
+
+header .user-data .links {
+    float: right;
+    margin-right: 20px;
+    margin-top: -7px;
+}
+
+header .user-data .links .send-report {
+    margin: 8px auto;
+    width: 45%;
+}
+
+header .user-data .links .send-report button {
     width: 100%;
-    border-spacing: 3px 4px;
-    border-collapse: separate;
 }
 
-.vegetables .block-rows td {
-    padding: 8px 10px;
-    box-sizing: content-box;
+header .user-data .calories > * {
+    display: inline-block;
+}
+
+header nav {
+    margin-top: 20px;
+}
+
+header .nav {
+    justify-content: center;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * */
+
+main {
+    margin-top: 30px;
+}
+
+main .block {
+    margin: 30px;
+    padding: 20px;
+    /*background-color: #228B22;*/
+
+    display: block;
+}
+
+main .block table tr th:nth-child(1),
+main .block table tr td:nth-child(1)
+{
+    padding-left: 35px;
+    width: 45%;
+}
+
+main .block table tr th:nth-child(2),
+main .block table tr td:nth-child(2)
+{
+    text-align: center;
+    width: 20%;
+}
+
+main .block table tr th:nth-child(3),
+main .block table tr td:nth-child(3)
+{
+    text-align: center;
+    width: 25%;
+}
+
+main .block table tr th:nth-child(4),
+main .block table tr td:nth-child(4)
+{
+    width: 10%;
+}
+
+/*
+main .tables-header {
+    margin-right: 42px;
+    margin-bottom: -40px;
+    padding-right: 55px;
+
+    text-align: center;
+    width: 70%;
+}
+
+main .tables-header table tr th {
+    padding-left: 0;
+}
+
+main .tables-header table tr th:last-child {
+    width: 0%;
+}
+*/
+
+main .block .block-header h5 {
+    text-align: center;
+    padding-bottom: 7px;
+
+    font-weight: bolder;
+}
+
+
+/* * * * * * * * * * * * * * */
+
+main .block .block-form {
+    padding: 8px;
+
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+    background: #FCFCFC;
+    box-shadow: 2px 2px 16px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+main .block .block-form .form-header {
+    text-align: center;
+    margin-bottom: 5px;
+    border-bottom: 1px solid black;
+    padding-bottom: 5px;
+}
+
+main .block .block-form .form-tip {
+    text-align: center;
+    font-size: 10pt;
+    margin-bottom: 12px;
+}
+
+main .block .block-form .form-elements > * {
+    margin: 0 auto;
+    width: 90%;
+}
+
+main .block .block-form .form-elements select,
+main .block .block-form .form-elements input,
+main .block .block-form .form-elements button
+{
+    margin: 3px;
+    width: 100%;
+    padding: 3px;
+    vertical-align: middle;
+    font-weight: bolder;
+}
+
+main .block .block-form .form-elements select,
+main .block .block-form .form-elements input {
+    padding-left: 14px;
+    font-size: 11pt;
+}
+
+main .block .block-form .form-elements select {
+    border: 1px solid #0BA765;
+    box-sizing: border-box;
+    border-radius: 10px;
+
+    color: var(--color-green);
+
+}
+
+main .block .block-form .form-elements input {
+    border: 1px solid #868686;
+    box-sizing: border-box;
+    border-radius: 10px;
+}
+
+main .block .block-form .form-elements button {
+    margin-top: 15px;
+    margin-bottom: 15px;
+
+    background: var(--color-green);
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+
     color: white;
 }
 
-.block-table table.dataTable thead th {
-    padding: 0;
+
+/* * * * * * * * * * * * * * */
+
+
+main .block .block-table table {
+    width: 100% !important;
+    border-spacing: 0px 10px;
+
+    
+}
+
+main .block .block-table thead {
+    
+}
+
+main .block .block-table table,
+main .block .block-table table th
+{
+    border: 0;
+}
+
+main .block .block-table tr {
+    background: #FCFCFC;
+    box-shadow: 2px 2px 16px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+}
+
+main .block .block-table table tbody tr td {
+    border-right: 1px solid black;
+}
+
+main .block .block-table table tbody tr td:last-child {
+    border-right: 0;
+}
+
+main .block .block-table table tbody tr td input {
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid black;
+    text-align: center;
+}
+
+main .block .block-table table tbody tr td input:focus {
+    outline-width: 0;
+}
+
+main .block .block-table table tbody tr td:nth-last-child(1),
+main .block .block-table table tbody tr td:nth-last-child(2)
+{
+    text-align: center;
 }

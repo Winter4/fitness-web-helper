@@ -33,6 +33,11 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.5/datatables.min.css"/>
     <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.5/datatables.min.js"></script>
 
+    <!-- Open Sans font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+
 
     <!-- Font Awesome CSS -->
     <link rel="stylesheet" type="text/css" href="/css/fontawesome.css">
@@ -57,11 +62,20 @@
 
         <!--------------------------------- Header ------------------------------------->
         <header>
-            <div class="links"></div>
-            <div class="calories">
-                <p>Калории: </p>
-                <div class="got"></div>
-                <div class="target"></div>
+            <div class="user-data">
+                <div class="hello">Привет, Александр!</div>
+
+                <div class="calories">
+                    <p>калорий за сегодня: </p>
+                    <div class="got"></div>
+                    из
+                    <div class="target"></div>
+                </div>
+
+                <div class="links">
+                    <div class="get-reports"></div>
+                    <div class="send-report" id="send-report"><button>Отправить отчёт</button></div>
+                </div>
             </div>
 
             <nav>
@@ -83,7 +97,8 @@
         <!---------------------------------- Content ------------------------------------>
         <main>
             
-            <!--------- Tables header ---------->
+
+            <!--------- Tables header ----------
             <div class="row justify-content-end">
                 <div class="block tables-header col-9">
                     <table class="dataTable">
@@ -92,12 +107,13 @@
                                 <th>Продукт</th>
                                 <th>Съедено, г</th>
                                 <th>Осталось съесть, г</th>
+                                <th></th>
                             </tr>
                         </thead>
                     </table>
                 </div>
             </div>
-            <!-------- Tables header over ------>
+            -------- Tables header over ------>
 
             
 
@@ -133,18 +149,22 @@
             <!------------------------------- Tabs content over ------------------------------------->
 
             <!-------- Vegetables table -------->
-            <div class="row vegetables block justify-content-end">
+            <div class="vegetables block row justify-content-end">
                 <div class="col-9">
-                    <h6 class="block-type-header">Овощи</h6>
-                    <table class="block-rows">
-                        <tbody>
-                            <tr>
-                                <td>Салат, овощи</td>
-                                <td><input type="number" min="0" onblur="updateVegetablesInput()"></td>
-                                <td id="toEatVegetablesWeight"></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="block-header"><h5>Овощи</h5></div>
+                    <div class="block-content row">
+                        <div class="block-table">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>Салат, овощи</td>
+                                        <td><input type="number" min="0" maxlength="3" onblur="updateVegetablesInput()"></td>
+                                        <td id="toEatVegetablesWeight"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!------- Vegetables table over ----->
