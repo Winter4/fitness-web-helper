@@ -136,11 +136,15 @@ header .nav button {
     color: var(--color-grey);
     font-weight: bold;
     border: 0;
+
+    transition: 0.2s;
 }
 
 header .nav button:hover {
     color: black;
     box-shadow: 10px -10px 22px -12px rgba(0,0,0,0.3);
+
+    transition: 0.2s;
 }
 
 header .nav-tabs .nav-link.active {
