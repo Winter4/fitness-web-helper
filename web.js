@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
-require('dotenv').config({ path: 'C:/Users/Vladimir/Desktop/.env' });
+require('dotenv').config({ path: 'C:/Users/Vladimir/Desktop/calories-app/.env' });
 
 // _________________________________________
 
@@ -43,7 +43,7 @@ app.get('/', async (req, res) => {
         log.info('Getting report from DB', { route: req.url });
         report = await Report.findOne({ user: req.query.user, date: time.today.date() });
         log.info('Got report from DB', { route: req.url });
-        
+
         log.info('Getting user from DB', { route: req.url });
         user = await User.findOne({ _id: req.query.user });
         log.info('Got user from DB', { route: req.url });
@@ -57,14 +57,14 @@ app.get('/', async (req, res) => {
     try {
         if (report == null) {
 
-            report = new Report({ 
+            report = new Report({
                 user: user._id,
                 tabs: [{}, {}, {}, {}, {}],
 
                 calories: { got: 0, target: user.caloriesToLose, },
 
                 nonNutrientMeals: {
-                    vegetables: { 
+                    vegetables: {
                         weight: { eaten: 0, },
                     }
                 }
@@ -89,7 +89,7 @@ app.get('/', async (req, res) => {
 
                 // create the field
                 report.tabs[i].calories.target = -1;
-            }  
+            }
         }
 
         report.mealsPerDay = user.mealsPerDay;

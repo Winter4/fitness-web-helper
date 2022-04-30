@@ -68,7 +68,6 @@ header .user-data .hello {
 header .user-data .links {
     float: right;
     margin-top: -7px;
-    margin-right: 75px;
 }
 
 header .user-data .links span:first-child {
