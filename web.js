@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
-require('dotenv').config({ path: 'C:/Users/Vladimir/Desktop/calories-app/.env' });
+require('dotenv').config({ path: '../.env' });
 
 // _________________________________________
 
