@@ -8,17 +8,14 @@ const Report = require('../../../models/report');
 const { getReport } = require('../../../_commons');
 
 
-router.get('/reports/non-nutr/junk/:user', async (req, res) => {
+router.get('/reports/junk/:user/:group', async (req, res) => {
     try {
         const report = await getReport(req.params, req.query);
-
-        await report.nonNutrientMeals.populate('junk.food');
-
-        const junkGroups = ['alcohol', 'soda', 'sweets'];
+        await report.populate('junk.food');
 
         let response = [];
-        for (let meal of report.nonNutrientMeals.junk) {
-            if (junkGroups.includes(meal.food.group)) {
+        for (let meal of report.junk) {
+            if (meal.food.group == req.params.group) {
                 response.push({ 
                     _id: meal._id,
                     name: meal.food.name,
@@ -41,7 +38,7 @@ router.get('/reports/non-nutr/junk/:user', async (req, res) => {
 router.use(express.urlencoded({ extended: false }));
 const { pushByID } = require('../nutrient/nutrient');
 
-router.post('/reports/non-nutr/junk/:user', async (req, res) => {
+router.post('/reports/junk/:user', async (req, res) => {
     try {
         const newMeal = { 
             _id: new mongoose.Types.ObjectId, 
@@ -52,7 +49,7 @@ router.post('/reports/non-nutr/junk/:user', async (req, res) => {
         };
 
         const report = await getReport(req.params, req.query);
-        pushByID(report.nonNutrientMeals.junk, newMeal);
+        pushByID(report.junk, newMeal);
 
         await report.save();
 
@@ -69,11 +66,11 @@ router.post('/reports/non-nutr/junk/:user', async (req, res) => {
 
 const { changeByID } = require('../nutrient/nutrient');
 
-router.put('/reports/non-nutr/junk/:user', async (req, res) => {
+router.put('/reports/junk/:user', async (req, res) => {
     try {
         const report = await getReport(req.params, req.query);
 
-        changeByID(report.nonNutrientMeals.junk, req.query.row_id, req.query.row_weight);
+        changeByID(report.junk, req.query.row_id, req.query.row_weight);
 
         await report.save();
 
@@ -90,11 +87,11 @@ router.put('/reports/non-nutr/junk/:user', async (req, res) => {
 
 const { deleteByID } = require('../nutrient/nutrient');
 
-router.delete('/reports/non-nutr/junk/:user', async (req, res) => {
+router.delete('/reports/junk/:user', async (req, res) => {
     try {
         let report = await getReport(req.params, req.query);
 
-        deleteByID(report.nonNutrientMeals.junk, req.query.row_id);
+        deleteByID(report.junk, req.query.row_id);
 
         await report.save();
 

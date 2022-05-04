@@ -26,56 +26,27 @@
 
 
 body {
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Open Sans', sans-serif;  
 }
 
-.container {
-    width: 100%;
-    padding: 0;
-    padding-bottom: 153px;
-    margin: 0 auto;
-}
-
-header {
+.container-fluid {
     background-color: var(--header-background);
-
-    position: fixed;
-    top: 0;
-    right: 0;
-    left: 0;
-
-    z-index: 2;
 }
 
-header .header-content {
-    height: 153px;
+.header-content {
     padding: 30px 20px 0px 20px;
     max-width: var(--page-width);
     margin: 0 auto;
+
 }
 
-header .user-data > * {
-    display: inline-block;
-    margin: 5px;
-    margin-left: 35px;
-}
-
-header .user-data .hello {
+.user-data .hello {
     font-weight: bold;
     font-size: 18pt;
 }
 
-header .user-data .links {
-    float: right;
-    margin-top: -7px;
-}
-
-header .user-data .links span:first-child {
-    margin-right: 10px;
-}
-
-header .user-data .links span,
-header .user-data .links button {
+.user-data .user-data-links span,
+.user-data button {
     background-color: var(--color-green);
     color: white;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.35);
@@ -87,52 +58,45 @@ header .user-data .links button {
     transition: 0.2s;
 }
 
-header .user-data .links span:hover,
-header .user-data .links button:hover {
+.user-data .user-data-links span:hover,
+.user-data .user-data-links button:hover {
     box-shadow: 4px 4px 7px rgba(0, 0, 0, 0.45);
     transition: 0.2s;
 }
 
-header .user-data .links .get-reports a {
+.user-data .user-data-links a {
     text-decoration: none;
     color: white;
 }
 
-header .user-data .links .send-report {
-    margin: 8px auto;
-    width: 45%;
-}
-
-header .user-data .links .send-report button {
-    width: 100%;
+.user-data .send-report button {
     background-color: var(--color-orange);
     border: 0;
-    font-size: 8pt;
 }
 
-header .user-data .calories > * {
+.user-data .calories > * {
     display: inline-block;
 }
 
-header .user-data .calories {
+.user-data .calories {
     color: var(--color-green);
     font-weight: bold;
 }
 
-header .user-data .calories p {
+.user-data .calories p {
     color: var(--color-grey);
     font-weight: normal;
 }
 
-header nav {
+nav {
     margin-top: 20px;
 }
 
-header .nav {
+.nav {
     justify-content: center;
 }
 
-header .nav button {
+.nav button {
     color: var(--color-grey);
     font-weight: bold;
     border: 0;
@@ -140,116 +104,110 @@ header .nav button {
     transition: 0.2s;
 }
 
-header .nav button:hover {
+.nav button:hover {
     color: black;
     box-shadow: 10px -10px 22px -12px rgba(0,0,0,0.3);
 
     transition: 0.2s;
 }
 
-header .nav-tabs .nav-link.active {
+.nav-tabs .nav-link.active {
     color: var(--color-green);
 
-    background-color: transparent;
+    background-color: white;
     border-bottom: 3px solid var(--color-green);
+
+    transition: 0.5s;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * */
-
-main {
-    max-width: var(--page-width);
-    margin: 150px auto;
+    
+.tab-header {
+    font-size: 16pt;
+    
+    border-bottom: 3px solid var(--color-green);
 }
 
-main .block {
-    margin: 30px;
-    padding: 20px;
-    /*background-color: #228B22;*/
+.tab-header-content {
+    color: var(--color-green);
+    font-weight: bold;
+}
 
-    display: flex;
-    flex-direction: column;
+.block {
+    /* margin: 0 auto; */
+    /* padding: 20px; */
+
+    /* display: flex; */
+    /* flex-direction: column; */
+}
+
+.block > * {
+    /* margin: 0 auto; */
 }
 
 
-main .block table tr th:nth-child(1),
-main .block table tr td:nth-child(1)
+.block table tr th:nth-child(1),
+.block table tr td:nth-child(1)
 {
     padding-left: 35px;
     width: 45%;
 }
 
-main .block table tr th:nth-child(2),
-main .block table tr td:nth-child(2)
+.block table tr th:nth-child(2),
+.block table tr td:nth-child(2)
 {
     text-align: center;
     width: 20%;
 }
 
-main .block table tr th:nth-child(3),
-main .block table tr td:nth-child(3)
+.block table tr th:nth-child(3),
+.block table tr td:nth-child(3)
 {
     text-align: center;
     width: 25%;
 }
 
-main .block table tr th:nth-child(4),
-main .block table tr td:nth-child(4)
+.block table tr th:nth-child(4),
+.block table tr td:nth-child(4)
 {
     width: 10%;
 }
 
-/*
-main .tables-header {
-    margin-right: 42px;
-    margin-bottom: -40px;
-    padding-right: 55px;
+.block-header {
+    font-size: 13pt;
+    color: var(--color-green);
 
-    text-align: center;
-    width: 70%;
+    font-weight: bold;
 }
 
-main .tables-header table tr th {
-    padding-left: 0;
-}
-
-main .tables-header table tr th:last-child {
-    width: 0%;
-}
-*/
-
-main .block .block-content {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-}
-
-main .block .block-header h5 {
-    text-align: center;
+.block-header .h {
+    font-size: 14pt;
     padding-bottom: 7px;
-
-    font-weight: bolder;
+    font-weight: normal;
+    color: black;
 }
 
 
 /* * * * * * * * * * * * * * */
 
-main .block .block-form {
-    padding: 8px;
-
+.block .block-form {
+    /* padding: 8px; */
+    /* box-sizing: border-box; */
+    
     filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
     background: #FCFCFC;
     box-shadow: 2px 2px 16px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
 }
 
-main .block .block-form .form-header {
+.block .block-form .form-header {
     text-align: center;
     margin-bottom: 5px;
     border-bottom: 1px solid black;
     padding-bottom: 5px;
 }
 
-main .block .block-form .form-tip {
+.block .block-form .form-tip {
     text-align: center;
     color: var(--color-grey);
 
@@ -257,18 +215,18 @@ main .block .block-form .form-tip {
     margin-bottom: 12px;
 }
 
-main .block .block-form .form-elements {
+.block .block-form .form-elements {
     margin: 5px;
 }
 
-main .block .block-form .form-elements > * {
+.block .block-form .form-elements > * {
     margin: 20px auto;
     width: 90%;
 }
 
-main .block .block-form .form-elements select,
-main .block .block-form .form-elements input,
-main .block .block-form .form-elements button
+.block .block-form .form-elements select,
+.block .block-form .form-elements input,
+.block .block-form .form-elements button
 {
     margin: 3px;
     width: 100%;
@@ -277,13 +235,13 @@ main .block .block-form .form-elements button
     font-weight: bolder;
 }
 
-main .block .block-form .form-elements select,
-main .block .block-form .form-elements input {
+.block .block-form .form-elements select,
+.block .block-form .form-elements input {
     padding-left: 14px;
     font-size: 11pt;
 }
 
-main .block .block-form .form-elements select {
+.block .block-form .form-elements select {
     border: 1px solid #0BA765;
     box-sizing: border-box;
     border-radius: 10px;
@@ -292,7 +250,7 @@ main .block .block-form .form-elements select {
 
 }
 
-main .block .block-form .form-elements input {
+.block .block-form .form-elements input {
     border: 1px solid #868686;
     box-sizing: border-box;
     border-radius: 10px;
@@ -300,12 +258,12 @@ main .block .block-form .form-elements input {
     transition: 0.3s;
 }
 
-main .block .block-form .form-elements input:focus {
+.block .block-form .form-elements input:focus {
     outline-color: var(--color-green);
     transition: 0.3s;
 }
 
-main .block .block-form .form-elements button {
+.block .block-form .form-elements button {
     margin-top: 15px;
     margin-bottom: 15px;
 
@@ -319,40 +277,43 @@ main .block .block-form .form-elements button {
     transition: 0.2s;
 }
 
-main .block .block-form .form-elements button:hover {
+.block .block-form .form-elements button:hover {
     box-shadow: 4px 4px 7px rgba(0, 0, 0, 0.45);
     transition: 0.2s;
 }
 
 
 /* * * * * * * * * * * * * * */
+.block-table {
+    box-sizing:border-box;
+}
 
-main .block .block-content .block-table table {
+.block .block-table table {
     width: 100% !important;
     border-spacing: 0px 10px;
 }
 
-main .block .block-table table,
-main .block .block-table table th
+.block .block-table table,
+.block .block-table table th
 {
     border: 0;
 }
 
-main .block .block-table tr {
+.block .block-table tr {
     background: #FCFCFC;
     box-shadow: 2px 2px 16px rgba(0, 0, 0, 0.25);
     border-radius: 10px;
 }
 
-main .block .block-table table tbody tr td {
+.block .block-table table tbody tr td {
     border-right: 2px solid var(--color-soft-grey);
 }
 
-main .block .block-table table tbody tr td:last-child {
+.block .block-table table tbody tr td:last-child {
     border-right: 0;
 }
 
-main .block .block-table table tbody tr td input {
+.block .block-table table tbody tr td input {
     width: 100%;
     border: 0;
     border-bottom: 2px solid var(--color-soft-grey);
@@ -360,14 +321,14 @@ main .block .block-table table tbody tr td input {
     transition: 0.4s;
 }
 
-main .block .block-table table tbody tr td input:focus {
+.block .block-table table tbody tr td input:focus {
     outline-width: 0;
     border-color: var(--color-green);
     transition: 0.6s;
 }
 
-main .block .block-table table tbody tr td:nth-last-child(1),
-main .block .block-table table tbody tr td:nth-last-child(2)
+.block .block-table table tbody tr td:nth-last-child(1),
+.block .block-table table tbody tr td:nth-last-child(2)
 {
     text-align: center;
 }
@@ -386,11 +347,106 @@ main .block .block-table table tbody tr td:nth-last-child(2)
 .disabled {
     pointer-events: none; /* делаем ссылку некликабельной */
     cursor: default;  /* устанавливаем курсор в виде стрелки */
-    color: var(--color-green) !important; /* цвет текста для нективной ссылки */
+
+    box-shadow: none !important; 
+
     border: 1px solid var(--color-green);
-    background-color: var(--header-background) !important;
+    background-color: var(--header-background) !important;   
 }
 
 .disabled a {
-    color: var(--color-green) !important;
+    color: var(--color-green) !important; /* цвет текста для нективной ссылки */
+    font-weight: bold;
+}
+
+/* * * * * * * * * * * * * * * */
+
+@media screen and (max-width: 1200px) {
+
+    .user-data .hello {
+        font-size: 15pt;
+    }  
+}
+
+@media screen and (max-width: 767px) {
+
+    .row {
+        --bs-gutter-x: 0;
+    }
+
+    .user-data .hello {
+        font-size: 12pt;
+    }
+
+    .user-data .calories {
+        font-size: 10pt;
+    }
+
+    .user-data .user-data-links > * {
+        display: inline;
+        font-size: 10pt;
+    }
+
+    .user-data .user-data-links button {
+        width: auto;
+    }
+
+    .nav button {
+        font-size: 10pt;
+    }
+}
+
+@media screen and (max-width: 425px) {
+
+    .header-content {
+        padding: 10px 5px 0;
+    }
+
+    .user-data .hello {
+        font-size: 11pt;
+    }
+
+    .user-data .calories {
+        font-size: 9pt;
+    }
+
+    .send-report {
+        margin-right: 4px;
+    }
+
+    .send-report button {
+        font-size: 9pt;
+    }
+
+    .user-data-links span {
+        padding: 5px 10px !important;
+    }
+
+    .nav {
+        margin-top: 7px;
+    }
+
+    .nav button {
+        padding: 5px 10px;
+        font-size: 8pt;
+    }
+
+    table.dataTable{
+        font-size: 14px; 
+    }
+    table.dataTable thead th, table.dataTable thead td {
+        padding: 8px 14px;
+    }
+    .block table tr th:nth-child(1),
+    .block table tr td:nth-child(1)
+    {
+        padding-left: 13px;
+        width: auto;
+    }
+}
+
+@media screen and (max-width: 340px) {
+    .user-data {
+        justify-content: space-between !important;
+    }
 }

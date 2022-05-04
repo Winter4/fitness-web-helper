@@ -63,28 +63,26 @@ app.get('/', async (req, res) => {
 
                 calories: { got: 0, target: user.caloriesToLose, },
 
-                nonNutrientMeals: {
-                    vegetables: {
-                        weight: { eaten: 0, },
-                    }
+                vegetables: {
+                    weight: { eaten: 0, },
                 }
             });
 
             // init the tabs
             for (let i in report.tabs) {
                 if (i == report.tabs.length - 1) {
-                    report.tabs[i].nutrientRates = {
-                        'proteins': 0.5,
-                        'fats': 0.25,
-                        'carbons': 0.25,
-                    };
+                    report.tabs[i].nutrients = [
+                        { rate: 0.5, calories: { got: 0 } },
+                        { rate: 0.25, calories: { got: 0 } },
+                        { rate: 0.25, calories: { got: 0 } },
+                    ];
                 }
                 else {
-                    report.tabs[i].nutrientRates ={
-                        'proteins': 0.35,
-                        'fats': 0.25,
-                        'carbons': 0.4,
-                    };
+                    report.tabs[i].nutrients = [
+                        { rate: 0.35, calories: { got: 0 } },
+                        { rate: 0.25, calories: { got: 0 } },
+                        { rate: 0.4, calories: { got: 0 } },
+                    ];
                 }
 
                 // create the field
@@ -108,7 +106,6 @@ app.get('/', async (req, res) => {
 
 
 app.use(require('./routes/data'));
-app.use(require('./routes/calories-got'));
 app.use(require('./routes/send-report'));
 
 app.use(require('./routes/reports/nutrient/nutrient').router);

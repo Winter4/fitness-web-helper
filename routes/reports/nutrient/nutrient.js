@@ -11,7 +11,7 @@ const { getReport, tabAtoi } = require('../../../_commons');
 
 // ___________________________________________________________________
 
-router.get('/reports/nutr/:user/:tab/:nutrient', async (req, res) => {
+router.get('/reports/tabs/:user/:tab/:nutrient', async (req, res) => {
     try {
         let report = await getReport(req.params, req.query);
 
@@ -32,7 +32,7 @@ router.get('/reports/nutr/:user/:tab/:nutrient', async (req, res) => {
             }
         }
 
-        log.info('Response for GET with nutr rows json OK', { route: req.url });
+        log.info('Response for GET with tabs rows json OK', { route: req.url });
         res.json({ data: response });
 
     } catch (e) {
@@ -58,7 +58,7 @@ const pushByID  = (array, mealObject) => {
 };
 module.exports.pushByID = pushByID;
 
-router.post('/reports/nutr/:user/:tab', async (req, res) => {
+router.post('/reports/tabs/:user/:tab', async (req, res) => {
     try {
         let newMeal = { 
             _id: new mongoose.Types.ObjectId, 
@@ -98,7 +98,7 @@ const changeByID = (array, id, newWeight) => {
 };
 module.exports.changeByID = changeByID;
 
-router.put('/reports/nutr/:user/:tab/:nutrient', async (req, res) => {
+router.put('/reports/tabs/:user/:tab/:nutrient', async (req, res) => {
     try {
         const report = await getReport(req.params, req.query);
 
@@ -129,7 +129,7 @@ const deleteByID = (array, id) => {
 };
 module.exports.deleteByID = deleteByID;
 
-router.delete('/reports/nutr/:user/:tab/:nutrient', async (req, res) => {
+router.delete('/reports/tabs/:user/:tab/:nutrient', async (req, res) => {
     try {
         let report = await getReport(req.params, req.query);
 

@@ -6,6 +6,7 @@ module.exports.log = createLogger({
 		format.json(),
 	),
  	transports: [
+ 		new transports.Console(),
     	new transports.File({ filename: './logs/full.log' }),
     	new transports.File({ filename: './logs/error.log', level: 'error' }),
 	]

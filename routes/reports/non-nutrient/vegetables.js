@@ -5,10 +5,10 @@ const { log } = require('../../../logger');
 const Report = require('../../../models/report');
 const { getReport } = require('../../../_commons');
 
-router.get('/reports/non-nutr/vegetables/:user', async (req, res) => {
+router.get('/reports/vegetables/:user', async (req, res) => {
 	try {
 		const report = await getReport(req.params, req.query);
-		const veg = report.nonNutrientMeals.vegetables.weight;
+		const veg = report.vegetables.weight;
 
 		const response = { 
 			eatenWeight: veg.eaten,
@@ -25,11 +25,12 @@ router.get('/reports/non-nutr/vegetables/:user', async (req, res) => {
 	}
 });
 
-router.put('/reports/non-nutr/vegetables/:user', async (req, res) => {
+router.put('/reports/vegetables/:user', async (req, res) => {
     try {
         const report = await getReport(req.params, req.query);
 
-        report.nonNutrientMeals.vegetables.weight.eaten = req.query.veg_weight;
+        console.log(req.query);
+        report.vegetables.weight.eaten = req.query.weight;
         await report.save();
 
         log.info('Response for PUT with OK', { route: req.url });
