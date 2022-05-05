@@ -431,6 +431,14 @@ nav {
         font-size: 8pt;
     }
 
+    .tab-header {
+        font-size: 14pt;
+    }
+
+    .block-header {
+        font-size: 12pt;
+    }
+
     table.dataTable{
         font-size: 14px; 
     }

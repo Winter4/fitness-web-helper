@@ -11,10 +11,10 @@ const { getReport } = require('../../../_commons');
 router.get('/reports/junk/:user/:group', async (req, res) => {
     try {
         const report = await getReport(req.params, req.query);
-        await report.populate('junk.food');
+        await report.populate('junk.meals.food');
 
         let response = [];
-        for (let meal of report.junk) {
+        for (let meal of report.junk.meals) {
             if (meal.food.group == req.params.group) {
                 response.push({ 
                     _id: meal._id,
@@ -49,7 +49,7 @@ router.post('/reports/junk/:user', async (req, res) => {
         };
 
         const report = await getReport(req.params, req.query);
-        pushByID(report.junk, newMeal);
+        pushByID(report.junk.meals, newMeal);
 
         await report.save();
 
@@ -70,7 +70,7 @@ router.put('/reports/junk/:user', async (req, res) => {
     try {
         const report = await getReport(req.params, req.query);
 
-        changeByID(report.junk, req.query.row_id, req.query.row_weight);
+        changeByID(report.junk.meals, req.query.row_id, req.query.row_weight);
 
         await report.save();
 
@@ -91,7 +91,7 @@ router.delete('/reports/junk/:user', async (req, res) => {
     try {
         let report = await getReport(req.params, req.query);
 
-        deleteByID(report.junk, req.query.row_id);
+        deleteByID(report.junk.meals, req.query.row_id);
 
         await report.save();
 

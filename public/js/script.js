@@ -157,12 +157,15 @@ function requestHeader() {
 // ________________________________________________________________ //
 
 // block header template
-const makeHeader = (text) => {
+const makeHeader = (text, flag) => {
+
+    const cals = flag ? `<span class="calories-got">XXX</span> из <span class="calories-target">YYY</span>` : ``;
+
     return `<div class="block-header col-12">
                 <div class="row">
-                    <div class="col-3 offset-1 mb-2">
-                        <span class="h">${text}:</span>
-                        <span class="calories-got">XXX</span> из <span class="calories-target">YYY</span>
+                    <div class="col-12 col-sm-3 offset-1 mb-2">
+                        <span class="h">${text}</span>
+                        ${cals}
                     </div>
                 </div>
             </div>`;
@@ -209,11 +212,11 @@ const makeForm = (tab) => {
  * @param  object{string x2}    group  [latin & cyrillic strings for the block]
  * @param  object{string x4}    ajax   [URLs for the tables GET, buttons POST, tables DELETE and tables PUT]
  */
-function makeBlock(target, group, ajax, toEatVisible) {
+function makeBlock(target, group, ajax, tabsFlag) {
 
     const block = 
         `<div class="${group.latin} block row mb-5">
-            ${makeHeader(group.cyrillic)}
+            ${makeHeader(group.cyrillic, tabsFlag)}
             ${makeForm(target)}
             ${makeTable(target)}
         </div>`;
@@ -254,7 +257,9 @@ function makeBlock(target, group, ajax, toEatVisible) {
             input.val('').blur();
             table.DataTable().ajax.reload();
             updateHeaderCaloriesBar();
-            updateTabCalories(target, 'got');
+
+            if (tabsFlag) updateTabCalories(target, 'got');
+            else updateJunkCalories();
         })
         .fail(function() { console.error(`post to ${ajax.post} failed`) });
     });
@@ -298,14 +303,14 @@ function makeBlock(target, group, ajax, toEatVisible) {
                                 value="${data}" 
                                 id="${row._id}" 
                                 data-tab="${target}"
-                                onblur="onInputBlur('${row._id}', '${ajax.put}', '${table.attr('id')}')"
+                                onblur="onInputBlur('${row._id}', '${ajax.put}', '${table.attr('id')}', ${tabsFlag})"
                             />`;
                 }
             },
             {
                 title: "Осталось съесть, г",
                 data: "weight.toEat",
-                visible: toEatVisible,
+                visible: tabsFlag,
                 render: function(data, type, row, meta) { 
                     let res;
                     if (Number(data) < 0) {
@@ -315,7 +320,7 @@ function makeBlock(target, group, ajax, toEatVisible) {
                         res = '<i class="fa-solid fa-arrow-up color-green"></i> ' + data;
                     }
                     else {
-                        res = data;
+                        res = '<i class="fa-solid fa-check color-green"></i>';
                     }
 
                     return `${res}`;
@@ -326,7 +331,7 @@ function makeBlock(target, group, ajax, toEatVisible) {
                 render: function(data, type, row, meta) {
                     return `<a href="javascript:;"
                                 class="delete-icon"
-                                onclick="onRowDelete('${row._id}', '${ajax.delete}', '${table.attr('id')}')"
+                                onclick="onRowDelete('${row._id}', '${ajax.delete}', '${table.attr('id')}', ${tabsFlag})"
                             >
                                 <i class="fa-solid fa-trash-can color-red"></i>
                             </a>`;
@@ -346,7 +351,7 @@ const tabGroups = {
 
 // get the tab calories data, depending on type (got/target)
 function updateTabCalories(tabID, type) {
-    $.get(`${origin}/tab/calories/${type}/${user}/${tabID.substring(5)}` + yestQuery)
+    $.get(`${origin}/tabs/calories/${type}/${user}/${tabID.substring(5)}` + yestQuery)
         .done(function(response) {
 
             const tabCaloriesGot = $(`${tabID} .tab-header-content .calories-got`);
@@ -416,7 +421,7 @@ function makeTabs() {
         updateTabCalories(tab, 'got');
 
         // to eat table column should't be visible in junkfood tables
-        const toEatTableColumnVisible = true;
+        const tabsFlag = true;
 
         // make 3 block per each tab
         for (let i in tabGroups.latin) {
@@ -432,10 +437,19 @@ function makeTabs() {
                 tab, 
                 { latin: tabGroups.latin[i], cyrillic: tabGroups.cyrillic[i] }, 
                 ajax,
-                toEatTableColumnVisible
+                tabsFlag
             );
         }
     }
+}
+
+function updateJunkCalories() {
+
+    $.get(`${origin}/junk/calories/got/${user}` + yestQuery)
+        .done(function(response) {
+            $(`${dom.main.junk} .calories-got`).html(response.value);
+        })
+        .fail(function() { console.error('updating junk calories got failed') });
 }
 
 function makeJunk() {
@@ -445,7 +459,7 @@ function makeJunk() {
                         <div class="col-12">
                             калорий за счёт нерекомендованных продуктов:
                             <div class="tab-header-content">
-                                <span class="calories-got">XXX</span>
+                                <span class="calories-got color-red">XXX</span>
                             </div
                         </div>
                     </div>`;
@@ -458,7 +472,10 @@ function makeJunk() {
         cyrillic: ['Алкоголь', 'Газировка и соки', 'Сладости'],
     };
 
-    const toEatTableColumnVisible = false;
+    // get the junk calories data
+    updateJunkCalories();
+
+    const tabsFlag = false;
 
     // make junk blocks
     for (let i in junkGroups.latin) {
@@ -474,7 +491,7 @@ function makeJunk() {
             dom.main.junk,
             { latin: junkGroups.latin[i], cyrillic: junkGroups.cyrillic[i] },
             ajax,
-            toEatTableColumnVisible
+            tabsFlag
         );
     }
 }
@@ -535,12 +552,18 @@ $(document).ready(function() {
     // make the main content - tabs, block, its forms & tables
     makeTabs();
     makeJunk();
+
+    // set send-report button onclick
+    $('#send-report').on('click', function() {
+        $.get(`/send-report/${user}` + yestQuery)
+            .fail(function() { console.error('failed to send report to bot') });
+    });
 });
 
 
 
 
-function onInputBlur(inputID, ajax, tableID) {
+function onInputBlur(inputID, ajax, tableID, tabsFlag) {
 
     const input = $(`#${inputID}`);
     const table = $(`#${tableID}`);
@@ -553,7 +576,9 @@ function onInputBlur(inputID, ajax, tableID) {
         success: function (res) {
             table.DataTable().ajax.reload();
             updateHeaderCaloriesBar();
-            updateTabCalories(input.data('tab'), 'got');
+
+            if (tabsFlag) updateTabCalories(input.data('tab'), 'got');
+            else updateJunkCalories();
         },
         error: function(res) {
             console.error(`onblur of input ${inputID} failed`);
@@ -561,7 +586,7 @@ function onInputBlur(inputID, ajax, tableID) {
     });
 }
 
-function onRowDelete(rowID, ajax, tableID) {
+function onRowDelete(rowID, ajax, tableID, tabsFlag) {
 
     const table = $(`#${tableID}`);
 
@@ -571,10 +596,12 @@ function onRowDelete(rowID, ajax, tableID) {
         success: function (res) {
             table.DataTable().ajax.reload();
             updateHeaderCaloriesBar();
-            updateTabCalories(table.data('tab'), 'got');
+
+            if (tabsFlag) updateTabCalories(table.data('tab'), 'got');
+            else updateJunkCalories();
         },
         error: function(res) {
-            console.log(`ondelete of row ${rowID} failed`)
+            console.error(`ondelete of row ${rowID} failed`)
         }
     });
 }

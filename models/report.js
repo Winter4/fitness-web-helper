@@ -34,7 +34,6 @@ const reportSchema = new mongoose.Schema({
                 eaten: Number,
                 toEat: Number,
             },
-
         }],
         calories: { got: Number, target: Number, },
         nutrients: [{
@@ -56,16 +55,19 @@ const reportSchema = new mongoose.Schema({
             }
         }
     },
-    junk: [{
-        _id: mongoose.Schema.Types.ObjectId,
-        food: { 
-            type: mongoose.Schema.Types.ObjectId, 
-            ref: 'meal',
-        },
-        weight: {
-            eaten: Number,
-        },
-    }],
+    junk: { 
+        meals: [{
+            _id: mongoose.Schema.Types.ObjectId,
+            food: { 
+                type: mongoose.Schema.Types.ObjectId, 
+                ref: 'meal',
+            },
+            weight: {
+                eaten: Number,
+            },
+        }],
+        calories: { got: Number },
+    },
 
     calories: {
         got: Number,
@@ -105,7 +107,9 @@ reportSchema.pre('save', async function(next) {
         // get the meals info
         await this.populate('tabs.meals.food');
 
-        // ________________ calc calories got in the whole report __________________
+        log.info('Starting calc calories got', { model: 'report' });
+
+        // ________________ CALC CALORIES GOT __________________
         
         // reset calories got in the report
         this.calories.got = Number(0);
@@ -124,7 +128,15 @@ reportSchema.pre('save', async function(next) {
             for (meal of tab.meals) {
 
                 // calories per this food (weigh * calory)
-                const cals = Number(meal.food.calories * meal.weight.eaten)
+                let cals = Number(meal.food.calories * meal.weight.eaten)
+
+                // EGGS CONVERT
+                // if this meal is egg, multiply its weight by 100 to get 
+                // actually weight from count (eggs are inputed not by weight)
+                // but by count (1 egg, 2 egg, N eggs)
+                if (`${meal.food._id.toString()}` == '62698bacaec76b49a8b91712')
+                    cals *= 100;
+                // ____________
 
                 // report calories
                 this.calories.got += cals;
@@ -142,30 +154,32 @@ reportSchema.pre('save', async function(next) {
                 group.calories.got = (group.calories.got).toFixed();
         }
 
+        // reset junk calories got
+        this.junk.calories.got = Number(0);
+
         // calc calories in junkfood tables
-        await this.populate('junk.food');
-        for (meal of this.junk)
-            this.calories.got += Number(meal.food.calories * meal.weight.eaten);
+        await this.populate('junk.meals.food');
+        for (meal of this.junk.meals) {
+
+            const cals = Number(meal.food.calories * meal.weight.eaten);
+
+            // sum to report calories got
+            this.calories.got += cals;
+            // sum to junk calories got
+            this.junk.calories.got += cals;
+        }
+
+        this.junk.calories.got = (this.junk.calories.got).toFixed();
 
         // beauifing
         this.calories.got = (this.calories.got).toFixed();
+
+        log.info('Finished to calc calories got', { model: 'report' });
+
+
+        // ___________________________ CALC TO EAT WEIGHTS _____________________________
         
-
-        log.info('Leaving pre-save model mdlwre', { model: 'report' });
-        next();
-
-    } catch (e) {
-        log.error({ model: 'report', error: e.message });
-        throw new Error('Report model pre-save mdlwre failed');
-    }
-});
-
-// ____________________________________________________________________
-
-// calc toEat weight for each food
-reportSchema.methods.calcToEatWeights = async function(tab, nutrient) {
-    try {
-        log.info('Entered calcToEatWeights model method', { model: 'report' });
+        log.info('Starting calc to eat weights', { model: 'report' });
 
         // copied from the _commons.js because 
         // requiring caused errors
@@ -178,30 +192,42 @@ reportSchema.methods.calcToEatWeights = async function(tab, nutrient) {
             'supper': 4,
         };
 
-        // get the food data
-        await this.populate(`tabs.${tabAtoi[tab]}.meals.food`);
+        // for each tab
+        for (let tab of this.tabs) {
+            // for meal
+            for (let meal of tab.meals) {
 
-        // get tab to operate with
-        const curTab = this.tabs[ tabAtoi[tab] ];
-        // get group in the tab to operate with
-        const curGroup = curTab.nutrients[ groupAtoi[nutrient] ];
+                // group object for getting calories
+                const group = tab.nutrients[ groupAtoi[meal.food.group] ];
+                // calories to be eaten
+                const calsToEat = group.calories.target - group.calories.got;
 
-        // calories to be eaten in this group
-        const caloriesToEat = curGroup.calories.target - curGroup.calories.got;
+                // calories / 1g-cals = weight to be eaten
+                meal.weight.toEat = (calsToEat / meal.food.calories).toFixed();
 
-        // calc new weights to eat
-        for (let meal of curTab.meals) {
-            if (meal.food.group == nutrient)
-                meal.weight.toEat = (caloriesToEat / meal.food.calories).toFixed();
+                // EGGS CONVERT
+                // if this meal is egg, divide its weight by 100 to get 
+                // actually count from weight (eggs are inputed not by weight
+                // but by count (1 egg, 2 egg, N eggs)
+                if (`${meal.food._id.toString()}` == '62698bacaec76b49a8b91712') {
+                    meal.weight.toEat /= 100;
+                }
+                // ____________
+            }
         }
 
-        log.info('Leaving calcToEatWeights model method', { model: 'report' });
+        log.info('Finished to calc calories got', { model: 'report' });
+        
+        log.info('Leaving pre-save model mdlwre', { model: 'report' });
+        next();
 
     } catch (e) {
         log.error({ model: 'report', error: e.message });
-        throw new Error('Report model calcToEatWeights method failed');
+        throw new Error('Report model pre-save mdlwre failed');
     }
-};
+});
+
+// ____________________________________________________________________
 
 // calc all the target calories in the report
 reportSchema.methods.calcTargetCalories = function() {

@@ -11,34 +11,23 @@ const { getReport } = require('../_commons');
 const { Telegram } = require('telegraf');
 const tgClient = new Telegram(process.env.BOT_TOKEN);
 
+// copied from models/report
+// got errors on exporting
+// so here's the solvation
+const groupAtoi = {
+    'proteins': 0,
+    'fats': 1,
+    'carbons': 2,
+}
 
 const examineTab = (tab, name) => {
 
-    let caloriesGot = {
-        'proteins': 0,
-        'carbons': 0,
-        'fats': 0,
-    };
-
-    // calc calories eaten per each nutrient
-    for (let meal of tab.meals) {
-        caloriesGot[meal.food.group] += meal.food.calories * meal.weight.eaten;
-    }
-
-    // calc target calories value for each nutrient
-    const caloriesTarget = {
-        proteins: tab.calories.target * tab.nutrientRates.proteins,
-        carbons: tab.calories.target * tab.nutrientRates.carbons,
-        fats: tab.calories.target * tab.nutrientRates.fats,
-    };
-
     // calc the percent of reaching the target
-    const percents = {
-        proteins: Number(caloriesGot.proteins / caloriesTarget.proteins * 100),
-        carbons: Number(caloriesGot.carbons / caloriesTarget.carbons * 100),
-        fats: Number(caloriesGot.fats / caloriesTarget.fats * 100),
-    };
-
+    let percents = [];
+    for (let group of tab.nutrients) {
+        const perc = Number(group.calories.got / group.calories.target * 100).toFixed();
+        percents.push(perc);
+    }
 
     const getMark = (percent) => {
         percent = Number(percent);
@@ -53,18 +42,14 @@ const examineTab = (tab, name) => {
         return mark;
     };
 
+    let marks = [];
+    for (let perc of percents)
+        marks.push(getMark(perc));
+
     return {
         name: name,
-        mark: {
-            proteins: getMark(percents.proteins),
-            carbons: getMark(percents.carbons),
-            fats: getMark(percents.fats),
-        },
-        value: {
-            proteins: (percents.proteins).toFixed(),
-            carbons: (percents.carbons).toFixed(),
-            fats: (percents.fats).toFixed(),
-        },
+        mark: marks,
+        value: percents,
     };
 };
 
@@ -83,10 +68,9 @@ router.get('/send-report/:user', async (req, res) => {
             supper: examineTab(report.tabs[4], 'Ужин'),
         }
 
-
+        console.log('1');
 
         const generateTab = (tab) => {
-
             const template = (nutr, value) => `В данном приеме пищи содержание ${nutr}ов составляет <b>${value}%</b> от идеального значения`;
             const marks = {
                 '5': 'Идеально!',
@@ -96,10 +80,10 @@ router.get('/send-report/:user', async (req, res) => {
                 '1': 'Неудовлетворительно!',
             };
 
-            return `<b><u>${tab.name}:</u></b>
-<b>Белки</b>: ${marks[tab.mark.proteins]} ${template('белк', tab.value.proteins)}
-<b>Жиры</b>: ${marks[tab.mark.fats]} ${template('жир', tab.value.fats)}
-<b>Углеводы</b>: ${marks[tab.mark.carbons]} ${template('углевод', tab.value.carbons)} \n\n`
+            return `<b><u>${tab.name}:</u></b> \n` + 
+                    `<b>Белки</b>: ${marks[tab.mark[0]]} ${template('белк', tab.value[0])} \n` +
+                    `<b>Жиры</b>: ${marks[tab.mark[1]]} ${template('жир', tab.value[1])} \n` +
+                    `<b>Углеводы</b>: ${marks[tab.mark[2]]} ${template('углевод', tab.value[2])} \n\n`;
         };
 
 
@@ -111,7 +95,7 @@ router.get('/send-report/:user', async (req, res) => {
         if (user.mealsPerDay == 5) text += generateTab(tabs.lunch2);
         text += generateTab(tabs.supper);
 
-        if (Number(report.nonNutrientMeals.vegetables.weight.eaten) < 300) {
+        if (Number(report.vegetables.weight.eaten) < 300) {
             text += `Обратите внимание: недостаточное потребление овощей в рационе к недостаточному наличию клетчатки, ` + 
                 `которая «скрабирует» и нормализует работу ЖКТ, помогает избавиться от лишнего веса, выводит шлаки и токсины. ` + 
                 `Достаточное количество клетчатки приводит к медленному усвоению жиров и углеводов, снижает уровень сахара в крови, `

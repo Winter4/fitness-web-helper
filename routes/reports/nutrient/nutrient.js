@@ -72,8 +72,6 @@ router.post('/reports/tabs/:user/:tab', async (req, res) => {
         let report = await getReport(req.params, req.query);
         pushByID(report.tabs[ tabAtoi[req.params.tab] ].meals, newMeal);
 
-        const mealData = await Meal.findById(req.body.meal_id);
-        await report.calcToEatWeights(req.params.tab, mealData.group);
         await report.save();
 
         log.info('Response for POST with OK', { route: req.url });
@@ -104,7 +102,6 @@ router.put('/reports/tabs/:user/:tab/:nutrient', async (req, res) => {
 
         changeByID(report.tabs[ tabAtoi[req.params.tab] ].meals, req.query.row_id, req.query.row_weight);
 
-        await report.calcToEatWeights(req.params.tab, req.params.nutrient);
         await report.save();
 
         log.info('Response for PUT with OK', { route: req.url });
@@ -135,7 +132,6 @@ router.delete('/reports/tabs/:user/:tab/:nutrient', async (req, res) => {
 
         deleteByID(report.tabs[ tabAtoi[req.params.tab] ].meals, req.query.row_id);
 
-        await report.calcToEatWeights(req.params.tab, req.params.nutrient);
         await report.save();
 
         log.info('Response for DELETE with OK', { route: req.url });

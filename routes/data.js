@@ -47,6 +47,8 @@ router.get('/data/:user', async (req, res) => {
     }
 });
 
+// ______________________________________________________________
+
 router.get('/header/calories/got/:user', async (req, res) => {
     try {
         const report = await getReport(req.params, req.query);
@@ -61,7 +63,9 @@ router.get('/header/calories/got/:user', async (req, res) => {
     }
 });
 
-router.get('/tab/calories/got/:user/:tab', async (req, res) => {
+// _______________________________________________________________
+
+router.get('/tabs/calories/got/:user/:tab', async (req, res) => {
     try {
         const report = await getReport(req.params, req.query);
 
@@ -88,7 +92,7 @@ router.get('/tab/calories/got/:user/:tab', async (req, res) => {
     }
 });
 
-router.get('/tab/calories/target/:user/:tab', async (req, res) => {
+router.get('/tabs/calories/target/:user/:tab', async (req, res) => {
     try {
         const report = await getReport(req.params, req.query);
 
@@ -108,6 +112,23 @@ router.get('/tab/calories/target/:user/:tab', async (req, res) => {
         log.info('Response for GET with tab caloriesTarget json OK', { route: req.url });
         res.json(response);
 
+    } catch (e) {
+        log.error({ route: req.url, error: e.message });
+        res.statusCode = 500;
+        res.send('Возникла непредвиденная ошибка на стороне сервера :(');
+    }
+});
+
+// _________________________________________________________
+
+router.get('/junk/calories/got/:user', async (req, res) => {
+    try {
+        const report = await getReport(req.params, req.query);
+
+        const response = { value: report.junk.calories.got };
+
+        log.info('Response for GET with junk caloriesGot json OK', { route: req.url });
+        res.json(response);
     } catch (e) {
         log.error({ route: req.url, error: e.message });
         res.statusCode = 500;
