@@ -6,7 +6,7 @@ const full = new transports.DailyRotateFile({
 
 	datePattern: 'YYYY-MM-DD',
 	zippedArchive: true,
-	maxSize: '150m',
+	maxSize: '20m',
 	maxFiles: '21d'
 });
 
