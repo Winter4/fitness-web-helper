@@ -163,7 +163,7 @@ const makeHeader = (text, flag) => {
 
     return `<div class="block-header col-12">
                 <div class="row">
-                    <div class="col-12 col-sm-3 offset-1 mb-2">
+                    <div class="col-12 mb-2" align="center">
                         <span class="h">${text}</span>
                         ${cals}
                     </div>
@@ -407,7 +407,7 @@ function makeTabs() {
                             <div class="col-12">
                                 калорий за ${tabName}:
                                 <div class="tab-header-content">
-                                    <span class="calories-got">XXX</span> из <span class="calories-target">YYY</span>
+                                    <span class="calories-got">XXX</span> из <span class="calories-target">YYY</span> <span>кал</span>
                                 </div
                             </div>
                         </div>`;
@@ -457,9 +457,9 @@ function makeJunk() {
     // make header calories bar
     const header = `<div class="tab-header row text-center mb-4">
                         <div class="col-12">
-                            калорий за счёт нерекомендованных продуктов:
+                            нерекомендованные продукты:
                             <div class="tab-header-content">
-                                <span class="calories-got color-red">XXX</span>
+                                <span class="calories-got color-red">XXX</span> <span class="color-red">кал</span>
                             </div
                         </div>
                     </div>`;

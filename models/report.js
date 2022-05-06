@@ -50,7 +50,7 @@ const reportSchema = new mongoose.Schema({
             eaten: Number,
             target: {
                 type: Number,
-                default: 300,
+                default: 400,
                 immutable: true,
             }
         }

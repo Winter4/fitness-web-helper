@@ -11,7 +11,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * */
 
 .invisible {
-    visibility: hidden;
+    display: none;
 }
 
 .color-green {
@@ -124,6 +124,7 @@ nav {
     
 .tab-header {
     font-size: 16pt;
+    font-weight: bold;
     
     border-bottom: 3px solid var(--color-green);
 }
@@ -174,16 +175,16 @@ nav {
 }
 
 .block-header {
-    font-size: 13pt;
+    font-size: 15pt;
     color: var(--color-green);
 
     font-weight: bold;
 }
 
 .block-header .h {
-    font-size: 14pt;
+    font-size: 15pt;
     padding-bottom: 7px;
-    font-weight: normal;
+    font-weight: bold;
     color: black;
 }
 
@@ -204,7 +205,7 @@ nav {
     text-align: center;
     margin-bottom: 5px;
     border-bottom: 1px solid black;
-    padding-bottom: 5px;
+    padding: 5px;
 }
 
 .block .block-form .form-tip {
@@ -217,6 +218,7 @@ nav {
 
 .block .block-form .form-elements {
     margin: 5px;
+    padding-right: 5px;
 }
 
 .block .block-form .form-elements > * {
