@@ -129,6 +129,14 @@ app.get('/meals/:nutrient', async (req, res) => {
 });
 
 app.listen(8080, () => {
-    mongoose.connect(process.env.MONGO_URL, () => log.info('Connected to DB'));
+    mongoose.connect(process.env.MONGO_URL, () => { 
+        console.log('Connected to DB'); 
+        log.info('Connected to DB'); 
+    });
+
+    console.log('Server started at 8080');
     log.info('Server started at 8080');
+
+    console.log('Logging...');
+    log.info('Logging...');
 });

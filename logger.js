@@ -1,4 +1,24 @@
 const { createLogger, transports, format } = require('winston');
+require('winston-daily-rotate-file');
+
+const full = new transports.DailyRotateFile({
+	filename: './logs/bot-full_%DATE%.log',
+
+	datePattern: 'YYYY-MM-DD',
+	zippedArchive: true,
+	maxSize: '150m',
+	maxFiles: '21d'
+});
+
+const error = new transports.DailyRotateFile({
+	filename: './logs/bot-error_%DATE%.log',
+	level: 'error',
+
+	datePattern: 'YYYY-MM-DD',
+	zippedArchive: true,
+	maxSize: '150m',
+	maxFiles: '21d'
+});
 
 module.exports.log = createLogger({
 	format: format.combine(
@@ -6,8 +26,7 @@ module.exports.log = createLogger({
 		format.json(),
 	),
  	transports: [
- 		new transports.Console(),
-    	new transports.File({ filename: './logs/full.log' }),
-    	new transports.File({ filename: './logs/error.log', level: 'error' }),
+ 		full,
+ 		error,
 	]
 });
