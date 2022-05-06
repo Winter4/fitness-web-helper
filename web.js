@@ -22,16 +22,18 @@ app.use(cors());
 
 // __________________________________________
 
-// logger
+// log all income requests
 app.use((req, res, next) => {
     log.info('New Request', { method: req.method, url: req.url, query: req.query });
     next();
 });
 
+// get the index.html
 app.get('/', async (req, res) => {
 
     let report, user;
 
+    // if the query is empty, resp with error
     if (req.query.user == undefined || Number(req.query.user) < 1) {
         log.warn('Invalid user query', { user: req.query.user });
         res.statusCode = 400;
@@ -39,11 +41,12 @@ app.get('/', async (req, res) => {
     }
 
     try {
-
+        // get the report
         log.info('Getting report from DB', { route: req.url });
         report = await Report.findOne({ user: req.query.user, date: time.today.date() });
         log.info('Got report from DB', { route: req.url });
 
+        // get the user object
         log.info('Getting user from DB', { route: req.url });
         user = await User.findOne({ _id: req.query.user });
         log.info('Got user from DB', { route: req.url });
@@ -55,6 +58,7 @@ app.get('/', async (req, res) => {
     }
 
     try {
+        // if there is no report, create a new one
         if (report == null) {
 
             report = new Report({
@@ -70,6 +74,7 @@ app.get('/', async (req, res) => {
 
             // init the tabs
             for (let i in report.tabs) {
+                // bf-l2 tabs has the following groups proportions
                 if (i == report.tabs.length - 1) {
                     report.tabs[i].nutrients = [
                         { rate: 0.5, calories: { got: 0 } },
@@ -77,6 +82,7 @@ app.get('/', async (req, res) => {
                         { rate: 0.25, calories: { got: 0 } },
                     ];
                 }
+                // sup tab has the following groups proporions
                 else {
                     report.tabs[i].nutrients = [
                         { rate: 0.35, calories: { got: 0 } },
@@ -90,7 +96,9 @@ app.get('/', async (req, res) => {
             }
         }
 
+        // copy the field from user doc to report doc
         report.mealsPerDay = user.mealsPerDay;
+        // calc target calories for user
         report.calcTargetCalories();
         await report.save();
 
@@ -108,16 +116,15 @@ app.get('/', async (req, res) => {
 app.use(require('./routes/data'));
 app.use(require('./routes/send-report'));
 
-app.use(require('./routes/reports/nutrient/nutrient').router);
+app.use(require('./routes/tables/tabs').router);
 
-app.use(require('./routes/reports/non-nutrient/vegetables'));
-app.use(require('./routes/reports/non-nutrient/junk').router);
+app.use(require('./routes/tables/vegetables'));
+app.use(require('./routes/tables/junk').router);
 
-
-app.get('/meals/:nutrient', async (req, res) => {
+// get the meals from the requested group
+app.get('/meals/:group', async (req, res) => {
     try {
-
-        const meals = await Meal.find({ group: req.params.nutrient });
+        const meals = await Meal.find({ group: req.params.group });
         log.info('Response with meals json OK', { route: req.url });
         res.json(meals);
 

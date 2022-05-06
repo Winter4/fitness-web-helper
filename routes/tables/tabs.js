@@ -1,28 +1,33 @@
 const express = require('express');
 const router = express.Router();
-const { log } = require('../../../logger');
+const { log } = require('../../logger');
 
 const mongoose = require('mongoose');
 
-const Report = require('../../../models/report');
-const Meal = require('../../../models/meal');
+const Report = require('../../models/report');
+const Meal = require('../../models/meal');
 
-const { getReport, tabAtoi } = require('../../../_commons');
+const { getReport, tabAtoi } = require('../../_commons');
 
 // ___________________________________________________________________
 
-router.get('/reports/tabs/:user/:tab/:nutrient', async (req, res) => {
+// get the rows for the table
+router.get('/reports/tabs/:user/:tab/:group', async (req, res) => {
     try {
+        // get the report for user and date
         let report = await getReport(req.params, req.query);
 
+        // get the tab up to sring param
         const tabIndex = tabAtoi[req.params.tab];
         await report.populate(`tabs.${tabIndex}.meals.food`);
 
+        // get the tab object
         const tab = report.tabs[tabIndex];
 
+        // response with meals from the req group
         let response = [];
         for (let meal of tab.meals) {
-            if (meal.food.group == req.params.nutrient) {
+            if (meal.food.group == req.params.group) {
                 response.push({ 
                     _id: meal._id,
                     name: meal.food.name,
@@ -58,6 +63,7 @@ const pushByID  = (array, mealObject) => {
 };
 module.exports.pushByID = pushByID;
 
+// create new row in the table
 router.post('/reports/tabs/:user/:tab', async (req, res) => {
     try {
         let newMeal = { 
@@ -69,6 +75,7 @@ router.post('/reports/tabs/:user/:tab', async (req, res) => {
             }
         };
 
+        // report for user and date
         let report = await getReport(req.params, req.query);
         pushByID(report.tabs[ tabAtoi[req.params.tab] ].meals, newMeal);
 
@@ -96,8 +103,9 @@ const changeByID = (array, id, newWeight) => {
 };
 module.exports.changeByID = changeByID;
 
-router.put('/reports/tabs/:user/:tab/:nutrient', async (req, res) => {
+router.put('/reports/tabs/:user/:tab/:group', async (req, res) => {
     try {
+        // report for user and date
         const report = await getReport(req.params, req.query);
 
         changeByID(report.tabs[ tabAtoi[req.params.tab] ].meals, req.query.row_id, req.query.row_weight);
@@ -126,8 +134,10 @@ const deleteByID = (array, id) => {
 };
 module.exports.deleteByID = deleteByID;
 
-router.delete('/reports/tabs/:user/:tab/:nutrient', async (req, res) => {
+// delete the row from the table
+router.delete('/reports/tabs/:user/:tab', async (req, res) => {
     try {
+        // report for user and date
         let report = await getReport(req.params, req.query);
 
         deleteByID(report.tabs[ tabAtoi[req.params.tab] ].meals, req.query.row_id);

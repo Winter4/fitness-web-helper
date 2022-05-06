@@ -20,6 +20,7 @@ const groupAtoi = {
     'carbons': 2,
 }
 
+// get the percents of eating per each group
 const examineTab = (tab, name) => {
 
     // calc the percent of reaching the target
@@ -29,6 +30,7 @@ const examineTab = (tab, name) => {
         percents.push(perc);
     }
 
+    // func for getting mark from the percent value
     const getMark = (percent) => {
         percent = Number(percent);
 
@@ -42,6 +44,7 @@ const examineTab = (tab, name) => {
         return mark;
     };
 
+    // calcing marks for percent array
     let marks = [];
     for (let perc of percents)
         marks.push(getMark(perc));
@@ -53,13 +56,17 @@ const examineTab = (tab, name) => {
     };
 };
 
+// router for sending report to bot
 router.get('/send-report/:user', async (req, res) => {
     try {
+        // user object
         const user = await User.findById(req.params.user);
 
+        // report for user and date
         const report = await getReport(req.params, req.query);
         await report.populate('tabs.meals.food');
 
+        // get the tabs percents and marks 
         const tabs = {
             breakfast: examineTab(report.tabs[0], 'Завтрак'),
             lunch1: examineTab(report.tabs[1], 'Перекус 1'),
@@ -68,8 +75,7 @@ router.get('/send-report/:user', async (req, res) => {
             supper: examineTab(report.tabs[4], 'Ужин'),
         }
 
-        console.log('1');
-
+        // generate text from the tab values
         const generateTab = (tab) => {
             const template = (nutr, value) => `В данном приеме пищи содержание ${nutr}ов составляет <b>${value}%</b> от идеального значения`;
             const marks = {
@@ -87,6 +93,7 @@ router.get('/send-report/:user', async (req, res) => {
         };
 
 
+        // concatenate the strings and make the message to bot
 
         let text = `Отчёт за ${report.date} проверен \n\n\n${user.name}, мы оценили Ваш отчёт \n\n`;
         text += generateTab(tabs.breakfast);

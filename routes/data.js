@@ -8,26 +8,33 @@ const time = require('../time');
 
 const { getReport, tabAtoi } = require('../_commons');
 
+// get the user date (for header)
 router.get('/data/:user', async (req, res) => {
     try {
+        // report for user and date
         let report = await getReport(req.params, req.query);
+        // user object
         const user = await User.findById(req.params.user);
 
         log.info('Response for GET with userData json OK', { route: req.url });
         res.json({ 
+            // dates DD-MM-YYYY
             date: {
                 today: time.today.date(),
                 yesterday: {
                     date: time.yesterday.date(),
+                    // if the report for yesterday exists
                     exists: Boolean(await Report.exists({ user: req.params.user, date: time.yesterday.date() })),
                 } 
             },
 
+            // user data from bot
             userData: {
                 name: user.name,
                 mealsPerDay: report.mealsPerDay,
             },
 
+            // calories target for whole report and per each tab
             caloriesTarget: {
                 common: report.calories.target,
                 tabs: {
@@ -49,8 +56,10 @@ router.get('/data/:user', async (req, res) => {
 
 // ______________________________________________________________
 
+// get the calories got in common
 router.get('/header/calories/got/:user', async (req, res) => {
     try {
+        // report for user and date
         const report = await getReport(req.params, req.query);
 
         log.info('Response for GET with caloriesGot json OK', { route: req.url });
@@ -65,13 +74,19 @@ router.get('/header/calories/got/:user', async (req, res) => {
 
 // _______________________________________________________________
 
+// get the calories got for tab
 router.get('/tabs/calories/got/:user/:tab', async (req, res) => {
     try {
+        // report for user and date
         const report = await getReport(req.params, req.query);
 
+        // tab index up to request 
         const tabIndex = tabAtoi[req.params.tab];
+        // tab object from the report
         const tab = report.tabs[tabIndex];
 
+        // response with tab calories got in common
+        // and per each group
         const response = {
             tab: tab.calories.got,
 
@@ -92,13 +107,19 @@ router.get('/tabs/calories/got/:user/:tab', async (req, res) => {
     }
 });
 
+// get the calories target for tab
 router.get('/tabs/calories/target/:user/:tab', async (req, res) => {
     try {
+        // report for user and date
         const report = await getReport(req.params, req.query);
 
+        // tab index up to reqeust
         const tabIndex = tabAtoi[req.params.tab];
+        // tab object from the report
         const tab = report.tabs[tabIndex];
 
+        // response with tab calories target in common
+        // and per each group
         const response = {
             tab: tab.calories.target,
 
@@ -121,10 +142,13 @@ router.get('/tabs/calories/target/:user/:tab', async (req, res) => {
 
 // _________________________________________________________
 
+// get the calories got for junkfood
 router.get('/junk/calories/got/:user', async (req, res) => {
     try {
+        // report for user and date
         const report = await getReport(req.params, req.query);
 
+        // response with the calories got value
         const response = { value: report.junk.calories.got };
 
         log.info('Response for GET with junk caloriesGot json OK', { route: req.url });

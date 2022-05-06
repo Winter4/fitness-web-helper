@@ -1,18 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const { log } = require('../../../logger');
+const { log } = require('../../logger');
 
 const mongoose = require('mongoose');
 
-const Report = require('../../../models/report');
-const { getReport } = require('../../../_commons');
+const Report = require('../../models/report');
+const { getReport } = require('../../_commons');
 
-
+// get the data for junks table
 router.get('/reports/junk/:user/:group', async (req, res) => {
     try {
+        // get the report depending on user and date
         const report = await getReport(req.params, req.query);
         await report.populate('junk.meals.food');
 
+        // reponse with all the meals of
+        // requested group
         let response = [];
         for (let meal of report.junk.meals) {
             if (meal.food.group == req.params.group) {
@@ -36,8 +39,9 @@ router.get('/reports/junk/:user/:group', async (req, res) => {
 
 
 router.use(express.urlencoded({ extended: false }));
-const { pushByID } = require('../nutrient/nutrient');
+const { pushByID } = require('./tabs');
 
+// add new row to the junk table
 router.post('/reports/junk/:user', async (req, res) => {
     try {
         const newMeal = { 
@@ -48,6 +52,7 @@ router.post('/reports/junk/:user', async (req, res) => {
             }
         };
 
+        // get the report for req user and req date
         const report = await getReport(req.params, req.query);
         pushByID(report.junk.meals, newMeal);
 
@@ -64,10 +69,12 @@ router.post('/reports/junk/:user', async (req, res) => {
 });
 
 
-const { changeByID } = require('../nutrient/nutrient');
+const { changeByID } = require('./tabs');
 
+// change table row
 router.put('/reports/junk/:user', async (req, res) => {
     try {
+        // get report for the req user and req date
         const report = await getReport(req.params, req.query);
 
         changeByID(report.junk.meals, req.query.row_id, req.query.row_weight);
@@ -85,10 +92,12 @@ router.put('/reports/junk/:user', async (req, res) => {
 });
 
 
-const { deleteByID } = require('../nutrient/nutrient');
+const { deleteByID } = require('./tabs');
 
+// delete table row
 router.delete('/reports/junk/:user', async (req, res) => {
     try {
+        // get report for the req user and req date
         let report = await getReport(req.params, req.query);
 
         deleteByID(report.junk.meals, req.query.row_id);

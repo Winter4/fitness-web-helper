@@ -430,7 +430,7 @@ function makeTabs() {
                 get:    `${origin}/reports/tabs/${user}/${tab.substring(5)}/${tabGroups.latin[i]}`  + yestQuery,
                 post:   `${origin}/reports/tabs/${user}/${tab.substring(5)}`                        + yestQuery,
                 put:    `${origin}/reports/tabs/${user}/${tab.substring(5)}/${tabGroups.latin[i]}`  + yestQuery,
-                delete: `${origin}/reports/tabs/${user}/${tab.substring(5)}/${tabGroups.latin[i]}`  + yestQuery,
+                delete: `${origin}/reports/tabs/${user}/${tab.substring(5)}`  + yestQuery,
             };
 
             makeBlock(

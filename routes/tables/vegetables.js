@@ -1,13 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const { log } = require('../../../logger');
+const { log } = require('../../logger');
 
-const Report = require('../../../models/report');
-const { getReport } = require('../../../_commons');
+const Report = require('../../models/report');
+const { getReport } = require('../../_commons');
 
+// get the data for vegetables table
 router.get('/reports/vegetables/:user', async (req, res) => {
 	try {
+		// report for user and date
 		const report = await getReport(req.params, req.query);
+		// report vegetables object
 		const veg = report.vegetables.weight;
 
 		const response = { 
@@ -25,11 +28,12 @@ router.get('/reports/vegetables/:user', async (req, res) => {
 	}
 });
 
+// change the vegetables eaten data
 router.put('/reports/vegetables/:user', async (req, res) => {
     try {
+    	// report for user and date
         const report = await getReport(req.params, req.query);
 
-        console.log(req.query);
         report.vegetables.weight.eaten = req.query.weight;
         await report.save();
 
