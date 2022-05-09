@@ -35,7 +35,7 @@ app.get('/', async (req, res) => {
 
     // if the query is empty, resp with error
     if (req.query.user == undefined || Number(req.query.user) < 1) {
-        log.warn('Invalid user query', { user: req.query.user });
+        log.info('Invalid user query', { user: req.query.user });
         res.statusCode = 400;
         res.send('Запрос содержит недопустимые параметры или не содержит их вовсе.');
     }
@@ -102,8 +102,18 @@ app.get('/', async (req, res) => {
         report.calcTargetCalories();
         await report.save();
 
-        log.info('Response with index.html OK', { route: req.url });
-        res.sendFile(__dirname + '/views/index.html');
+        // if the request is ajax for generating meal plan in bot
+        // send the report object
+        if (req.query.bot) {
+            log.info('Response with report json OK', { route: req.url });
+            res.json(report);
+        }
+        // if the request if regular browser GET
+        // send index.html
+        else {
+            log.info('Response with index.html OK', { route: req.url });
+            res.sendFile(__dirname + '/views/index.html');
+        }
 
     } catch (e) {
         log.error({ route: req.url, error: e.message });
