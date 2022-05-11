@@ -287,8 +287,8 @@ function makeBlock(target, group, ajax, tabsFlag) {
                 title: "Продукт",
                 data: "name",
                 render: function(data, type, row, meta) {
-                            const icon = `<i class="fa-solid fa-circle-info color-green" title="${row.title}"></i>`;
-                            const field = row.title ? `<span>${data} ${icon}</span>` : `<span>${data}</span>`;
+                            const icon = `<i class="fa-solid fa-circle-info color-green"></i>`;
+                            const field = row.title ? `<span class="hoverable" data-tooltip="${row.title}">${data} ${icon}</span>` : `<span>${data}</span>`;
                             return field;
                 },
             },
