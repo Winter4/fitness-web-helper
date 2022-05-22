@@ -2,7 +2,7 @@ const { createLogger, transports, format } = require('winston');
 require('winston-daily-rotate-file');
 
 const full = new transports.DailyRotateFile({
-	filename: './logs/bot-full_%DATE%.log',
+	filename: './logs/web-full_%DATE%.log',
 
 	datePattern: 'YYYY-MM-DD',
 	zippedArchive: true,
@@ -11,7 +11,7 @@ const full = new transports.DailyRotateFile({
 });
 
 const error = new transports.DailyRotateFile({
-	filename: './logs/bot-error_%DATE%.log',
+	filename: './logs/web-error_%DATE%.log',
 	level: 'error',
 
 	datePattern: 'YYYY-MM-DD',
