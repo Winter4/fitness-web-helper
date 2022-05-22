@@ -98,7 +98,7 @@ app.get('/', async (req, res) => {
         }
 
         // copy the caloriesToLoose field from 
-        report.calories.target = user.caloriesToLoose;
+        report.calories.target = user.caloriesToLose;
 
         // copy the field from user doc to report doc
         report.mealsPerDay = user.mealsPerDay;
