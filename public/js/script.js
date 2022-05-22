@@ -580,6 +580,11 @@ function onInputBlur(inputID, ajax, tableID, tabsFlag) {
 
     const weight = input.val();
 
+    if (!weight || weight < 1 || weight > 1000) {
+        table.DataTable().ajax.reload();
+        return;
+    }
+
     $.ajax({
         url: ajax + `&row_id=${inputID}` + `&row_weight=${weight}`,
         type: 'PUT',
