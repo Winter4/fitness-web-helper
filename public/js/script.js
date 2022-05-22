@@ -196,7 +196,7 @@ const makeForm = (tab) => {
                         </div>
 
                         <div>
-                            <input class="weight" type="number" min="1" placeholder="Масса пищи.." />
+                            <input class="weight" type="number" min="1" max="1000" placeholder="Масса пищи.." />
                         </div>
 
                         <button data-tab="${tab}">Добавить</button>
@@ -251,6 +251,9 @@ function makeBlock(target, group, ajax, tabsFlag) {
         const id = select.val();
         const weight = input.val();
         if (!weight) return;
+        // if egg, count <= 15
+        if (select.val() == '62698bacaec76b49a8b91712' && weight > 15) return;
+        if (weight > 1000) return;
 
         $.post(ajax.post, { meal_id: id, meal_weight: weight })
         .done(function(res) {
@@ -299,7 +302,7 @@ function makeBlock(target, group, ajax, tabsFlag) {
                     return `<input 
                                 type="number" 
                                 min="1" 
-                                maxlength="3" 
+                                max="1000"
                                 value="${data}" 
                                 id="${row._id}" 
                                 data-tab="${target}"
