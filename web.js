@@ -66,7 +66,7 @@ app.get('/', async (req, res) => {
                 user: user._id,
                 tabs: [{}, {}, {}, {}, {}],
 
-                calories: { got: 0 },
+                calories: { got: 0, target: user.caloriesToLose, },
 
                 vegetables: {
                     weight: { eaten: 0, },
