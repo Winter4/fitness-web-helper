@@ -66,7 +66,7 @@ app.get('/', async (req, res) => {
                 user: user._id,
                 tabs: [{}, {}, {}, {}, {}],
 
-                calories: { got: 0, target: user.caloriesToLose, },
+                calories: { got: 0 },
 
                 vegetables: {
                     weight: { eaten: 0, },
@@ -96,6 +96,9 @@ app.get('/', async (req, res) => {
                 report.tabs[i].calories.target = -1;
             }
         }
+
+        // copy the caloriesToLoose field from 
+        report.calories.target = user.caloriesToLoose;
 
         // copy the field from user doc to report doc
         report.mealsPerDay = user.mealsPerDay;
