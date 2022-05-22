@@ -386,6 +386,10 @@ nav {
     font-weight: bold;
 }
 
+button.disabled {
+    background-color: #cc3300 !important;
+}
+
 /* * * * * * * * * * * * * * * */
 
 @media screen and (max-width: 1200px) {

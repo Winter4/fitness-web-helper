@@ -554,7 +554,14 @@ $(document).ready(function() {
     makeJunk();
 
     // set send-report button onclick
-    $('#send-report').on('click', function() {
+    const sendReportBtn = $('#send-report');
+    sendReportBtn.on('click', function() {
+
+        sendReportBtn.addClass('disabled');
+        setTimeout(() => {
+            sendReportBtn.removeClass('disabled');
+        }, 3000);
+
         $.get(`/send-report/${user}` + yestQuery)
             .fail(function() { console.error('failed to send report to bot') });
     });
