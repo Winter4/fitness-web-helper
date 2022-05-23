@@ -93,20 +93,83 @@ router.get('/send-report/:user', async (req, res) => {
         };
 
 
+        
+        // groups avg percents
+        const avgPercents = {
+            values: Array(3).fill(Number(0)),
+            count: 0,
+        };
+        const addPercents = values => {
+            for (let i in avgPercents.values) {
+                avgPercents.values[i] += Number(values[i]);
+            }
+            avgPercents.count++
+        };
+
         // concatenate the strings and make the message to bot
+        // also calc groups percents
 
         let text = `Отчёт за ${report.date} проверен \n\n\n${user.name}, мы оценили Ваш отчёт \n\n`;
         text += generateTab(tabs.breakfast);
-        if (user.mealsPerDay > 3) text += generateTab(tabs.lunch1);
+        addPercents(tabs.breakfast.value);
+        if (user.mealsPerDay > 3) { 
+            text += generateTab(tabs.lunch1);
+            addPercents(tabs.lunch1.value);
+        }
         text += generateTab(tabs.dinner);
-        if (user.mealsPerDay == 5) text += generateTab(tabs.lunch2);
+        addPercents(tabs.dinner.value);
+        if (user.mealsPerDay == 5) {
+            text += generateTab(tabs.lunch2);
+            addPercents(tabs.lunch2.value);
+        }
         text += generateTab(tabs.supper);
+        addPercents(tabs.supper.value);
 
-        if (Number(report.vegetables.weight.eaten) < 300) {
-            text += `Обратите внимание: недостаточное потребление овощей в рационе к недостаточному наличию клетчатки, ` + 
-                `которая «скрабирует» и нормализует работу ЖКТ, помогает избавиться от лишнего веса, выводит шлаки и токсины. ` + 
-                `Достаточное количество клетчатки приводит к медленному усвоению жиров и углеводов, снижает уровень сахара в крови, `
-                + `дает чувство сытости.`;
+        // calc avg percents for each group
+        for (let i in avgPercents.values) avgPercents.values[i] /= avgPercents.count;
+        // if all the percents are good, make it true and send its msg
+        let percentsFlag = true;
+
+        // if the proteins weight is not enough
+        if (avgPercents.values[0] <= 89) {
+            percentsFlag = false;
+            text += '\nОбратите внимание: при недостаточном содержании жиров в рационе организму тяжело насытиться другими нутриентами и регулировать аппетит! ' + 
+                    'Также, содержание в рационе полиненасыщенных жиров (орехи, жирная рыба, тофу, соевые бобы, семечки, грецкие орехи, семена льна и подсолнечника, ' +
+                    'и мононенасыщенных жиров (орехи и ореховое масло, авокадо, оливковое и рапсовое масло, оливки) ведёт к улучшению многих функций организма и профилактике различных заболеваний';
+        }
+        else if (avgPercents.values[0] >= 111) {
+            percentsFlag = false;
+            text += '\nОбратите внимание: при избытке белка еда с трудом переваривается, поэтому ЖКТ работает в усиленном режиме, ' +
+                    'что сказывается на самочувствии и ведёт к повышению общей калорийности \n';
+        }
+
+        // if the fats weight is not enough
+        if (avgPercents.values[1] <= 89) {
+            percentsFlag = false;
+            text += '\nОбратите внимание: недостаточное содержание белка в организме приводит к снижению мышечной массы, ее тонуса и силы \n';
+        }
+        else if (avgPercents.values[1] >= 111) {
+            percentsFlag = false;
+            text += '\nОбратите внимание: при избытке жиров, калорийность рациона существенно повышается, что способствует набору лишнего веса \n';
+        }
+
+        // if the carbons weight is not enough
+        if (avgPercents.values[2] <= 89) {
+            percentsFlag = false;
+            text += '\nОбратите внимание: недостаточное содержание углеводов (особенно в утреннее и дневное время) приводит к плохому самочувствию, ' +
+                    'нехватке энергии и чувству голода(особенно в вечернее время) \n';
+        }
+        else if (avgPercents.values[2] >= 111) {
+            percentsFlag = false;
+            text += '\nОбратите внимание: при повышенном содержании углеводов в суточном рационе, организм конвертирует их избыточное количество в жир \n';
+        }
+
+        // if the vegetables weight isn't enough
+        if (Number(report.vegetables.weight.eaten) < Number(report.vegetables.weight.target)) {
+            text += '\nОбратите внимание: недостаточное потребление овощей в рационе к недостаточному наличию клетчатки, ' + 
+                'которая «скрабирует» и нормализует работу ЖКТ, помогает избавиться от лишнего веса, выводит шлаки и токсины. ' + 
+                'Достаточное количество клетчатки приводит к медленному усвоению жиров и углеводов, снижает уровень сахара в крови, '
+                + 'дает чувство сытости.';
         }
 
         log.info('Sending report to bot', { user: user._id, date: report.date });
