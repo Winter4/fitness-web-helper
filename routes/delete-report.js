@@ -8,9 +8,9 @@ const time = require("../time");
 router.delete("/delete-report/:user", async (req, res) => {
   try {
     // delete today and yesterday's reports
-    await Report.deleteOne({ date: time.today.date, user: req.params.user });
+    await Report.deleteOne({ date: time.today.date(), user: req.params.user });
     await Report.deleteOne({
-      date: time.yesterday.date,
+      date: time.yesterday.date(),
       user: req.params.user,
     });
 
