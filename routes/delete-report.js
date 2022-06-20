@@ -5,7 +5,7 @@ const { log } = require("../logger");
 const Report = require("../models/report");
 const time = require("../time");
 
-router.delete("delete-report/:user", async (req, res) => {
+router.delete("/delete-report/:user", async (req, res) => {
   try {
     // delete today and yesterday's reports
     await Report.deleteOne({ date: time.today.date, user: req.params.user });
