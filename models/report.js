@@ -171,6 +171,14 @@ reportSchema.pre('save', async function(next) {
 
         this.junk.calories.got = (this.junk.calories.got).toFixed();
 
+        // remove calories from the removed tabs
+        if (this.mealsPerDay < 5) {
+            this.calories.got -= this.tabs[3].calories.got;
+        }
+        if (this.mealsPerDay < 4) {
+            this.calories.got -= this.tabs[1].calories.got;
+        }
+
         // beauifing
         this.calories.got = (this.calories.got).toFixed();
 
